@@ -33,7 +33,6 @@ OTHER_FILES += qml/valuelogger.qml \
     qml/pages/Valuelogger.qml \
     qml/pages/AboutPage.qml \
     rpm/valuelogger.spec \
-    harbour-valuelogger.png \
     harbour-valuelogger.desktop \
     qml/pages/NewParameter.qml \
     qml/pages/AddValue.qml \
@@ -49,5 +48,12 @@ OTHER_FILES += qml/valuelogger.qml \
 TRANSLATIONS += i18n/translations_fi.ts \
                 i18n/translations_sv.ts
 
-
-
+# Icons
+ICON_SIZES = 86 108 128 256
+for(s, ICON_SIZES) {
+    icon_target = icon$${s}
+    icon_dir = icons/$${s}x$${s}
+    $${icon_target}.files = $${icon_dir}/$${TARGET}.png
+    $${icon_target}.path = /usr/share/icons/hicolor/$${s}x$${s}/apps
+    INSTALLS += $${icon_target}
+}
