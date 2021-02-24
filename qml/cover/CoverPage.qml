@@ -1,46 +1,45 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-CoverBackground
-{
-    Image
-    {
-        id: im
-        source: "/usr/share/icons/hicolor/86x86/apps/harbour-valuelogger.png"
-        anchors.top: parent.top
-        anchors.topMargin: ((parent.height - im.height - label.height - label.anchors.topMargin) / 2) - (par.visible ? 30 : 0)
+CoverBackground {
+    id: cover
+
+    Image {
+        id: icon
+
+        y: x
+        width: Math.floor(parent.width * 0.56) & (-2)
+        source: Qt.resolvedUrl("../images/harbour-valuelogger.svg")
         anchors.horizontalCenter: parent.horizontalCenter
+        sourceSize.width: width
     }
-    Label
-    {
+
+    Label {
         id: label
-        anchors.top: im.bottom
-        anchors.topMargin: 10
-        anchors.horizontalCenter: parent.horizontalCenter
-        text: "Value logger"
-    }
-    Label
-    {
-        id: par
-        visible: lastDataAddedIndex != -1
-        anchors.top: label.bottom
-        font.pixelSize: Theme.fontSizeExtraSmall
-        anchors.topMargin: 20
-        anchors.horizontalCenter: parent.horizontalCenter
-        text: lastDataAddedIndex != -1 ? parameterList.get(lastDataAddedIndex).parName : ""
+
+        anchors {
+            horizontalCenter: parent.horizontalCenter
+            top: icon.bottom
+            bottom: parent.bottom
+            bottomMargin: (Theme.itemSizeSmall + Theme.iconSizeSmall)/2/cover.parent.scale
+        }
+        verticalAlignment: Text.AlignVCenter
+        truncationMode: TruncationMode.Fade
+        minimumPixelSize: Theme.fontSizeTiny
+        fontSizeMode: Text.Fit
+        color: Theme.highlightColor
+        text: par ? par : "Value logger"
+        readonly property string par: (lastDataAddedIndex) >= 0 ? parameterList.get(lastDataAddedIndex).parName : ""
     }
 
-    CoverActionList   /* Courtesy of http://sailfishdev.tumblr.com/post/86418219502/dynamic-coverpage */
-    {
-        enabled: lastDataAddedIndex != -1
+    CoverActionList {
+        enabled: lastDataAddedIndex >= 0
 
-        CoverAction
-        {
+        CoverAction {
             iconSource: coverIconLeft
             onTriggered: coverLeftClicked()
         }
-        CoverAction
-        {
+        CoverAction {
             iconSource: coverIconRight
             onTriggered: coverRightClicked()
         }

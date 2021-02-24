@@ -1,8 +1,8 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import "../components"
 
-Dialog
-{
+Dialog {
     id: addValuePage
 
     canAccept: false
@@ -16,19 +16,14 @@ Dialog
     property string nowTime: "value"
     property bool paired: false
 
-    Component.onCompleted:
-    {
-        /* Check are we adding new, or editing existing one */
-        if (nowDate == "value" && nowTime == "value" && value == "value")
-        {
+    Component.onCompleted: {
+        // Check are we adding new, or editing existing one
+        if (nowDate == "value" && nowTime == "value" && value == "value") {
             var tmp = new Date()
             updateDateTime(Qt.formatDateTime(tmp, "yyyy-MM-dd"), Qt.formatDateTime(tmp, "hh:mm:ss"))
             pageTitle = qsTr("Add")
-        }
-        else
-        {
-            if (nowTime == "")
-                nowTime = "00:00:00"
+        } else {
+            if (nowTime == "") nowTime = "00:00:00"
             updateDateTime(nowDate, nowTime)
             valueField.text = (value == "value") ? "" : value
             annotationField.text = (value == "value") ? "" : annotation
@@ -36,147 +31,174 @@ Dialog
         }
     }
 
-    function updateDateTime (newDate, newTime)
-    {
-        console.log("newdate " + newDate + " newtime " + newTime)
+    function updateDateTime(newDate, newTime) {
+        console.log("newdate", newDate, "newtime", newTime)
         nowDate = Qt.formatDateTime(new Date(newDate), "yyyy-MM-dd")
         nowTime = Qt.formatDateTime(new Date(newDate + " " + newTime), "hh:mm:ss")
-        console.log("nowdate " + nowDate + " nowtime " + nowTime)
+        console.log("nowdate", nowDate, "nowtime", nowTime)
 
-        dateNow.text = Qt.formatDateTime(new Date(nowDate), "dd.MM.yyyy") + " " + Qt.formatDateTime(new Date(nowDate + " " + nowTime), "hh:mm:ss")
-
-        console.log("dateNow " + dateNow.text)
+        dateNow.text = nowDate + " " + nowTime
+        console.log("dateNow", dateNow.text)
     }
 
-    onDone:
-    {
-        if (result === DialogResult.Accepted)
-        {
+    onDone: {
+        if (result === DialogResult.Accepted) {
             value = valueField.text.replace(",",".")
             annotation = annotationField.text
         }
     }
 
-    SilicaFlickable
-    {
+    DialogHeader {
+        id: dialogHeader
+
+        acceptText: pageTitle + qsTr(" value")
+        cancelText: qsTr("Cancel")
+    }
+
+    SilicaFlickable {
         id: flick
 
-        anchors.fill: parent
+        clip: true
         contentHeight: col.height
-        width: parent.width
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: dialogHeader.bottom
+            bottom: parent.bottom
+        }
 
         VerticalScrollDecorator { flickable: flick }
 
-        Column
-        {
+        Column {
             id: col
-            spacing: Theme.paddingSmall
-            anchors.top: dialogHeader.bottom
-            width: addValuePage.width
 
-            DialogHeader
-            {
-                id: dialogHeader
-                acceptText: pageTitle + qsTr(" value")
-                cancelText: qsTr("Cancel")
-            }
+            width: parent.width
+            spacing: Theme.paddingLarge
 
-            Row
-            {
-                x: Theme.paddingLarge
-                Image
-                {
+            Row {
+                x: Theme.horizontalPageMargin
+
+                Image {
                     id: pairIcon
                     source: "image://theme/icon-m-link"
                     anchors.verticalCenter: parent.verticalCenter
                     visible: paired
                 }
-                Column
-                {
+
+                Column {
+                    width: col.width - 2 * parent.x - x
                     anchors.verticalCenter: parent.verticalCenter
-                    Label
-                    {
+
+                    Label {
+                        width: parent.width
                         text: parameterName
-                        font.bold: true
+                        font.pixelSize: Theme.fontSizeExtraLarge
+                        color: Theme.highlightColor
+                        truncationMode: TruncationMode.Fade
                     }
-                    Label
-                    {
+
+                    Label {
+                        width: parent.width
                         text: parameterDescription
-                        color: Theme.secondaryColor
+                        color: Theme.secondaryHighlightColor
+                        truncationMode: TruncationMode.Fade
+                        visible: text !== ""
                     }
                 }
             }
 
-            SectionHeader
-            {
-                text: qsTr("Timestamp")
-            }
+            Row {
+                x: Theme.horizontalPageMargin
 
-            Row
-            {
-                x: Theme.paddingLarge
-                width: parent.width - 2*Theme.paddingLarge
-
-                Label
-                {
-                    id: dateNow
-                    text: "unknown"
-                    width: parent.width - modifyDateButton.width - modifyTimeButton.width
+                Column {
                     anchors.verticalCenter: parent.verticalCenter
+                    width: col.width - modifyDateButton.width - modifyTimeButton.width - 2 * parent.x
+
+                    Label {
+                        id: dateNow
+
+                        width: parent.width
+                        text: "unknown"
+                    }
+
+                    Label {
+                        width: parent.width
+                        font.pixelSize: Theme.fontSizeSmall
+                        color: Theme.secondaryColor
+                        text: qsTr("Timestamp")
+                    }
                 }
 
-                IconButton
-                {
+                MouseArea {
                     id: modifyDateButton
+
+                    width: Theme.iconSizeMedium
+                    height: width
                     anchors.verticalCenter: parent.verticalCenter
-                    icon.source: "image://theme/icon-lock-calendar"
-                    onClicked:
-                    {
+
+                    readonly property bool showPress: (pressed && containsMouse) || modifyDateButtonPressTimer.running
+
+                    HighlightIcon {
+                        source: "../images/calendar-icon.svg"
+                        highlightColor: parent.showPress ? Theme.highlightColor : Theme.primaryColor
+                        anchors.centerIn: parent
+                        sourceSize.height: Theme.iconSizeMedium
+                    }
+
+                    onPressedChanged: {
+                        if (pressed) {
+                            modifyDateButtonPressTimer.start()
+                        }
+                    }
+
+                    onCanceled: modifyDateButtonPressTimer.stop()
+
+                    onClicked: {
                         console.log("modifyDateButton clicked")
 
                         var dialogDate = pageStack.push(pickerDate, { date: new Date(nowDate) })
-                               dialogDate.accepted.connect(function()
-                               {
-                                   console.log("You chose: " + dialogDate.dateText)
-                                   // use date, as dateText return varies
-                                   var d = dialogDate.date
-                                   updateDateTime(Qt.formatDateTime(new Date(d), "yyyy-MM-dd"), nowTime)
-                               })
+                        dialogDate.accepted.connect(function() {
+                            console.log("You chose:", dialogDate.dateText)
+                            // use date, as dateText return varies
+                            var d = dialogDate.date
+                            updateDateTime(Qt.formatDateTime(new Date(d), "yyyy-MM-dd"), nowTime)
+                        })
                     }
-                    Component
-                    {
+
+                    Timer {
+                        id: modifyDateButtonPressTimer
+                        interval: 50
+                    }
+
+                    Component {
                         id: pickerDate
                         DatePickerDialog {}
                     }
-
                 }
-                IconButton
-                {
+
+                IconButton {
                     id: modifyTimeButton
+
                     anchors.verticalCenter: parent.verticalCenter
                     icon.source: "image://theme/icon-m-time-date"
-                    onClicked:
-                    {
+
+                    onClicked: {
+                        var h = Qt.formatDateTime(new Date(nowDate + " " + nowTime), "hh")
+                        var m = Qt.formatDateTime(new Date(nowDate + " " + nowTime), "mm")
+
                         console.log("modifyTimeButton clicked")
+                        console.log("hour", h)
+                        console.log("minute", m)
 
-                        console.log("hour " + Qt.formatDateTime(new Date(nowDate + " " + nowTime), "hh"))
-                        console.log("minute " + Qt.formatDateTime(new Date(nowDate + " " + nowTime), "mm"))
-
-                        var dialogTime = pageStack.push(pickerTime, {
-                                                            hour: Qt.formatDateTime(new Date(nowDate + " " + nowTime), "hh"),
-                                                            minute: Qt.formatDateTime(new Date(nowDate + " " + nowTime), "mm")})
-                              dialogTime.accepted.connect(function()
-                              {
-                                  console.log("You chose: " + dialogTime.timeText)
-                                  var tt = dialogTime.timeText + ":00"
-                                  if (dialogTime.hour < 10)
-                                      tt = "0" + tt
-                                  updateDateTime(nowDate, tt)
-                              })
-
+                        var dialogTime = pageStack.push(pickerTime, {hour: h, minute: m})
+                        dialogTime.accepted.connect(function() {
+                            console.log("You chose:", dialogTime.timeText)
+                            var tt = dialogTime.timeText + ":00"
+                            if (dialogTime.hour.length < 2) tt = "0" + tt
+                            updateDateTime(nowDate, tt)
+                        })
                     }
-                    Component
-                    {
+                    Component {
                         id: pickerTime
                         TimePickerDialog {}
                     }
@@ -184,14 +206,9 @@ Dialog
                 }
             }
 
-            SectionHeader
-            {
-                text: qsTr("Value")
-            }
-
-            TextField
-            {
+            TextField {
                 id: valueField
+
                 focus: true
                 width: parent.width
                 label: qsTr("Value")
@@ -206,14 +223,9 @@ Dialog
                 EnterKey.onClicked: annotationField.focus = true
             }
 
-            SectionHeader
-            {
-                text: qsTr("Annotation")
-            }
-
-            TextField
-            {
+            TextField {
                 id: annotationField
+
                 focus: false
                 width: parent.width
                 label: qsTr("Annotation")

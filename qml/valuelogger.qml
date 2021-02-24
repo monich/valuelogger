@@ -1,9 +1,10 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.valuelogger.Logger 1.0
+import "pages"
+import "cover"
 
-ApplicationWindow
-{
+ApplicationWindow {
     id: valuelogger
 
     property var plotColors:[ "#ffffff", "#ff0080", "#ff8000", "#ffff00", "#00ff00",
@@ -14,25 +15,27 @@ ApplicationWindow
     property bool plotDraggingActive : false
 
 
-    initialPage: Qt.resolvedUrl("pages/Valuelogger.qml") //Component { Valuelogger { } }
+    initialPage: Component {
+        Valuelogger {
+            allowedOrientations: valuelogger.allowedOrientations
+        }
+    }
 
-    cover: Qt.resolvedUrl("cover/CoverPage.qml")
+    cover: Component {
+        CoverPage { }
+    }
 
     property string coverIconLeft: "image://theme/icon-cover-new"
     property string coverIconRight: "../icon-cover-plot.png"
 
-    function getBottomPageId()
-    {
-        return pageStack.find( function(page)
-        {
+    function getBottomPageId() {
+        return pageStack.find( function(page) {
             return (page._depth === 0)
         })
     }
 
-    function coverLeftClicked()
-    {
-        if ((lastDataAddedIndex != -1) && (lastDataAddedIndex < parameterList.count))
-        {
+    function coverLeftClicked() {
+        if ((lastDataAddedIndex != -1) && (lastDataAddedIndex < parameterList.count)) {
             console.log("Adding value to index " + lastDataAddedIndex)
 
             pageStack.pop(getBottomPageId(), PageStackAction.Immediate)
@@ -41,21 +44,20 @@ ApplicationWindow
              */
 
             var dialog
-            dialog = pageStack.push(Qt.resolvedUrl("pages/AddValue.qml"),
-                                            {"parameterName": parameterList.get(lastDataAddedIndex).parName,
-                                             "parameterDescription": parameterList.get(lastDataAddedIndex).parDescription })
+            dialog = pageStack.push(Qt.resolvedUrl("pages/AddValue.qml"), {
+                "allowedOrientations": allowedOrientations,
+                "parameterName": parameterList.get(lastDataAddedIndex).parName,
+                "parameterDescription": parameterList.get(lastDataAddedIndex).parDescription
+            }, PageStackAction.Immediate)
 
-            if (parameterList.get(lastDataAddedIndex).pairedTable !== "")
-            {
+            if (parameterList.get(lastDataAddedIndex).pairedTable !== "") {
                 console.log("this is a paired parameter")
                 var paired_parName = "ERROR"
                 var paired_parDescription = "ERROR"
 
-                for (var i=0; i<parameterList.count; i++)
-                {
+                for (var i=0; i<parameterList.count; i++) {
                     var tmp = parameterList.get(i)
-                    if (tmp.dataTable === parameterList.get(lastDataAddedIndex).pairedTable)
-                    {
+                    if (tmp.dataTable === parameterList.get(lastDataAddedIndex).pairedTable) {
                         paired_parName = tmp.parName
                         paired_parDescription = tmp.parDescription
                         console.log("found " + tmp.parName + " " + tmp.parDescription)
@@ -63,15 +65,16 @@ ApplicationWindow
                     }
                 }
 
-                var pairdialog = pageStack.pushAttached(Qt.resolvedUrl("pages/AddValue.qml"),
-                                           {"nowDate": dialog.nowDate,
-                                            "nowTime": dialog.nowTime,
-                                            "parameterName": paired_parName,
-                                            "parameterDescription": paired_parDescription,
-                                            "paired": true})
+                var pairdialog = pageStack.pushAttached(Qt.resolvedUrl("pages/AddValue.qml"), {
+                    "allowedOrientations": allowedOrientations,
+                    "nowDate": dialog.nowDate,
+                    "nowTime": dialog.nowTime,
+                    "parameterName": paired_parName,
+                    "parameterDescription": paired_parDescription,
+                    "paired": true
+                })
 
-                pairdialog.accepted.connect(function()
-                {
+                pairdialog.accepted.connect(function() {
                     console.log("paired dialog accepted")
                     console.log(" value is " + pairdialog.value)
                     console.log(" annotation is " + pairdialog.annotation)
@@ -79,19 +82,16 @@ ApplicationWindow
                     console.log(" time is " + pairdialog.nowTime)
 
                     logger.addData(parameterList.get(lastDataAddedIndex).pairedTable, "", pairdialog.value, pairdialog.annotation, pairdialog.nowDate + " " + pairdialog.nowTime)
-
                     valuelogger.deactivate()
                 })
-                pairdialog.rejected.connect(function()
-                {
+
+                pairdialog.rejected.connect(function() {
                     console.log("Dialog rejected")
                     valuelogger.deactivate()
                 })
-
             }
 
-            dialog.accepted.connect(function()
-            {
+            dialog.accepted.connect(function() {
                 console.log("dialog accepted")
                 console.log(" value is " + dialog.value)
                 console.log(" annotation is " + dialog.annotation)
@@ -103,8 +103,7 @@ ApplicationWindow
                 if (parameterList.get(lastDataAddedIndex).pairedTable === "")
                     valuelogger.deactivate()
             })
-            dialog.rejected.connect(function()
-            {
+            dialog.rejected.connect(function() {
                 console.log("Dialog rejected")
                 valuelogger.deactivate()
             })
@@ -115,8 +114,7 @@ ApplicationWindow
             console.log("This should never happen")
     }
 
-    function coverRightClicked()
-    {
+    function coverRightClicked() {
         console.log("showing data from " + parameterList.get(lastDataAddedIndex).parName)
 
         var l = []
@@ -127,44 +125,41 @@ ApplicationWindow
         l.push(logger.readData(parameterList.get(lastDataAddedIndex).dataTable))
 
         pageStack.pop(getBottomPageId(), PageStackAction.Immediate)
-
-        pageStack.push(Qt.resolvedUrl("pages/DrawData.qml"), {"dataList": l, "parInfo": parInfo})
+        pageStack.push(Qt.resolvedUrl("pages/DrawData.qml"), {
+            "allowedOrientations": allowedOrientations,
+            "dataList": l,
+            "parInfo": parInfo
+        }, PageStackAction.Immediate)
 
         valuelogger.activate()
     }
 
-
-
-    Logger
-    {
+    Logger {
         id: logger
 
-        Component.onCompleted:
-        {
+        Component.onCompleted: {
             var tmp = logger.readParameters()
 
-            for (var i=0 ; i<tmp.length; i++)
-            {
-                console.log(i + " = " + tmp[i]["name"] + " is " + tmp[i]["plotcolor"] )
+            for (var i=0 ; i<tmp.length; i++) {
+                var par = tmp[i]
 
-                parameterList.append({"parName": tmp[i]["name"],
-                                         "parDescription": tmp[i]["description"],
-                                         "plotcolor": tmp[i]["plotcolor"],
-                                         "dataTable": tmp[i]["datatable"],
-                                         "pairedTable": tmp[i]["pairedtable"],
-                                         "visualize": (tmp[i]["visualize"] == 1 ? true : false),
+                console.log(i + " = " + par["name"] + " is " + par["plotcolor"] )
+                parameterList.append({"parName": par["name"],
+                                         "parDescription": par["description"],
+                                         "plotcolor": par["plotcolor"],
+                                         "dataTable": par["datatable"],
+                                         "pairedTable": par["pairedtable"],
+                                         "visualize": (par["visualize"] == 1 ? true : false),
                                          "visualizeChanged": false})
             }
         }
     }
 
-    ListModel
-    {
+    ListModel {
         id: parameterList
     }
 
-    ListModel
-    {
+    ListModel {
         id: parInfo
     }
 }

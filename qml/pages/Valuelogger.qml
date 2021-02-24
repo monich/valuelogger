@@ -2,16 +2,17 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "../components"
 
-Page
-{
+Page {
     id: mainPage
 
-    function addParameter(index, oldParName, oldParDesc, oldPlotColor)
-    {
-        var dialog = pageStack.push(Qt.resolvedUrl("NewParameter.qml"))
+    readonly property real fullHeight: isPortrait ? Screen.height : Screen.width
 
-        dialog.accepted.connect(function()
-        {
+    function addParameter(index, oldParName, oldParDesc, oldPlotColor) {
+        var dialog = pageStack.push(Qt.resolvedUrl("NewParameter.qml"), {
+            "allowedOrientations": allowedOrientations
+        })
+
+        dialog.accepted.connect(function() {
             console.log("dialog accepted")
             console.log(dialog.parameterName)
             console.log(dialog.parameterDescription)
@@ -26,90 +27,114 @@ Page
                                   "dataTable": datatable,
                                   "pairedTable": "",
                                   "visualizeChanged": false})
-        } )
+        })
     }
 
-    Messagebox
-    {
-        id: messagebox
-    }
+    Messagebox { id: messagebox  }
 
-    SilicaFlickable
-    {
-        anchors.fill: parent
+    SilicaFlickable {
+        width: parent.width
+        height: fullHeight
+        contentHeight: height
 
-        PullDownMenu
-        {
-            MenuItem
-            {
+        PullDownMenu {
+            MenuItem {
                 text: qsTr("About...")
-                onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"),
-                                          { "version": logger.version,
-                                              "year": "2014-2015",
-                                              "name": "Value Logger",
-                                              "imagelocation": "/usr/share/icons/hicolor/86x86/apps/harbour-valuelogger.png"} )
+                onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"), {
+                    "allowedOrientations": allowedOrientations,
+                    "version": logger.version,
+                    "name": "Value Logger",
+                    "imagelocation": Qt.resolvedUrl("../images/harbour-valuelogger.svg")
+                })
             }
 
-            MenuItem
-            {
+            MenuItem {
                 text: qsTr("Export to CSV")
-                onClicked:
-                {
-                    messagebox.showMessage(qsTr("Exported to:") + "<br>" + logger.exportToCSV(), 2500)
-                }
-            }
-        }
-
-        contentHeight: column.height
-
-        Column
-        {
-            id: column
-
-            width: mainPage.width
-            spacing: Theme.paddingLarge
-
-            PageHeader
-            {
-                title: "Value Logger"
+                onClicked: messagebox.showMessage(qsTr("Exported to:") + "<br>" + logger.exportToCSV(), 2500)
             }
 
-            Button
-            {
-
+            MenuItem {
                 text: qsTr("Add new parameter")
-                anchors.horizontalCenter: parent.horizontalCenter
                 onClicked: addParameter()
             }
         }
 
-        ListView
-        {
-            id: parameters
-            width: parent.width
-            height: 6*Theme.itemSizeMedium
-            clip: true
+        PageHeader {
+            id: header
 
-            VerticalScrollDecorator { flickable: parameters }
+            title: "Value Logger"
+        }
+
+        SilicaListView {
+            id: parameters
+
+            width: parent.width
+            clip: true
 
             model: parameterList
 
-            anchors.top: column.bottom
+            anchors {
+                top: header.bottom
+                bottom: plotButton.top
+                bottomMargin: Theme.paddingLarge
+            }
 
-            delegate: ListItem
-            {
+            delegate: ListItem {
                 id: parameterItem
-                menu: contextMenu
+
                 contentHeight: Theme.itemSizeMedium
+                menu: Component {
+                    ContextMenu {
+                        MenuItem {
+                            text: qsTr("Show raw data")
+                            onClicked: {
+                                var tmp = logger.readData(dataTable)
+
+                                dataList.clear()
+
+                                for (var i=0; i<tmp.length; i++) {
+                                    var row = tmp[i]
+                                    console.log(i + " = " + row["timestamp"] + " = " + row["value"])
+                                    dataList.append({
+                                        "key": row["key"],
+                                        "value": row["value"],
+                                        "annotation": row["annotation"],
+                                        "timestamp": row["timestamp"]
+                                    })
+                                }
+                                pageStack.push(Qt.resolvedUrl("ShowData.qml"), {
+                                    "allowedOrientations": allowedOrientations,
+                                    "parName": parName,
+                                    "parDescription": parDescription,
+                                    "dataList": dataList,
+                                    "dataTable": dataTable
+                                })
+                            }
+                        }
+
+                        MenuItem {
+                            text: qsTr("Edit")
+                            onClicked: editParameter()
+                        }
+
+                        MenuItem {
+                            text: qsTr("Pair")
+                            onClicked: pairParameter()
+                        }
+
+                        MenuItem {
+                            text: qsTr("Remove")
+                            onClicked: remove()
+                        }
+                    }
+                }
 
                 ListView.onRemove: animateRemoval(parameterItem)
 
-                function remove()
-                {
-                    remorseAction(qsTr("Deleting"), function()
-                    {
+                function remove() {
+                    remorseAction(qsTr("Deleting"), function() {
                         // remove this from parameters where it is paired to
-                        for (var i=0 ; i<parameters.model.count; i++)
+                        for (var i=0; i<parameters.model.count; i++)
                         {
                             var tmp = parameters.model.get(i)
                             if (tmp.pairedTable === dataTable)
@@ -125,16 +150,16 @@ Page
                     })
                 }
 
-                function editParameter()
-                {
-                    var dialog = pageStack.push(Qt.resolvedUrl("NewParameter.qml"),
-                                                {"parameterName": parName,
-                                                    "parameterDescription": parDescription,
-                                                    "plotColor": plotcolor,
-                                                    "pageTitle": qsTr("Edit")})
+                function editParameter() {
+                    var dialog = pageStack.push(Qt.resolvedUrl("NewParameter.qml"), {
+                        "allowedOrientations": allowedOrientations,
+                        "parameterName": parName,
+                        "parameterDescription": parDescription,
+                        "plotColor": plotcolor,
+                        "pageTitle": qsTr("Edit")
+                    })
 
-                    dialog.accepted.connect(function()
-                    {
+                    dialog.accepted.connect(function() {
                         console.log("EDIT dialog accepted")
                         console.log(dialog.parameterName)
                         console.log(dialog.parameterDescription)
@@ -145,236 +170,197 @@ Page
                         parameters.model.setProperty(index, "parName", dialog.parameterName)
                         parameters.model.setProperty(index, "parDescription", dialog.parameterDescription)
                         parameters.model.setProperty(index, "plotcolor", logger.colorToString(dialog.plotColor))
-                    } )
+                    })
                 }
 
-                function pairParameter()
-                {
-                    var dialog = pageStack.push(Qt.resolvedUrl("AddPair.qml"),
-                                                {"pairFirstTable": dataTable,
-                                                 "pairSecondTable": pairedTable})
+                function pairParameter() {
+                    var dialog = pageStack.push(Qt.resolvedUrl("AddPair.qml"), {
+                        "allowedOrientations": allowedOrientations,
+                        "pairFirstTable": dataTable,
+                        "pairSecondTable": pairedTable
+                    })
 
-                    dialog.accepted.connect(function()
-                    {
+                    dialog.accepted.connect(function() {
                         console.log("Add pair dialog accepted")
                         console.log(dialog.pairSecondTable)
                         logger.setPairedTable(dataTable, dialog.pairSecondTable)
                         parameters.model.setProperty(index, "pairedTable", dialog.pairSecondTable)
-                    } )
+                    })
                 }
 
-                Row
-                {
-                    width: parent.width - Theme.paddingMedium
+                Item {
+                    width: parent.width - Theme.horizontalPageMargin
+                    height: parent.height
 
-                    Switch
-                    {
+                    Switch {
                         id: parSwitch
+
+                        anchors.verticalCenter: parent.verticalCenter
                         checked: visualize
-                        onCheckedChanged:
-                        {
+                        onCheckedChanged: {
                             parameterList.setProperty(index, "visualize", checked)
                             parameterList.setProperty(index, "visualizeChanged", true)
                         }
                     }
 
-                    Column
-                    {
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: parent.width - parSwitch.width - addValueButton.width - pairIcon.width
-                        Label
-                        {
-                            id: parNameLabel
-                            text: parName
+                    Column {
+                        anchors {
+                            left: parSwitch.right
+                            right: rightArea.left
+                            rightMargin: Theme.paddingLarge
+                            verticalCenter: parent.verticalCenter
+                        }
+
+                        Label {
+                            width: parent.width
                             color: parameterItem.highlighted ? Theme.highlightColor : Theme.primaryColor
+                            truncationMode: TruncationMode.Fade
+                            text: parName
                         }
-                        Label
-                        {
-                            text: parDescription
+                        Label {
+                            width: parent.width
                             font.pixelSize: Theme.fontSizeSmall
-                            color: parameterItem.highlighted ? Theme.highlightColor : Theme.secondaryColor
+                            truncationMode: TruncationMode.Fade
+                            color: parameterItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+                            text: parDescription
+                            visible: text !== ""
                         }
                     }
-                    Image
-                    {
-                        id: pairIcon
-                        source: "image://theme/icon-m-link"
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 48
-                        height: 48
-                        opacity: (pairedTable === "") ? 0.0 : 0.9
-                    }
 
-                    IconButton
-                    {
-                        id: addValueButton
-                        anchors.verticalCenter: parent.verticalCenter
-                        icon.source: "image://theme/icon-m-add"
-                        onClicked:
-                        {
-                            console.log("clicked add value button")
+                    Row {
+                        id: rightArea
 
-                            lastDataAddedIndex = index
+                        height: parent.height
+                        spacing: Theme.paddingLarge
+                        anchors.right: parent.right
 
-                            var dialog = pageStack.push(Qt.resolvedUrl("AddValue.qml"),
-                                                        {"parameterName": parName,
-                                                         "parameterDescription": parDescription })
+                        Image {
+                            id: pairIcon
+                            source: "image://theme/icon-m-link"
+                            anchors.verticalCenter: parent.verticalCenter
+                            sourceSize: Qt.size(Theme.iconSizeMedium, Theme.iconSizeMedium)
+                            visible: pairedTable !== ""
+                        }
 
-                            if (pairedTable !== "")
-                            {
-                                console.log("this is a paired parameter")
-                                var paired_parName = "ERROR"
-                                var paired_parDescription = "ERROR"
+                        IconButton {
+                            id: addValueButton
+                            anchors.verticalCenter: parent.verticalCenter
+                            icon.source: "image://theme/icon-m-add"
+                            onClicked: {
+                                console.log("clicked add value button")
 
-                                for (var i=0; i<parameterList.count; i++)
-                                {
-                                    var tmp = parameterList.get(i)
-                                    if (tmp.dataTable === pairedTable)
-                                    {
-                                        paired_parName = tmp.parName
-                                        paired_parDescription = tmp.parDescription
-                                        console.log("found " + tmp.parName + " " + tmp.parDescription)
-                                        break
+                                lastDataAddedIndex = index
+
+                                var dialog = pageStack.push(Qt.resolvedUrl("AddValue.qml"), {
+                                    "allowedOrientations": allowedOrientations,
+                                    "parameterName": parName,
+                                    "parameterDescription": parDescription
+                                })
+
+                                if (pairedTable !== "") {
+                                    console.log("this is a paired parameter")
+                                    var paired_parName = "ERROR"
+                                    var paired_parDescription = "ERROR"
+
+                                    for (var i=0; i<parameterList.count; i++) {
+                                        var tmp = parameterList.get(i)
+                                        if (tmp.dataTable === pairedTable) {
+                                            paired_parName = tmp.parName
+                                            paired_parDescription = tmp.parDescription
+                                            console.log("found " + tmp.parName + " " + tmp.parDescription)
+                                            break
+                                        }
                                     }
+
+                                    var pairdialog = pageStack.pushAttached(Qt.resolvedUrl("AddValue.qml"), {
+                                        "allowedOrientations": allowedOrientations,
+                                        "nowDate": dialog.nowDate,
+                                        "nowTime": dialog.nowTime,
+                                        "parameterName": paired_parName,
+                                        "parameterDescription": paired_parDescription,
+                                        "paired": true
+                                    })
+
+                                    pairdialog.accepted.connect(function() {
+                                        console.log("paired dialog accepted")
+                                        console.log(" value is " + pairdialog.value)
+                                        console.log(" annotation is " + pairdialog.annotation)
+                                        console.log(" date is " + pairdialog.nowDate)
+                                        console.log(" time is " + pairdialog.nowTime)
+
+                                        logger.addData(pairedTable, "", pairdialog.value, pairdialog.annotation, pairdialog.nowDate + " " + pairdialog.nowTime)
+                                    })
                                 }
 
-                                var pairdialog = pageStack.pushAttached(Qt.resolvedUrl("AddValue.qml"),
-                                                           {"nowDate": dialog.nowDate,
-                                                            "nowTime": dialog.nowTime,
-                                                            "parameterName": paired_parName,
-                                                            "parameterDescription": paired_parDescription,
-                                                            "paired": true})
-
-                                pairdialog.accepted.connect(function()
+                                dialog.accepted.connect(function()
                                 {
-                                    console.log("paired dialog accepted")
-                                    console.log(" value is " + pairdialog.value)
-                                    console.log(" annotation is " + pairdialog.annotation)
-                                    console.log(" date is " + pairdialog.nowDate)
-                                    console.log(" time is " + pairdialog.nowTime)
+                                    console.log("dialog accepted")
+                                    console.log(" value is " + dialog.value)
+                                    console.log(" annotation is " + dialog.annotation)
+                                    console.log(" date is " + dialog.nowDate)
+                                    console.log(" time is " + dialog.nowTime)
 
-                                    logger.addData(pairedTable, "", pairdialog.value, pairdialog.annotation, pairdialog.nowDate + " " + pairdialog.nowTime)
-
+                                    logger.addData(dataTable, "", dialog.value, dialog.annotation, dialog.nowDate + " " + dialog.nowTime)
                                 })
                             }
-
-                            dialog.accepted.connect(function()
-                            {
-                                console.log("dialog accepted")
-                                console.log(" value is " + dialog.value)
-                                console.log(" annotation is " + dialog.annotation)
-                                console.log(" date is " + dialog.nowDate)
-                                console.log(" time is " + dialog.nowTime)
-
-                                logger.addData(dataTable, "", dialog.value, dialog.annotation, dialog.nowDate + " " + dialog.nowTime)
-                            })
                         }
                     }
                 }
 
-                Component
-                {
-                    id: contextMenu
-                    ContextMenu
-                    {
-                        MenuItem
-                        {
-                            text: qsTr("Show raw data")
-                            onClicked:
-                            {
-                                var tmp = logger.readData(dataTable)
-
-                                dataList.clear()
-
-                                for (var i=0 ; i<tmp.length; i++)
-                                {
-                                    console.log(i + " = " + tmp[i]["timestamp"] + " = " + tmp[i]["value"])
-                                    dataList.append( {"key":tmp[i]["key"],
-                                                        "value": tmp[i]["value"],
-                                                        "annotation": tmp[i]["annotation"],
-                                                        "timestamp": tmp[i]["timestamp"]} )
-                                }
-                                pageStack.push(Qt.resolvedUrl("ShowData.qml"),
-                                               { "parName": parName,
-                                                 "parDescription": parDescription,
-                                                 "dataList": dataList,
-                                                 "dataTable": dataTable} );
-                            }
-                        }
-
-                        MenuItem
-                        {
-                            text: qsTr("Edit")
-                            onClicked: editParameter()
-                        }
-
-                        MenuItem
-                        {
-                            text: qsTr("Pair")
-                            onClicked: pairParameter()
-                        }
-
-                        MenuItem
-                        {
-                            text: qsTr("Remove")
-                            onClicked: remove()
-                        }
-                    }
-                }
-                ListModel
-                {
-                    id: dataList
-                }
-
+                ListModel { id: dataList }
             }
+
+            VerticalScrollDecorator { flickable: parameters }
         }
 
 
-        Button
-        {
+        Button {
+            id: plotButton
+
+            anchors {
+                bottom: parent.bottom
+                bottomMargin: Theme.paddingLarge
+                horizontalCenter: parent.horizontalCenter
+            }
+
             text: qsTr("Plot selected")
             enabled: parameterList.count > 0
 
-            onClicked:
-            {
+            onClicked: {
                 console.log("there is " + parameterList.count + " items in list.")
 
                 var l = []
                 parInfo.clear()
 
-                for (var a=0; a<parameterList.count; a++)
-                {
+                for (var a=0; a<parameterList.count; a++) {
                     /* Save changes if visualize touched */
-                    if (parameterList.get(a).visualizeChanged)
-                        logger.addParameterEntry(parameterList.get(a).dataTable,
-                                                 parameterList.get(a).parName,
-                                                 parameterList.get(a).parDescription,
-                                                 parameterList.get(a).visualize,
-                                                 parameterList.get(a).plotcolor,
-                                                 parameterList.get(a).pairedTable)
+                    var par = parameterList.get(a)
+                    if (par.visualizeChanged) {
+                        logger.addParameterEntry(par.dataTable,
+                                                 par.parName,
+                                                 par.parDescription,
+                                                 par.visualize,
+                                                 par.plotcolor,
+                                                 par.pairedTable)
+                    }
 
-                    if (parameterList.get(a).visualize)
-                    {
-                        console.log("showing data from " + parameterList.get(a).parName)
-                        parInfo.append({"name": parameterList.get(a).parName,
-                                        "plotcolor": parameterList.get(a).plotcolor})
-                        l.push(logger.readData(parameterList.get(a).dataTable))
+                    if (par.visualize) {
+                        console.log("showing data from " + par.parName)
+                        parInfo.append({"name": par.parName, "plotcolor": par.plotcolor})
+                        l.push(logger.readData(par.dataTable))
                     }
                 }
 
-                if (l.length > 0 && l.length < 10)
-                {
-                    pageStack.push(Qt.resolvedUrl("DrawData.qml"), {"dataList": l, "parInfo": parInfo})
-                }
-                else
+                if (l.length > 0 && l.length < 10) {
+                    pageStack.push(Qt.resolvedUrl("DrawData.qml"), {
+                        "allowedOrientations": allowedOrientations,
+                        "dataList": l,
+                        "parInfo": parInfo
+                    })
+                } else {
                     console.log("ERROR: None or too many plots selected")
-
+                }
             }
-            anchors.top: parameters.bottom
-            anchors.horizontalCenter: parent.horizontalCenter
         }
     }
-
 }
-
-

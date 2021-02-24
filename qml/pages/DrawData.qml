@@ -3,24 +3,18 @@ import Sailfish.Silica 1.0
 
 import "../components"
 
-Page
-{
-    id: drawDataPage
+Page {
     property var dataList : []
     property var parInfo : null
 
     backNavigation: !plotDraggingActive
 
-    allowedOrientations: Orientation.Portrait | Orientation.Landscape
-
-    PageHeader
-    {
+    PageHeader {
         id: ph
         title: qsTr("Plot")
     }
 
-    LinePlot
-    {
+    LinePlot {
         dataListModel: dataList
         parInfoModel: parInfo
         id: plot

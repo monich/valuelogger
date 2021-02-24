@@ -1,10 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-
-Page
-{
-
+Page {
     id: showDataPage
 
     property var dataList : []
@@ -12,18 +9,13 @@ Page
     property string parDescription : "Description goes here"
     property string dataTable : "Data table name here"
 
-    function test(s)
-    {
-        console.log("test " +s)
-    }
-    PageHeader
-    {
+    PageHeader {
         id: pageHeader
+
         title: parName
     }
 
-    SilicaListView
-    {
+    SilicaListView {
         id: dataListView
 
         VerticalScrollDecorator { flickable: dataListView }
@@ -35,36 +27,46 @@ Page
         anchors.top: pageHeader.bottom
         clip: true
 
-        delegate: ListItem
-        {
+        delegate: ListItem {
             id: dataItem
-            contentHeight: Theme.itemSizeSmall
-            menu: contextMenu
+
+            width: dataListView.width
+            menu: Component {
+                ContextMenu {
+                    MenuItem {
+                        text: qsTr("Edit")
+                        onClicked: editData()
+                    }
+
+                    MenuItem {
+                        text: qsTr("Remove")
+                        onClicked: remove()
+                    }
+                }
+            }
 
             ListView.onRemove: animateRemoval(dataItem)
 
-            function remove()
-            {
+            function remove() {
                 console.log("Deleting...")
-                remorseAction(qsTr("Deleting"), function()
-                {
+                remorseAction(qsTr("Deleting"), function() {
                     logger.deleteData(dataTable, key)
                     dataListView.model.remove(index)
                 }, 2500 )
             }
 
-            function editData()
-            {
-                var editDialog = pageStack.push(Qt.resolvedUrl("AddValue.qml"),
-                                            {"parameterName": parName,
-                                             "parameterDescription": parDescription,
-                                             "value": value,
-                                             "annotation": annotation,
-                                             "nowDate": Qt.formatDateTime(new Date(timestamp.trim()), "yyyy-MM-dd"),
-                                             "nowTime": Qt.formatDateTime(new Date(timestamp.trim()), "h:mm:ss")})
+            function editData() {
+                var editDialog = pageStack.push(Qt.resolvedUrl("AddValue.qml"), {
+                    "allowedOrientations": allowedOrientations,
+                    "parameterName": parName,
+                    "parameterDescription": parDescription,
+                    "value": value,
+                    "annotation": annotation,
+                    "nowDate": Qt.formatDateTime(new Date(timestamp.trim()), "yyyy-MM-dd"),
+                    "nowTime": Qt.formatDateTime(new Date(timestamp.trim()), "h:mm:ss")
+                })
 
-                editDialog.accepted.connect( function()
-                {
+                editDialog.accepted.connect( function() {
                     console.log("dialog accepted")
                     console.log(" value is " + editDialog.value)
                     console.log(" annotation is " + editDialog.annotation)
@@ -79,65 +81,46 @@ Page
                 })
             }
 
-            Row
-            {
+            Row {
                 id: itemRow
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: width - annotationLabel.width - valueLabel.width
-                x: Theme.paddingMedium
-                width: parent.width - 3*Theme.paddingMedium
-                height: Theme.itemSizeMedium
 
-                Column
-                {
+                anchors.verticalCenter: parent.verticalCenter
+                x: Theme.horizontalPageMargin
+                height: Theme.itemSizeMedium
+                spacing: Theme.paddingMedium
+
+                Column {
+                    width: dataItem.width - 2 * parent.x - valueLabel.width - parent.spacing
                     anchors.verticalCenter: parent.verticalCenter
-                    Label
-                    {
-                        id: timestampLabel
+
+                    Label {
                         text: timestamp
-                    }
-                    Label
-                    {
-                        id: annotationLabel
-                        x: Theme.paddingSmall
-                        text: annotation
-                        width: showDataPage.width - valueLabel.width - 3*Theme.paddingMedium
+                        width: parent.width
                         truncationMode: TruncationMode.Fade
-                        font.italic: true
-                        horizontalAlignment: Text.AlignLeft
-                        font.pixelSize: Theme.fontSizeSmall
+                    }
+
+                    Label {
+                        text: annotation
+                        width: parent.width
+                        truncationMode: TruncationMode.Fade
+                        visible: text !== ""
+                        color: Theme.secondaryColor
+                        font {
+                            italic: true
+                            pixelSize: Theme.fontSizeSmall
+                        }
                     }
                 }
-                Label
-                {
+
+                Label {
                     id: valueLabel
+
                     anchors.verticalCenter: parent.verticalCenter
                     text: value
                     horizontalAlignment: Text.AlignRight
                     font.pixelSize: Theme.fontSizeExtraLarge
                 }
-
             }
-
-            Component
-            {
-                id: contextMenu
-                ContextMenu
-                {
-                    MenuItem
-                    {
-                        text: qsTr("Edit")
-                        onClicked: editData();
-                    }
-
-                    MenuItem
-                    {
-                        text: qsTr("Remove")
-                        onClicked: remove();
-                    }
-                }
-            }
-
         }
     }
 }

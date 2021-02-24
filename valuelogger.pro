@@ -29,21 +29,15 @@ HEADERS += src/graph.h \
         src/logger.h
 
 OTHER_FILES += qml/valuelogger.qml \
-    qml/cover/CoverPage.qml \
-    qml/pages/Valuelogger.qml \
-    qml/pages/AboutPage.qml \
     rpm/valuelogger.spec \
     harbour-valuelogger.desktop \
-    qml/pages/NewParameter.qml \
-    qml/pages/AddValue.qml \
-    qml/pages/ShowData.qml \
-    qml/pages/DrawData.qml \
-    qml/components/LinePlot.qml \
+    qml/cover/*.qml \
+    qml/pages/*.qml \
+    qml/components/*.qml \
+    qml/images/*.svg \
     i18n/translations_fi.ts \
     i18n/translations_sv.ts \
-    qml/icon-cover-plot.png \
-    qml/pages/AddPair.qml \
-    qml/components/Messagebox.qml
+    qml/icon-cover-plot.png
 
 TRANSLATIONS += i18n/translations_fi.ts \
                 i18n/translations_sv.ts

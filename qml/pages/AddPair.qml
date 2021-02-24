@@ -1,80 +1,77 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-Dialog
-{
-    id: addPairPage
-
+Dialog {
     property string pairFirstTable: ""
     property string pairSecondTable: ""
 
-    DialogHeader
-    {
+    DialogHeader {
         id: dialogHeader
+
         acceptText: pairSecondTable === "" ? qsTr("Clear pair") : qsTr("Add pair")
-        cancelText: qsTr("Cancel")
     }
 
-    SilicaListView
-    {
+    SilicaListView {
+        id: list
+
         width: parent.width
         height: parent.height - dialogHeader.height
         anchors.top: dialogHeader.bottom
         clip: true
 
-        VerticalScrollDecorator { flickable: parameters }
+        VerticalScrollDecorator { }
 
         model: parameterList
 
-        delegate: MouseArea
-        {
+        delegate: MouseArea {
             id: parameterItem
-            property bool highlighted: dataTable === pairSecondTable
+
+            readonly property color highlightedColor: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity)
+            readonly property color pressedColor: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity/2)
+            readonly property bool highlighted: dataTable === pairSecondTable
+            readonly property bool down: pressed && containsMouse
+
             enabled: dataTable !== pairFirstTable
             height: Theme.itemSizeMedium
-            width: parent.width
+            width: list.width
 
-            onClicked:
-            {
+            onClicked: {
                 // toggle logic
-                if (pairSecondTable === dataTable)
+                if (pairSecondTable === dataTable) {
                     pairSecondTable = ""
-                else
+                } else {
                     pairSecondTable = dataTable
+                }
             }
 
-            Rectangle
-            {
-                id: bgRect
-                width: parent.width
-                height: parent.height
-                color: parent.highlighted ? Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity) : "transparent"
+            Rectangle {
+                anchors.fill: parent
+                color: parent.pressed ? pressedColor : parent.highlighted ? highlightedColor : "transparent"
+                Behavior on color { ColorAnimation { duration: 50 } }
             }
 
-            Column
-            {
-                width: parent.width - Theme.paddingMedium
-                anchors.verticalCenter: bgRect.verticalCenter
-                anchors.left: bgRect.left
-                anchors.leftMargin: Theme.paddingLarge
+            Column {
+                x: Theme.horizontalPageMargin
+                width: parent.width - 2 * x
+                anchors.verticalCenter: parent.verticalCenter
 
-                Label
-                {
-                    id: parNameLabel
+                Label {
                     text: parName
+                    width: parent.width
+                    truncationMode: TruncationMode.Fade
                     color: parameterItem.highlighted ? Theme.highlightColor : Theme.primaryColor
                     opacity: parameterItem.enabled ? 1.0 : 0.6
                 }
-                Label
-                {
+
+                Label {
                     text: parDescription
+                    width: parent.width
+                    truncationMode: TruncationMode.Fade
                     font.pixelSize: Theme.fontSizeSmall
-                    color: parameterItem.highlighted ? Theme.highlightColor : Theme.secondaryColor
-                    opacity: parameterItem.enabled ? 1.0 : 0.6
+                    color: parameterItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
+                    visible: text !== ""
                 }
             }
         }
     }
 }
-
-
