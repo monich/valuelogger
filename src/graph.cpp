@@ -1,4 +1,5 @@
 #include "graph.h"
+#include "debuglog.h"
 
 #include <QSGGeometry>
 #include <QSGGeometryNode>
@@ -321,7 +322,7 @@ QSGNode *Graph::updatePaintNode(QSGNode *paintNode, UpdatePaintNodeData *)
             m_nodes.resize(0);
         }
 
-        qDebug() << m_nodes.count();
+        DBG(m_nodes.count());
         return paintNode;
     }
 }

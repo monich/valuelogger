@@ -1,8 +1,8 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import "../js/debug.js" as Debug
 
-Dialog
-{
+Dialog {
     id: newParamaterPage
 
     canAccept: false
@@ -12,21 +12,18 @@ Dialog
     property color plotColor: plotColors[0]
     property string pageTitle: qsTr("Add")
 
-    onDone:
-    {
-        console.log("closing: " + result)
-        if (result === DialogResult.Accepted)
-        {
+    onDone: {
+        Debug.log("closing:", result)
+        if (result === DialogResult.Accepted) {
             parameterName = parNameField.text
             parameterDescription = parDescField.text
-            console.log("color set to " + plotColor)
+            Debug.log("color set to", plotColor)
 //            plotColor = plotColorLegend.color
         }
     }
 
 
-    SilicaFlickable
-    {
+    SilicaFlickable {
         id: flick
 
         anchors.fill: parent
@@ -35,21 +32,19 @@ Dialog
 
         VerticalScrollDecorator { flickable: flick }
 
-        Column
-        {
+        Column {
             id: col
+
             spacing: Theme.paddingLarge
             width: newParamaterPage.width
 
-            DialogHeader
-            {
+            DialogHeader {
                 id: pageHeader
                 acceptText: pageTitle + qsTr(" parameter")
                 cancelText: qsTr("Cancel")
             }
 
-            TextField
-            {
+            TextField {
                 id: parNameField
                 focus: true
                 width: parent.width
@@ -61,8 +56,8 @@ Dialog
                 EnterKey.iconSource: "image://theme/icon-m-enter-next"
                 EnterKey.onClicked: parDescField.focus = true
             }
-            TextField
-            {
+
+            TextField {
                 id: parDescField
                 width: parent.width
                 label: qsTr("Description")
@@ -72,34 +67,29 @@ Dialog
                 EnterKey.iconSource: "image://theme/icon-m-enter-next"
                 EnterKey.onClicked: parNameField.focus = true
             }
-            SectionHeader
-            {
+
+            SectionHeader {
                 text: qsTr("Plot color")
             }
 
-            Row
-            {
+            Row {
                 anchors.horizontalCenter: parent.horizontalCenter
                 spacing: 50
 
-                Rectangle
-                {
+                Rectangle {
                     id: plotColorLegend
                     height: 50
                     width: 50
                     color: plotColor
                 }
 
-                Button
-                {
+                Button {
                     text: qsTr("Change")
                     anchors.verticalCenter: plotColorLegend.verticalCenter
-                    onClicked:
-                    {
+                    onClicked: {
                         var dialog = pageStack.push("Sailfish.Silica.ColorPickerDialog", { "colors": plotColors })
-                        dialog.accepted.connect(function()
-                        {
-                            console.log("Changed color to " + dialog.color)
+                        dialog.accepted.connect(function() {
+                            Debug.log("Changed color to", dialog.color)
                             plotColorLegend.color = dialog.color
                             plotColor = dialog.color
                         })

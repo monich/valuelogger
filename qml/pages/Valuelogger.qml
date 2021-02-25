@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import "../components"
+import "../js/debug.js" as Debug
 
 Page {
     id: mainPage
@@ -13,10 +14,10 @@ Page {
         })
 
         dialog.accepted.connect(function() {
-            console.log("dialog accepted")
-            console.log(dialog.parameterName)
-            console.log(dialog.parameterDescription)
-            console.log(dialog.plotColor)
+            Debug.log("dialog accepted")
+            Debug.log(dialog.parameterName)
+            Debug.log(dialog.parameterDescription)
+            Debug.log(dialog.plotColor)
 
             var datatable = logger.addParameterEntry("", dialog.parameterName, dialog.parameterDescription, true, dialog.plotColor, "")
 
@@ -94,12 +95,14 @@ Page {
 
                                 for (var i=0; i<tmp.length; i++) {
                                     var row = tmp[i]
-                                    console.log(i + " = " + row["timestamp"] + " = " + row["value"])
+                                    var timestamp = row["timestamp"]
+                                    var value = row["value"]
+                                    Debug.log(i, "=", timestamp, "=", value)
                                     dataList.append({
                                         "key": row["key"],
-                                        "value": row["value"],
-                                        "annotation": row["annotation"],
-                                        "timestamp": row["timestamp"]
+                                        "value": value,
+                                        "timestamp": timestamp,
+                                        "annotation": row["annotation"]
                                     })
                                 }
                                 pageStack.push(Qt.resolvedUrl("ShowData.qml"), {
@@ -160,10 +163,10 @@ Page {
                     })
 
                     dialog.accepted.connect(function() {
-                        console.log("EDIT dialog accepted")
-                        console.log(dialog.parameterName)
-                        console.log(dialog.parameterDescription)
-                        console.log(dialog.plotColor)
+                        Debug.log("EDIT dialog accepted")
+                        Debug.log(dialog.parameterName)
+                        Debug.log(dialog.parameterDescription)
+                        Debug.log(dialog.plotColor)
 
                         logger.addParameterEntry(dataTable, dialog.parameterName, dialog.parameterDescription, visualize, dialog.plotColor, pairedTable)
 
@@ -181,8 +184,8 @@ Page {
                     })
 
                     dialog.accepted.connect(function() {
-                        console.log("Add pair dialog accepted")
-                        console.log(dialog.pairSecondTable)
+                        Debug.log("Add pair dialog accepted")
+                        Debug.log(dialog.pairSecondTable)
                         logger.setPairedTable(dataTable, dialog.pairSecondTable)
                         parameters.model.setProperty(index, "pairedTable", dialog.pairSecondTable)
                     })
@@ -247,7 +250,7 @@ Page {
                             anchors.verticalCenter: parent.verticalCenter
                             icon.source: "image://theme/icon-m-add"
                             onClicked: {
-                                console.log("clicked add value button")
+                                Debug.log("clicked add value button")
 
                                 lastDataAddedIndex = index
 
@@ -258,7 +261,7 @@ Page {
                                 })
 
                                 if (pairedTable !== "") {
-                                    console.log("this is a paired parameter")
+                                    Debug.log("this is a paired parameter")
                                     var paired_parName = "ERROR"
                                     var paired_parDescription = "ERROR"
 
@@ -267,7 +270,7 @@ Page {
                                         if (tmp.dataTable === pairedTable) {
                                             paired_parName = tmp.parName
                                             paired_parDescription = tmp.parDescription
-                                            console.log("found " + tmp.parName + " " + tmp.parDescription)
+                                            Debug.log("found ", tmp.parName, tmp.parDescription)
                                             break
                                         }
                                     }
@@ -282,23 +285,22 @@ Page {
                                     })
 
                                     pairdialog.accepted.connect(function() {
-                                        console.log("paired dialog accepted")
-                                        console.log(" value is " + pairdialog.value)
-                                        console.log(" annotation is " + pairdialog.annotation)
-                                        console.log(" date is " + pairdialog.nowDate)
-                                        console.log(" time is " + pairdialog.nowTime)
+                                        Debug.log("paired dialog accepted")
+                                        Debug.log(" value is", pairdialog.value)
+                                        Debug.log(" annotation is", pairdialog.annotation)
+                                        Debug.log(" date is", pairdialog.nowDate)
+                                        Debug.log(" time is", pairdialog.nowTime)
 
                                         logger.addData(pairedTable, "", pairdialog.value, pairdialog.annotation, pairdialog.nowDate + " " + pairdialog.nowTime)
                                     })
                                 }
 
-                                dialog.accepted.connect(function()
-                                {
-                                    console.log("dialog accepted")
-                                    console.log(" value is " + dialog.value)
-                                    console.log(" annotation is " + dialog.annotation)
-                                    console.log(" date is " + dialog.nowDate)
-                                    console.log(" time is " + dialog.nowTime)
+                                dialog.accepted.connect(function() {
+                                    Debug.log("dialog accepted")
+                                    Debug.log(" value is", dialog.value)
+                                    Debug.log(" annotation is", dialog.annotation)
+                                    Debug.log(" date is", dialog.nowDate)
+                                    Debug.log(" time is", dialog.nowTime)
 
                                     logger.addData(dataTable, "", dialog.value, dialog.annotation, dialog.nowDate + " " + dialog.nowTime)
                                 })
@@ -327,7 +329,7 @@ Page {
             enabled: parameterList.count > 0
 
             onClicked: {
-                console.log("there is " + parameterList.count + " items in list.")
+                Debug.log("there is", parameterList.count, " items in list.")
 
                 var l = []
                 parInfo.clear()
@@ -345,7 +347,7 @@ Page {
                     }
 
                     if (par.visualize) {
-                        console.log("showing data from " + par.parName)
+                        Debug.log("showing data from", par.parName)
                         parInfo.append({"name": par.parName, "plotcolor": par.plotcolor})
                         l.push(logger.readData(par.dataTable))
                     }
@@ -358,7 +360,7 @@ Page {
                         "parInfo": parInfo
                     })
                 } else {
-                    console.log("ERROR: None or too many plots selected")
+                    Debug.log("ERROR: None or too many plots selected")
                 }
             }
         }

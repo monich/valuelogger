@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import "../js/debug.js" as Debug
 import "../components"
 
 Dialog {
@@ -32,13 +33,13 @@ Dialog {
     }
 
     function updateDateTime(newDate, newTime) {
-        console.log("newdate", newDate, "newtime", newTime)
+        Debug.log("newdate", newDate, "newtime", newTime)
         nowDate = Qt.formatDateTime(new Date(newDate), "yyyy-MM-dd")
         nowTime = Qt.formatDateTime(new Date(newDate + " " + newTime), "hh:mm:ss")
-        console.log("nowdate", nowDate, "nowtime", nowTime)
+        Debug.log("nowdate", nowDate, "nowtime", nowTime)
 
         dateNow.text = nowDate + " " + nowTime
-        console.log("dateNow", dateNow.text)
+        Debug.log("dateNow", dateNow.text)
     }
 
     onDone: {
@@ -154,11 +155,11 @@ Dialog {
                     onCanceled: modifyDateButtonPressTimer.stop()
 
                     onClicked: {
-                        console.log("modifyDateButton clicked")
+                        Debug.log("modifyDateButton clicked")
 
                         var dialogDate = pageStack.push(pickerDate, { date: new Date(nowDate) })
                         dialogDate.accepted.connect(function() {
-                            console.log("You chose:", dialogDate.dateText)
+                            Debug.log("You chose:", dialogDate.dateText)
                             // use date, as dateText return varies
                             var d = dialogDate.date
                             updateDateTime(Qt.formatDateTime(new Date(d), "yyyy-MM-dd"), nowTime)
@@ -186,13 +187,13 @@ Dialog {
                         var h = Qt.formatDateTime(new Date(nowDate + " " + nowTime), "hh")
                         var m = Qt.formatDateTime(new Date(nowDate + " " + nowTime), "mm")
 
-                        console.log("modifyTimeButton clicked")
-                        console.log("hour", h)
-                        console.log("minute", m)
+                        Debug.log("modifyTimeButton clicked")
+                        Debug.log("hour", h)
+                        Debug.log("minute", m)
 
                         var dialogTime = pageStack.push(pickerTime, {hour: h, minute: m})
                         dialogTime.accepted.connect(function() {
-                            console.log("You chose:", dialogTime.timeText)
+                            Debug.log("You chose:", dialogTime.timeText)
                             var tt = dialogTime.timeText + ":00"
                             if (dialogTime.hour.length < 2) tt = "0" + tt
                             updateDateTime(nowDate, tt)

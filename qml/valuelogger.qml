@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.valuelogger.Logger 1.0
+import "js/debug.js" as Debug
 import "pages"
 import "cover"
 
@@ -36,7 +37,7 @@ ApplicationWindow {
 
     function coverLeftClicked() {
         if ((lastDataAddedIndex != -1) && (lastDataAddedIndex < parameterList.count)) {
-            console.log("Adding value to index " + lastDataAddedIndex)
+            Debug.log("Adding value to index", lastDataAddedIndex)
 
             pageStack.pop(getBottomPageId(), PageStackAction.Immediate)
             /* Remove all except bottom page, Thansk for Acce:
@@ -51,7 +52,7 @@ ApplicationWindow {
             }, PageStackAction.Immediate)
 
             if (parameterList.get(lastDataAddedIndex).pairedTable !== "") {
-                console.log("this is a paired parameter")
+                Debug.log("this is a paired parameter")
                 var paired_parName = "ERROR"
                 var paired_parDescription = "ERROR"
 
@@ -60,7 +61,7 @@ ApplicationWindow {
                     if (tmp.dataTable === parameterList.get(lastDataAddedIndex).pairedTable) {
                         paired_parName = tmp.parName
                         paired_parDescription = tmp.parDescription
-                        console.log("found " + tmp.parName + " " + tmp.parDescription)
+                        Debug.log("found", tmp.parName, tmp.parDescription)
                         break
                     }
                 }
@@ -75,28 +76,28 @@ ApplicationWindow {
                 })
 
                 pairdialog.accepted.connect(function() {
-                    console.log("paired dialog accepted")
-                    console.log(" value is " + pairdialog.value)
-                    console.log(" annotation is " + pairdialog.annotation)
-                    console.log(" date is " + pairdialog.nowDate)
-                    console.log(" time is " + pairdialog.nowTime)
+                    Debug.log("paired dialog accepted")
+                    Debug.log(" value is", pairdialog.value)
+                    Debug.log(" annotation is", pairdialog.annotation)
+                    Debug.log(" date is", pairdialog.nowDate)
+                    Debug.log(" time is", pairdialog.nowTime)
 
                     logger.addData(parameterList.get(lastDataAddedIndex).pairedTable, "", pairdialog.value, pairdialog.annotation, pairdialog.nowDate + " " + pairdialog.nowTime)
                     valuelogger.deactivate()
                 })
 
                 pairdialog.rejected.connect(function() {
-                    console.log("Dialog rejected")
+                    Debug.log("Dialog rejected")
                     valuelogger.deactivate()
                 })
             }
 
             dialog.accepted.connect(function() {
-                console.log("dialog accepted")
-                console.log(" value is " + dialog.value)
-                console.log(" annotation is " + dialog.annotation)
-                console.log(" date is " + dialog.nowDate)
-                console.log(" time is " + dialog.nowTime)
+                Debug.log("dialog accepted")
+                Debug.log(" value is", dialog.value)
+                Debug.log(" annotation is", dialog.annotation)
+                Debug.log(" date is", dialog.nowDate)
+                Debug.log(" time is", dialog.nowTime)
 
                 logger.addData(parameterList.get(lastDataAddedIndex).dataTable, "", dialog.value, dialog.annotation, dialog.nowDate + " " + dialog.nowTime)
 
@@ -104,18 +105,18 @@ ApplicationWindow {
                     valuelogger.deactivate()
             })
             dialog.rejected.connect(function() {
-                console.log("Dialog rejected")
+                Debug.log("Dialog rejected")
                 valuelogger.deactivate()
             })
 
             valuelogger.activate()
+        } else {
+            Debug.log("This should never happen")
         }
-        else
-            console.log("This should never happen")
     }
 
     function coverRightClicked() {
-        console.log("showing data from " + parameterList.get(lastDataAddedIndex).parName)
+        Debug.log("showing data from", parameterList.get(lastDataAddedIndex).parName)
 
         var l = []
 
@@ -142,15 +143,19 @@ ApplicationWindow {
 
             for (var i=0 ; i<tmp.length; i++) {
                 var par = tmp[i]
+                var name = par["name"]
+                var plotcolor = par["plotcolor"]
 
-                console.log(i + " = " + par["name"] + " is " + par["plotcolor"] )
-                parameterList.append({"parName": par["name"],
-                                         "parDescription": par["description"],
-                                         "plotcolor": par["plotcolor"],
-                                         "dataTable": par["datatable"],
-                                         "pairedTable": par["pairedtable"],
-                                         "visualize": (par["visualize"] == 1 ? true : false),
-                                         "visualizeChanged": false})
+                Debug.log(i, "=", name, "is", plotcolor)
+                parameterList.append({
+                    "parName": name,
+                    "parDescription": par["description"],
+                    "plotcolor": plotcolor,
+                    "dataTable": par["datatable"],
+                    "pairedTable": par["pairedtable"],
+                    "visualize": (par["visualize"] == 1 ? true : false),
+                    "visualizeChanged": false
+                })
             }
         }
     }

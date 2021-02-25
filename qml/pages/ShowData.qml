@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import "../js/debug.js" as Debug
 
 Page {
     id: showDataPage
@@ -48,7 +49,7 @@ Page {
             ListView.onRemove: animateRemoval(dataItem)
 
             function remove() {
-                console.log("Deleting...")
+                Debug.log("Deleting...")
                 remorseAction(qsTr("Deleting"), function() {
                     logger.deleteData(dataTable, key)
                     dataListView.model.remove(index)
@@ -67,11 +68,11 @@ Page {
                 })
 
                 editDialog.accepted.connect( function() {
-                    console.log("dialog accepted")
-                    console.log(" value is " + editDialog.value)
-                    console.log(" annotation is " + editDialog.annotation)
-                    console.log(" date is " + editDialog.nowDate)
-                    console.log(" time is " + editDialog.nowTime)
+                    Debug.log("dialog accepted")
+                    Debug.log(" value is", editDialog.value)
+                    Debug.log(" annotation is", editDialog.annotation)
+                    Debug.log(" date is", editDialog.nowDate)
+                    Debug.log(" time is", editDialog.nowTime)
 
                     dataListView.model.setProperty(index, "value", editDialog.value)
                     dataListView.model.setProperty(index, "annotation", editDialog.annotation)

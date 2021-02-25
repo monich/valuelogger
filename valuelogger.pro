@@ -10,6 +10,10 @@ QT += sql
 
 DEFINES += "APPVERSION=\\\"$${SPECVERSION}\\\""
 
+CONFIG(debug, debug|release) {
+    DEFINES += DEBUG LOG_DBG
+}
+
 message($${DEFINES})
 
 #system(lupdate qml -ts $$PWD/i18n/*.ts)
@@ -25,7 +29,8 @@ SOURCES += src/valuelogger.cpp \
         src/graph.cpp \
         src/logger.cpp
 
-HEADERS += src/graph.h \
+HEADERS += src/debuglog.h \
+        src/graph.h \
         src/logger.h
 
 OTHER_FILES += qml/valuelogger.qml \
@@ -35,6 +40,7 @@ OTHER_FILES += qml/valuelogger.qml \
     qml/pages/*.qml \
     qml/components/*.qml \
     qml/images/*.svg \
+    qml/js/*.js \
     i18n/translations_fi.ts \
     i18n/translations_sv.ts \
     qml/icon-cover-plot.png
