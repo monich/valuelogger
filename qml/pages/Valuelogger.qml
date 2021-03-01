@@ -24,7 +24,7 @@ Page {
             parameterList.append({"parName": dialog.parameterName,
                                   "parDescription": dialog.parameterDescription,
                                   "visualize": true,
-                                  "plotcolor": logger.colorToString(dialog.plotColor),
+                                  "plotcolor": dialog.plotColor,
                                   "dataTable": datatable,
                                   "pairedTable": "",
                                   "visualizeChanged": false})

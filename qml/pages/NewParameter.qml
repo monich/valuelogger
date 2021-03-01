@@ -7,9 +7,9 @@ Dialog {
 
     canAccept: false
 
-    property string parameterName: ""
-    property string parameterDescription: ""
-    property color plotColor: plotColors[0]
+    property string parameterName
+    property string parameterDescription
+    property string plotColor: plotColors[0]
     property string pageTitle: qsTr("Add")
 
     onDone: {
@@ -18,7 +18,6 @@ Dialog {
             parameterName = parNameField.text
             parameterDescription = parDescField.text
             Debug.log("color set to", plotColor)
-//            plotColor = plotColorLegend.color
         }
     }
 
