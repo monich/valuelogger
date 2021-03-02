@@ -14,19 +14,23 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 #include <QObject>
 #include <QColor>
-#include <QVariant>
+#include <QString>
+#include <QVariantList>
 #include <QSqlDatabase>
+
+class QQmlEngine;
+class QJSEngine;
 
 class Logger : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QString version READ readVersion CONSTANT)
+    Q_PROPERTY(QString version READ getVersion CONSTANT)
 
 public:
-    explicit Logger(QObject *parent = 0);
+    explicit Logger(QObject* parent = Q_NULLPTR);
     ~Logger();
 
-    QString readVersion();
+    QString getVersion();
 
     Q_INVOKABLE QString addParameterEntry(QString key, QString parameterName, QString parameterDescription, bool visualize, QColor plotColor, QString pairedtable);
     Q_INVOKABLE void deleteParameterEntry(QString parameterName, QString datatable);
@@ -35,22 +39,21 @@ public:
     Q_INVOKABLE QString addData(QString table, QString key, QString value, QString annotation, QString timestamp);
     Q_INVOKABLE void deleteData(QString table, QString key);
     Q_INVOKABLE void setPairedTable(QString datatable, QString pairedtable);
-
-    Q_INVOKABLE QString colorToString(QColor color) { return color.name(); }
-
     Q_INVOKABLE QString exportToCSV();
 
+    /* Callback for qmlRegisterSingletonType<Logger> */
+    static QObject* createSingleton(QQmlEngine* engine, QJSEngine* js);
+
+private:
+    static QString generateHash(QString sometext);
+
     void dropDataTable(QString table);
-
-    QString generateHash(QString sometext);
-
     void closeDatabase();
     void createParameterTable();
     void createDataTable(QString table);
 
-    static const QString DB_NAME;
-
 private:
+    static const QString DB_NAME;
     QSqlDatabase db;
 };
 

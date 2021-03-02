@@ -8,6 +8,8 @@ CONFIG += sailfishapp
 
 QT += sql
 
+QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-psabi
+
 DEFINES += "APPVERSION=\\\"$${SPECVERSION}\\\""
 
 CONFIG(debug, debug|release) {

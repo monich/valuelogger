@@ -1,6 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import harbour.valuelogger.Logger 1.0
+import harbour.valuelogger 1.0
+
 import "js/debug.js" as Debug
 import "pages"
 import "cover"
@@ -82,7 +83,7 @@ ApplicationWindow {
                     Debug.log(" date is", pairdialog.nowDate)
                     Debug.log(" time is", pairdialog.nowTime)
 
-                    logger.addData(parameterList.get(lastDataAddedIndex).pairedTable, "", pairdialog.value, pairdialog.annotation, pairdialog.nowDate + " " + pairdialog.nowTime)
+                    Logger.addData(parameterList.get(lastDataAddedIndex).pairedTable, "", pairdialog.value, pairdialog.annotation, pairdialog.nowDate + " " + pairdialog.nowTime)
                     valuelogger.deactivate()
                 })
 
@@ -99,7 +100,7 @@ ApplicationWindow {
                 Debug.log(" date is", dialog.nowDate)
                 Debug.log(" time is", dialog.nowTime)
 
-                logger.addData(parameterList.get(lastDataAddedIndex).dataTable, "", dialog.value, dialog.annotation, dialog.nowDate + " " + dialog.nowTime)
+                Logger.addData(parameterList.get(lastDataAddedIndex).dataTable, "", dialog.value, dialog.annotation, dialog.nowDate + " " + dialog.nowTime)
 
                 if (parameterList.get(lastDataAddedIndex).pairedTable === "")
                     valuelogger.deactivate()
@@ -123,7 +124,7 @@ ApplicationWindow {
         parInfo.clear()
         parInfo.append({"name": parameterList.get(lastDataAddedIndex).parName,
                         "plotcolor": parameterList.get(lastDataAddedIndex).plotcolor})
-        l.push(logger.readData(parameterList.get(lastDataAddedIndex).dataTable))
+        l.push(Logger.readData(parameterList.get(lastDataAddedIndex).dataTable))
 
         pageStack.pop(getBottomPageId(), PageStackAction.Immediate)
         pageStack.push(Qt.resolvedUrl("pages/DrawData.qml"), {
@@ -135,28 +136,24 @@ ApplicationWindow {
         valuelogger.activate()
     }
 
-    Logger {
-        id: logger
+    Component.onCompleted: {
+        var tmp = Logger.readParameters()
 
-        Component.onCompleted: {
-            var tmp = logger.readParameters()
+        for (var i=0 ; i<tmp.length; i++) {
+            var par = tmp[i]
+            var name = par["name"]
+            var plotcolor = par["plotcolor"]
 
-            for (var i=0 ; i<tmp.length; i++) {
-                var par = tmp[i]
-                var name = par["name"]
-                var plotcolor = par["plotcolor"]
-
-                Debug.log(i, "=", name, "is", plotcolor)
-                parameterList.append({
-                    "parName": name,
-                    "parDescription": par["description"],
-                    "plotcolor": plotcolor,
-                    "dataTable": par["datatable"],
-                    "pairedTable": par["pairedtable"],
-                    "visualize": (par["visualize"] == 1 ? true : false),
-                    "visualizeChanged": false
-                })
-            }
+            Debug.log(i, "=", name, "is", plotcolor)
+            parameterList.append({
+                "parName": name,
+                "parDescription": par["description"],
+                "plotcolor": plotcolor,
+                "dataTable": par["datatable"],
+                "pairedTable": par["pairedtable"],
+                "visualize": (par["visualize"] == 1 ? true : false),
+                "visualizeChanged": false
+            })
         }
     }
 

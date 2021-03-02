@@ -1,6 +1,6 @@
 .pragma library
-.import harbour.valuelogger.Logger 1.0 as Logger
+.import harbour.valuelogger 1.0 as ValueLogger
 
-var enabled = Logger.DebugLog.enabled
+var enabled = ValueLogger.DebugLog.enabled
 
 var log = enabled ? console.log : function(){};

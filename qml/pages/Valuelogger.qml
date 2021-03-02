@@ -1,5 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import harbour.valuelogger 1.0
+
 import "../components"
 import "../js/debug.js" as Debug
 
@@ -19,7 +21,7 @@ Page {
             Debug.log(dialog.parameterDescription)
             Debug.log(dialog.plotColor)
 
-            var datatable = logger.addParameterEntry("", dialog.parameterName, dialog.parameterDescription, true, dialog.plotColor, "")
+            var datatable = Logger.addParameterEntry("", dialog.parameterName, dialog.parameterDescription, true, dialog.plotColor, "")
 
             parameterList.append({"parName": dialog.parameterName,
                                   "parDescription": dialog.parameterDescription,
@@ -43,7 +45,7 @@ Page {
                 text: qsTr("About...")
                 onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"), {
                     "allowedOrientations": allowedOrientations,
-                    "version": logger.version,
+                    "version": Logger.version,
                     "name": "Value Logger",
                     "imagelocation": Qt.resolvedUrl("../images/harbour-valuelogger.svg")
                 })
@@ -51,7 +53,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Export to CSV")
-                onClicked: messagebox.showMessage(qsTr("Exported to:") + "<br>" + logger.exportToCSV(), 2500)
+                onClicked: messagebox.showMessage(qsTr("Exported to:") + "<br>" + Logger.exportToCSV(), 2500)
             }
 
             MenuItem {
@@ -89,7 +91,7 @@ Page {
                         MenuItem {
                             text: qsTr("Show raw data")
                             onClicked: {
-                                var tmp = logger.readData(dataTable)
+                                var tmp = Logger.readData(dataTable)
 
                                 dataList.clear()
 
@@ -143,11 +145,11 @@ Page {
                             if (tmp.pairedTable === dataTable)
                             {
                                 parameters.model.setProperty(i, "pairedTable", "")
-                                logger.setPairedTable(tmp.dataTable, "")
+                                Logger.setPairedTable(tmp.dataTable, "")
                             }
                         }
 
-                        logger.deleteParameterEntry(parName, dataTable)
+                        Logger.deleteParameterEntry(parName, dataTable)
                         parameters.model.remove(index)
                         lastDataAddedIndex = -1
                     })
@@ -168,11 +170,11 @@ Page {
                         Debug.log(dialog.parameterDescription)
                         Debug.log(dialog.plotColor)
 
-                        logger.addParameterEntry(dataTable, dialog.parameterName, dialog.parameterDescription, visualize, dialog.plotColor, pairedTable)
+                        Logger.addParameterEntry(dataTable, dialog.parameterName, dialog.parameterDescription, visualize, dialog.plotColor, pairedTable)
 
                         parameters.model.setProperty(index, "parName", dialog.parameterName)
                         parameters.model.setProperty(index, "parDescription", dialog.parameterDescription)
-                        parameters.model.setProperty(index, "plotcolor", logger.colorToString(dialog.plotColor))
+                        parameters.model.setProperty(index, "plotcolor", dialog.plotColor)
                     })
                 }
 
@@ -186,7 +188,7 @@ Page {
                     dialog.accepted.connect(function() {
                         Debug.log("Add pair dialog accepted")
                         Debug.log(dialog.pairSecondTable)
-                        logger.setPairedTable(dataTable, dialog.pairSecondTable)
+                        Logger.setPairedTable(dataTable, dialog.pairSecondTable)
                         parameters.model.setProperty(index, "pairedTable", dialog.pairSecondTable)
                     })
                 }
@@ -291,7 +293,7 @@ Page {
                                         Debug.log(" date is", pairdialog.nowDate)
                                         Debug.log(" time is", pairdialog.nowTime)
 
-                                        logger.addData(pairedTable, "", pairdialog.value, pairdialog.annotation, pairdialog.nowDate + " " + pairdialog.nowTime)
+                                        Logger.addData(pairedTable, "", pairdialog.value, pairdialog.annotation, pairdialog.nowDate + " " + pairdialog.nowTime)
                                     })
                                 }
 
@@ -302,7 +304,7 @@ Page {
                                     Debug.log(" date is", dialog.nowDate)
                                     Debug.log(" time is", dialog.nowTime)
 
-                                    logger.addData(dataTable, "", dialog.value, dialog.annotation, dialog.nowDate + " " + dialog.nowTime)
+                                    Logger.addData(dataTable, "", dialog.value, dialog.annotation, dialog.nowDate + " " + dialog.nowTime)
                                 })
                             }
                         }
@@ -338,7 +340,7 @@ Page {
                     /* Save changes if visualize touched */
                     var par = parameterList.get(a)
                     if (par.visualizeChanged) {
-                        logger.addParameterEntry(par.dataTable,
+                        Logger.addParameterEntry(par.dataTable,
                                                  par.parName,
                                                  par.parDescription,
                                                  par.visualize,
@@ -349,7 +351,7 @@ Page {
                     if (par.visualize) {
                         Debug.log("showing data from", par.parName)
                         parInfo.append({"name": par.parName, "plotcolor": par.plotcolor})
-                        l.push(logger.readData(par.dataTable))
+                        l.push(Logger.readData(par.dataTable))
                     }
                 }
 

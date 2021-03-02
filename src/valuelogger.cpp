@@ -44,9 +44,9 @@ public:
 
 int main(int argc, char *argv[])
 {
-    const char *uri = "harbour.valuelogger.Logger";
+    const char *uri = "harbour.valuelogger";
     qmlRegisterType<Graph>(uri, 1, 0, "Graph");
-    qmlRegisterType<Logger>(uri, 1, 0, "Logger");
+    qmlRegisterSingletonType<Logger>(uri, 1, 0, "Logger", Logger::createSingleton);
     qmlRegisterSingletonType<DebugLog>(uri, 1, 0, "DebugLog", DebugLog::createSingleton);
 
     QScopedPointer<QGuiApplication> app(SailfishApp::application(argc, argv));

@@ -48,7 +48,13 @@ Logger::Logger(QObject *parent) :
     createParameterTable();
 }
 
-QString Logger::readVersion()
+/* Callback for qmlRegisterSingletonType<Logger> */
+QObject* Logger::createSingleton(QQmlEngine* engine, QJSEngine* js)
+{
+    return new Logger();
+}
+
+QString Logger::getVersion()
 {
     return APPVERSION;
 }
@@ -289,8 +295,6 @@ void Logger::deleteParameterEntry(QString parameterName, QString datatable)
 
     dropDataTable(datatable);
 }
-
-
 
 void Logger::closeDatabase()
 {

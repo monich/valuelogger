@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+
 import "../js/debug.js" as Debug
 
 Page {
@@ -51,7 +52,7 @@ Page {
             function remove() {
                 Debug.log("Deleting...")
                 remorseAction(qsTr("Deleting"), function() {
-                    logger.deleteData(dataTable, key)
+                    Logger.deleteData(dataTable, key)
                     dataListView.model.remove(index)
                 }, 2500 )
             }
@@ -78,7 +79,7 @@ Page {
                     dataListView.model.setProperty(index, "annotation", editDialog.annotation)
                     dataListView.model.setProperty(index, "timestamp", (editDialog.nowDate + " " + editDialog.nowTime))
 
-                    logger.addData(dataTable, key, editDialog.value, editDialog.annotation, (editDialog.nowDate + " " + editDialog.nowTime))
+                    Logger.addData(dataTable, key, editDialog.value, editDialog.annotation, (editDialog.nowDate + " " + editDialog.nowTime))
                 })
             }
 

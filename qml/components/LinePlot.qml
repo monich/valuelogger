@@ -3,6 +3,8 @@
  
 	Modified to support multiple lines for valuelogger 2014 Kimmo Lindholm
 
+    More or less completely rewritten in 2021 by Slava Monich
+
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
 	in the Software without restriction, including without limitation the rights
@@ -24,11 +26,9 @@
 
 import QtQuick 2.0
 import Sailfish.Silica 1.0
-import harbour.valuelogger.Logger 1.0
+import harbour.valuelogger 1.0
 
-Item
-{
-    id: chart
+Item {
     width: parent.width
     height: parent.height
 
@@ -45,48 +45,42 @@ Item
     property date xstart : new Date()
     property date xend : new Date()
 
-    function distanceX(p1, p2)
-    {
+    function distanceX(p1, p2){
         return Math.max(p1.x, p2.x) - Math.min(p1.x, p2.x)
     }
-    function distanceY(p1, p2)
-    {
+
+    function distanceY(p1, p2) {
         return Math.max(p1.y, p2.y) - Math.min(p1.y, p2.y)
     }
 
-    function getMinMax(data)
-    {
-        var last = data.length - 1;
-        var first = 0;
+    function getMinMax(data) {
+        if (data.length > 0) {
+            var last = data.length - 1;
+            var first = 0;
 
-        var s = new Date(data[0]["timestamp"])
+            var s = new Date(data[0]["timestamp"])
 
-        if (s.getTime() < xstart.getTime())
-            xstart = s
+            if (s.getTime() < xstart.getTime())
+                xstart = s
 
-        s = new Date(data[data.length-1]["timestamp"])
+            s = new Date(data[data.length-1]["timestamp"])
 
-        if (s.getTime() > xend.getTime())
-            xend = s
+            if (s.getTime() > xend.getTime())
+                xend = s
 
-        first = 0;
-        last = data.length - 1;
+            first = 0;
+            last = data.length - 1;
 
-        for (var i = first; i <= last; i++)
-        {
-            var l = data[i]
+            for (var i = first; i <= last; i++) {
+                var l = data[i]
 
-            if (l[column] > max)
-                max = l[column];
-
-            if (l[column] < min)
-                min = l[column];
+                if (l[column] > max) max = l[column]
+                if (l[column] < min) min = l[column]
+            }
         }
     }
 
-    function updateVerticalScale()
-    {
-
+    function updateVerticalScale() {
         var m = (((max-min))/canvas.height)*pinchZoom.deltaY
 
         max = max - m/2
@@ -106,8 +100,7 @@ Item
         }
     }
 
-    function updateHorizontalScale()
-    {
+    function updateHorizontalScale() {
         var mm = (((xstart.getTime() - xend.getTime()))/canvas.width)*pinchZoom.deltaX
 
         var t = new Date()
@@ -132,8 +125,7 @@ Item
         xEnd.text = Qt.formatDateTime(xstart, "dd.MM.yyyy hh:mm")
     }
 
-    function updateGraph()
-    {
+    function updateGraph() {
         // assign some timestamp which is in range as start/end default for further expanding
         xstart = new Date(dataListModel[0][0]["timestamp"])
         xend = new Date(dataListModel[0][0]["timestamp"])
@@ -149,19 +141,16 @@ Item
     }
 
     onWidthChanged: sizeChangedTimer.restart()
-
     onHeightChanged: sizeChangedTimer.restart()
 
-    Timer
-    {
+    Timer {
         id: sizeChangedTimer
         interval: 0
         repeat: false
         onTriggered: updateGraph()
     }
 
-    Text
-    {
+    Text {
         id: xStart
         color: Theme.primaryColor
         font.pixelSize: fontSize
@@ -172,8 +161,7 @@ Item
         text: "unk"
     }
 
-    Text
-    {
+    Text {
         id: xEnd
         color: Theme.primaryColor
         font.pixelSize: fontSize
@@ -184,8 +172,7 @@ Item
         text: "unk"
     }
 
-    Text
-    {
+    Text {
         id: valueMax
         color: Theme.primaryColor
         width: 50
@@ -197,8 +184,7 @@ Item
         text: "unk"
     }
 
-    Text
-    {
+    Text {
         id: valueMin
         color: Theme.primaryColor
         width: 50
@@ -210,13 +196,11 @@ Item
         text: "unk"
     }
 
-    Repeater
-    {
+    Repeater {
         id: valueMiddle
         model:4
 
-        Text
-        {
+        Text {
             color: Theme.primaryColor
             font.pixelSize: fontSize
             font.bold: fontBold
@@ -228,33 +212,27 @@ Item
         }
     }
 
-    ListView
-    {
-        x: 150
-        y: 150
+    ListView {
+        x: Theme.itemSizeLarge
+        y: Theme.itemSizeLarge
         z: 11
         height: fontSize*1.2*10
         id: legend
         model: parInfoModel
 
-        delegate: ListItem
-        {
+        delegate: ListItem {
             contentHeight: fontSize*2
 
-            Row
-            {
-                id: legendRow
+            Row {
                 height: fontSize*2
                 spacing: 10
-                Rectangle
-                {
+                Rectangle {
                     id: legendColor
                     width: 30
                     height: 3
                     color: plotcolor
                 }
-                Text
-                {
+                Text {
                     text: name
                     color: Theme.primaryColor
                     font.pointSize: fontSize
@@ -264,32 +242,26 @@ Item
             }
         }
 
-        Behavior on opacity
-        {
+        Behavior on opacity {
             FadeAnimation {}
         }
 
-        onOpacityChanged:
-        {
+        onOpacityChanged: {
             if (opacity == 1.0)
                 legendVisibility.start()
         }
 
-        Timer
-        {
+        Timer {
             id: legendVisibility
             interval: 2000
             running: true
             onTriggered:  legend.opacity = 0.0
         }
-
     }
 
-    Repeater
-    {
+    Repeater {
         model: 7
-        delegate: Rectangle
-        {
+        delegate: Rectangle {
             x: index * parent.width/6
             width: 1
             anchors.top: valueMax.bottom
@@ -298,11 +270,9 @@ Item
         }
     }
 
-    Repeater
-    {
+    Repeater {
         model: 6
-        delegate: Rectangle
-        {
+        delegate: Rectangle {
             y: valueMin.y + index*(valueMax.y + valueMax.height - valueMin.y)/5 + height
             width: parent.width
             height: 1
@@ -310,15 +280,13 @@ Item
         }
     }
 
-    Item
-    {
+    Item {
         id: canvas
         width: parent.width
         anchors.top: valueMax.bottom
         anchors.bottom: valueMin.top
 
-        PinchArea
-        {
+        PinchArea {
             id: pinchZoom
             anchors.fill: canvas
 
@@ -366,8 +334,7 @@ Item
                 updateGraph()
             }
 
-            MouseArea
-            {
+            MouseArea {
                 property real iX
                 property real iY
                 property real movementX : 0
@@ -378,14 +345,12 @@ Item
 
                 onClicked: legend.opacity = 1.0
 
-                onPressed:
-                {
+                onPressed: {
                     plotDraggingActive = true
                     iX = mouseX
                     iY = mouseY
                 }
-                onDoubleClicked:
-                {
+                onDoubleClicked: {
                     movementX = 0
                     movementY = 0
                     pinchZoom.deltaX = 0
@@ -393,8 +358,7 @@ Item
 
                     updateGraph()
                 }
-                onPositionChanged:
-                {
+                onPositionChanged: {
                     var dX = mouseX - iX
                     iX = mouseX
                     movementX += dX
@@ -405,14 +369,13 @@ Item
                     updateGraph()
                 }
                 onReleased: plotDraggingActive = false
+                onCanceled: plotDraggingActive = false
             }
         }
 
-        Repeater
-        {
+        Repeater {
             model: dataListModel
-            delegate: Graph
-            {
+            delegate: Graph {
                 anchors.fill: parent
                 minValue: min
                 maxValue: max
