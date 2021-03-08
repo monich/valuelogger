@@ -1,14 +1,23 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import harbour.valuelogger 1.0
 
 Dialog {
-    property string pairFirstTable: ""
-    property string pairSecondTable: ""
+    property string pairFirstTable
+    property string pairSecondTable
+
+    property bool _hadSecondTable
+    readonly property bool _haveSecondTable: pairSecondTable !== ""
+
+    canAccept: _haveSecondTable || _hadSecondTable
+
+    Component.onCompleted: _hadSecondTable = (pairSecondTable !== "")
 
     DialogHeader {
         id: dialogHeader
 
-        acceptText: pairSecondTable === "" ? qsTr("Clear pair") : qsTr("Add pair")
+        acceptText: _haveSecondTable ? qsTr("Add pair") :
+            _hadSecondTable ? qsTr("Clear pair") : ""
     }
 
     SilicaListView {
@@ -21,26 +30,26 @@ Dialog {
 
         VerticalScrollDecorator { }
 
-        model: parameterList
+        model: Logger
 
         delegate: MouseArea {
             id: parameterItem
 
             readonly property color highlightedColor: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity)
             readonly property color pressedColor: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity/2)
-            readonly property bool highlighted: dataTable === pairSecondTable
+            readonly property bool highlighted: model.datatable === pairSecondTable
             readonly property bool down: pressed && containsMouse
 
-            enabled: dataTable !== pairFirstTable
+            enabled: model.datatable !== pairFirstTable
             height: Theme.itemSizeMedium
             width: list.width
 
             onClicked: {
                 // toggle logic
-                if (pairSecondTable === dataTable) {
+                if (pairSecondTable === model.datatable) {
                     pairSecondTable = ""
                 } else {
-                    pairSecondTable = dataTable
+                    pairSecondTable = model.datatable
                 }
             }
 
@@ -56,7 +65,7 @@ Dialog {
                 anchors.verticalCenter: parent.verticalCenter
 
                 Label {
-                    text: parName
+                    text: model.name
                     width: parent.width
                     truncationMode: TruncationMode.Fade
                     color: parameterItem.highlighted ? Theme.highlightColor : Theme.primaryColor
@@ -64,7 +73,7 @@ Dialog {
                 }
 
                 Label {
-                    text: parDescription
+                    text: model.description
                     width: parent.width
                     truncationMode: TruncationMode.Fade
                     font.pixelSize: Theme.fontSizeSmall

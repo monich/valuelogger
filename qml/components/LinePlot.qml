@@ -29,21 +29,19 @@ import Sailfish.Silica 1.0
 import harbour.valuelogger 1.0
 
 Item {
-    width: parent.width
-    height: parent.height
-
-    property var dataListModel: null
-    property var parInfoModel: null
+    property var dataListModel
+    property var parInfoModel
     property string column: "value"
+    property bool dragging
 
-    property real min : 0.0
-    property real max : 1.0
+    property real min: 0.0
+    property real max: 1.0
 
-    property int fontSize: Theme.fontSizeTiny
-    property bool fontBold: true
+    property date xstart: new Date()
+    property date xend: new Date()
 
-    property date xstart : new Date()
-    property date xend : new Date()
+    readonly property int fontSize: Theme.fontSizeTiny
+    readonly property bool fontBold: true
 
     function distanceX(p1, p2){
         return Math.max(p1.x, p2.x) - Math.min(p1.x, p2.x)
@@ -213,31 +211,38 @@ Item {
     }
 
     ListView {
-        x: Theme.itemSizeLarge
-        y: Theme.itemSizeLarge
-        z: 11
-        height: fontSize*1.2*10
         id: legend
+        x: parent.width/12
+        y: x
+        z: 11
+        width: parent.width - 2 * x
+        height: contentHeight
         model: parInfoModel
 
         delegate: ListItem {
-            contentHeight: fontSize*2
+            id: legendItem
+            height: Math.floor(fontSize * 3 / 2)
+            width: legend.width
 
-            Row {
-                height: fontSize*2
-                spacing: 10
-                Rectangle {
-                    id: legendColor
-                    width: 30
-                    height: 3
-                    color: plotcolor
+            Rectangle {
+                id: legendColor
+                width: Theme.paddingLarge
+                height: Theme.paddingSmall/2
+                color: modelData.plotcolor
+                anchors.verticalCenter: parent.verticalCenter
+            }
+            Label {
+                text: modelData.name
+                anchors {
+                    verticalCenter: parent.verticalCenter
+                    left: legendColor.right
+                    leftMargin: Theme.paddingSmall
+                    right: parent.right
                 }
-                Text {
-                    text: name
-                    color: Theme.primaryColor
-                    font.pointSize: fontSize
-                    font.bold: fontBold
-                    anchors.verticalCenter: legendColor.verticalCenter
+                truncationMode: TruncationMode.Fade
+                font {
+                    pixelSize: fontSize
+                    bold: fontBold
                 }
             }
         }
@@ -346,7 +351,7 @@ Item {
                 onClicked: legend.opacity = 1.0
 
                 onPressed: {
-                    plotDraggingActive = true
+                    dragging = true
                     iX = mouseX
                     iY = mouseY
                 }
@@ -368,8 +373,8 @@ Item {
 
                     updateGraph()
                 }
-                onReleased: plotDraggingActive = false
-                onCanceled: plotDraggingActive = false
+                onReleased: dragging = false
+                onCanceled: dragging = false
             }
         }
 
@@ -383,7 +388,7 @@ Item {
                 maxTime: xend
                 data: modelData
                 lineWidth: Math.max(Math.min(Math.round(Theme.paddingSmall/2), width/modelData.length), 2)
-                color: parInfoModel.get(index).plotcolor
+                color: parInfoModel[index].plotcolor
             }
         }
     }

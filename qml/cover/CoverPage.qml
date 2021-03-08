@@ -1,8 +1,12 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import harbour.valuelogger 1.0
 
 CoverBackground {
     id: cover
+
+    signal addValue()
+    signal plotSelected()
 
     Image {
         id: icon
@@ -28,20 +32,28 @@ CoverBackground {
         minimumPixelSize: Theme.fontSizeTiny
         fontSizeMode: Text.Fit
         color: Theme.highlightColor
-        text: par ? par : "Value logger"
-        readonly property string par: (lastDataAddedIndex) >= 0 ? parameterList.get(lastDataAddedIndex).parName : ""
+        text: Logger.defaultParameterName ? Logger.defaultParameterName : "Value logger"
     }
 
     CoverActionList {
-        enabled: lastDataAddedIndex >= 0
+        enabled: Logger.visualizeCount === 1
 
         CoverAction {
-            iconSource: coverIconLeft
-            onTriggered: coverLeftClicked()
+            iconSource: "image://theme/icon-cover-new"
+            onTriggered: addValue()
         }
         CoverAction {
-            iconSource: coverIconRight
-            onTriggered: coverRightClicked()
+            iconSource: "../icon-cover-plot.png"
+            onTriggered: cover.plotSelected()
+        }
+    }
+
+    CoverActionList {
+        enabled: Logger.visualizeCount > 1
+
+        CoverAction {
+            iconSource: "../icon-cover-plot.png"
+            onTriggered: cover.plotSelected()
         }
     }
 }

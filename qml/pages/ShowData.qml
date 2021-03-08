@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import harbour.valuelogger 1.0
 
 import "../js/debug.js" as Debug
 
@@ -11,10 +12,13 @@ Page {
     property string parDescription : "Description goes here"
     property string dataTable : "Data table name here"
 
+    signal deleteData(var key)
+
     PageHeader {
         id: pageHeader
 
         title: parName
+        description: parDescription
     }
 
     SilicaListView {
@@ -37,24 +41,20 @@ Page {
                 ContextMenu {
                     MenuItem {
                         text: qsTr("Edit")
-                        onClicked: editData()
+                        onClicked: dataItem.editData()
                     }
-
                     MenuItem {
                         text: qsTr("Remove")
-                        onClicked: remove()
+                        onClicked: dataItem.removeEntry()
                     }
                 }
             }
 
             ListView.onRemove: animateRemoval(dataItem)
 
-            function remove() {
-                Debug.log("Deleting...")
-                remorseAction(qsTr("Deleting"), function() {
-                    Logger.deleteData(dataTable, key)
-                    dataListView.model.remove(index)
-                }, 2500 )
+            function removeEntry() {
+                Debug.log("deleting", modelData.key ,"...")
+                remorseAction(qsTr("Deleting"), function() { showDataPage.deleteData(modelData.key)}, 2500)
             }
 
             function editData() {
@@ -62,47 +62,52 @@ Page {
                     "allowedOrientations": allowedOrientations,
                     "parameterName": parName,
                     "parameterDescription": parDescription,
-                    "value": value,
-                    "annotation": annotation,
-                    "nowDate": Qt.formatDateTime(new Date(timestamp.trim()), "yyyy-MM-dd"),
-                    "nowTime": Qt.formatDateTime(new Date(timestamp.trim()), "h:mm:ss")
+                    "value": valueLabel.text,
+                    "annotation": annotationLabel.text,
+                    "nowDate": Qt.formatDateTime(new Date(timestampLabel.text), "yyyy-MM-dd"),
+                    "nowTime": Qt.formatDateTime(new Date(timestampLabel.text), "h:mm:ss")
                 })
 
                 editDialog.accepted.connect( function() {
                     Debug.log("dialog accepted")
-                    Debug.log(" value is", editDialog.value)
-                    Debug.log(" annotation is", editDialog.annotation)
-                    Debug.log(" date is", editDialog.nowDate)
-                    Debug.log(" time is", editDialog.nowTime)
 
-                    dataListView.model.setProperty(index, "value", editDialog.value)
-                    dataListView.model.setProperty(index, "annotation", editDialog.annotation)
-                    dataListView.model.setProperty(index, "timestamp", (editDialog.nowDate + " " + editDialog.nowTime))
+                    var timestamp = editDialog.nowDate + " " + editDialog.nowTime
+                    Debug.log(" value", editDialog.value)
+                    Debug.log(" annotation", editDialog.annotation)
+                    Debug.log(" time", timestamp)
 
-                    Logger.addData(dataTable, key, editDialog.value, editDialog.annotation, (editDialog.nowDate + " " + editDialog.nowTime))
+                    Logger.addData(dataTable, modelData.key, editDialog.value, editDialog.annotation, timestamp)
+
+                    /* Break the bindings for now.
+                     * TODO: use a real modifiable data model */
+                    valueLabel.text = editDialog.value
+                    annotationLabel.text = editDialog.annotation
+                    timestampLabel.text = timestamp
                 })
             }
 
             Row {
-                id: itemRow
-
-                anchors.verticalCenter: parent.verticalCenter
                 x: Theme.horizontalPageMargin
                 height: Theme.itemSizeMedium
                 spacing: Theme.paddingMedium
+                anchors.verticalCenter: parent.verticalCenter
 
                 Column {
                     width: dataItem.width - 2 * parent.x - valueLabel.width - parent.spacing
                     anchors.verticalCenter: parent.verticalCenter
 
                     Label {
-                        text: timestamp
+                        id: timestampLabel
+
+                        text: modelData.timestamp
                         width: parent.width
                         truncationMode: TruncationMode.Fade
                     }
 
                     Label {
-                        text: annotation
+                        id: annotationLabel
+
+                        text: modelData.annotation
                         width: parent.width
                         truncationMode: TruncationMode.Fade
                         visible: text !== ""
@@ -118,11 +123,16 @@ Page {
                     id: valueLabel
 
                     anchors.verticalCenter: parent.verticalCenter
-                    text: value
+                    text: modelData.value
                     horizontalAlignment: Text.AlignRight
                     font.pixelSize: Theme.fontSizeExtraLarge
                 }
             }
         }
+    }
+
+    ViewPlaceholder {
+        enabled: dataListView.count === 0
+        text: qsTr("No data")
     }
 }

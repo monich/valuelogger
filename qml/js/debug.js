@@ -3,4 +3,4 @@
 
 var enabled = ValueLogger.DebugLog.enabled
 
-var log = enabled ? console.log : function(){};
+var log = enabled ? console.log : function() {}

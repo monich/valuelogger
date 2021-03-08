@@ -12,158 +12,136 @@ ApplicationWindow {
     property var plotColors:[ "#ffffff", "#ff0080", "#ff8000", "#ffff00", "#00ff00",
                               "#00ff80", "#00ffff", "#0000ff", "#8000ff", "#ff00ff" ]
 
-    property int lastDataAddedIndex: -1
-
-    property bool plotDraggingActive : false
-
-
     initialPage: Component {
         Valuelogger {
             allowedOrientations: valuelogger.allowedOrientations
+            onPlotSelected: valuelogger.plotSelected(PageStackAction.Animated)
         }
     }
 
     cover: Component {
-        CoverPage { }
+        CoverPage {
+            onAddValue: {
+                valuelogger.addValue()
+                valuelogger.activate()
+            }
+            onPlotSelected: {
+                popAll()
+                if (valuelogger.plotSelected(PageStackAction.Immediate)) {
+                    valuelogger.activate()
+                }
+            }
+        }
     }
 
-    property string coverIconLeft: "image://theme/icon-cover-new"
-    property string coverIconRight: "../icon-cover-plot.png"
-
-    function getBottomPageId() {
-        return pageStack.find( function(page) {
-            return (page._depth === 0)
-        })
+    function popAll() {
+        /* Remove all except bottom page */
+        Debug.log("stack depth", pageStack.depth)
+        while (pageStack.depth > 1) {
+            pageStack.pop(null, PageStackAction.Immediate)
+            Debug.log("stack depth", pageStack.depth)
+        }
     }
 
-    function coverLeftClicked() {
-        if ((lastDataAddedIndex != -1) && (lastDataAddedIndex < parameterList.count)) {
-            Debug.log("Adding value to index", lastDataAddedIndex)
+    function addValue() {
+        if (Logger.defaultParameterIndex >= 0) {
+            var par = Logger.get(Logger.defaultParameterIndex)
+            Debug.log("Adding", par.name,"value")
 
-            pageStack.pop(getBottomPageId(), PageStackAction.Immediate)
-            /* Remove all except bottom page, Thansk for Acce:
-             * https://together.jolla.com/question/44103/how-to-remove-all-except-bottom-page-from-pagestack/#post-id-44117
-             */
+            popAll()
 
             var dialog
             dialog = pageStack.push(Qt.resolvedUrl("pages/AddValue.qml"), {
                 "allowedOrientations": allowedOrientations,
-                "parameterName": parameterList.get(lastDataAddedIndex).parName,
-                "parameterDescription": parameterList.get(lastDataAddedIndex).parDescription
+                "parameterName": par.name,
+                "parameterDescription": par.description
             }, PageStackAction.Immediate)
 
-            if (parameterList.get(lastDataAddedIndex).pairedTable !== "") {
+            var paired
+            if (par.pairedtable) {
                 Debug.log("this is a paired parameter")
-                var paired_parName = "ERROR"
-                var paired_parDescription = "ERROR"
-
-                for (var i=0; i<parameterList.count; i++) {
-                    var tmp = parameterList.get(i)
-                    if (tmp.dataTable === parameterList.get(lastDataAddedIndex).pairedTable) {
-                        paired_parName = tmp.parName
-                        paired_parDescription = tmp.parDescription
-                        Debug.log("found", tmp.parName, tmp.parDescription)
+                for (var i = 0; i < Logger.count; i++) {
+                    var par2 = Logger.get(i)
+                    if (par2.datatable === par.pairedtable) {
+                        paired = par2
+                        Debug.log("found", par2.name, par2.description)
                         break
                     }
                 }
+            }
 
+            if (paired) {
                 var pairdialog = pageStack.pushAttached(Qt.resolvedUrl("pages/AddValue.qml"), {
                     "allowedOrientations": allowedOrientations,
                     "nowDate": dialog.nowDate,
                     "nowTime": dialog.nowTime,
-                    "parameterName": paired_parName,
-                    "parameterDescription": paired_parDescription,
+                    "parameterName": paired.name,
+                    "parameterDescription": paired.description,
                     "paired": true
                 })
 
                 pairdialog.accepted.connect(function() {
-                    Debug.log("paired dialog accepted")
-                    Debug.log(" value is", pairdialog.value)
-                    Debug.log(" annotation is", pairdialog.annotation)
-                    Debug.log(" date is", pairdialog.nowDate)
-                    Debug.log(" time is", pairdialog.nowTime)
+                    var time = dialog.nowDate + " " + dialog.nowTime
+                    var pairedtime = pairdialog.nowDate + " " + pairdialog.nowTime
 
-                    Logger.addData(parameterList.get(lastDataAddedIndex).pairedTable, "", pairdialog.value, pairdialog.annotation, pairdialog.nowDate + " " + pairdialog.nowTime)
+                    Debug.log("paired dialog accepted")
+                    Debug.log(" value", dialog.value)
+                    Debug.log(" annotation", dialog.annotation)
+                    Debug.log(" time", time)
+                    Debug.log("  paired value", pairdialog.value)
+                    Debug.log("  paired annotation", pairdialog.annotation)
+                    Debug.log("  paired time", pairedtime)
+
+                    Logger.addData(par.datatable, "", dialog.value, dialog.annotation, time)
+                    Logger.addData(par.pairedtable, "", pairdialog.value, pairdialog.annotation, pairedtime)
                     valuelogger.deactivate()
                 })
+            } else {
+                dialog.accepted.connect(function() {
+                    var time = dialog.nowDate + " " + dialog.nowTime
 
-                pairdialog.rejected.connect(function() {
-                    Debug.log("Dialog rejected")
+                    Debug.log("dialog accepted")
+                    Debug.log(" value", dialog.value)
+                    Debug.log(" annotation", dialog.annotation)
+                    Debug.log(" time", time)
+
+                    Logger.addData(par.datatable, "", dialog.value, dialog.annotation, time)
                     valuelogger.deactivate()
                 })
             }
 
-            dialog.accepted.connect(function() {
-                Debug.log("dialog accepted")
-                Debug.log(" value is", dialog.value)
-                Debug.log(" annotation is", dialog.annotation)
-                Debug.log(" date is", dialog.nowDate)
-                Debug.log(" time is", dialog.nowTime)
-
-                Logger.addData(parameterList.get(lastDataAddedIndex).dataTable, "", dialog.value, dialog.annotation, dialog.nowDate + " " + dialog.nowTime)
-
-                if (parameterList.get(lastDataAddedIndex).pairedTable === "")
-                    valuelogger.deactivate()
-            })
             dialog.rejected.connect(function() {
                 Debug.log("Dialog rejected")
                 valuelogger.deactivate()
             })
+        }
+    }
 
-            valuelogger.activate()
+    function plotSelected(operationType) {
+        if (Logger.count > 0) {
+            Debug.log(Logger.count, "item(s) in list.")
+
+            var l = []
+            var parInfo = []
+
+            for (var i = 0; i < Logger.count; i++) {
+                var par = Logger.get(i)
+                if (par.visualize) {
+                    var data = Logger.readData(par.datatable)
+                    Debug.log("showing", data.length,"item(s) from", par.name)
+                    parInfo.push({"name": par.name, "plotcolor": par.plotcolor})
+                    l.push(data)
+                }
+            }
+
+            pageStack.push(Qt.resolvedUrl("pages/DrawData.qml"), {
+                "allowedOrientations": allowedOrientations,
+                "dataList": l,
+                "parInfo": parInfo
+            }, operationType)
+            return true
         } else {
-            Debug.log("This should never happen")
+            return false
         }
-    }
-
-    function coverRightClicked() {
-        Debug.log("showing data from", parameterList.get(lastDataAddedIndex).parName)
-
-        var l = []
-
-        parInfo.clear()
-        parInfo.append({"name": parameterList.get(lastDataAddedIndex).parName,
-                        "plotcolor": parameterList.get(lastDataAddedIndex).plotcolor})
-        l.push(Logger.readData(parameterList.get(lastDataAddedIndex).dataTable))
-
-        pageStack.pop(getBottomPageId(), PageStackAction.Immediate)
-        pageStack.push(Qt.resolvedUrl("pages/DrawData.qml"), {
-            "allowedOrientations": allowedOrientations,
-            "dataList": l,
-            "parInfo": parInfo
-        }, PageStackAction.Immediate)
-
-        valuelogger.activate()
-    }
-
-    Component.onCompleted: {
-        var tmp = Logger.readParameters()
-
-        for (var i=0 ; i<tmp.length; i++) {
-            var par = tmp[i]
-            var name = par["name"]
-            var plotcolor = par["plotcolor"]
-
-            Debug.log(i, "=", name, "is", plotcolor)
-            parameterList.append({
-                "parName": name,
-                "parDescription": par["description"],
-                "plotcolor": plotcolor,
-                "dataTable": par["datatable"],
-                "pairedTable": par["pairedtable"],
-                "visualize": (par["visualize"] == 1 ? true : false),
-                "visualizeChanged": false
-            })
-        }
-    }
-
-    ListModel {
-        id: parameterList
-    }
-
-    ListModel {
-        id: parInfo
     }
 }
-
-

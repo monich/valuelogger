@@ -1,35 +1,36 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+
 import "../js/debug.js" as Debug
 import "../components"
 
 Dialog {
     id: addValuePage
 
-    canAccept: false
+    canAccept: valueField.text.length > 0
 
-    property string parameterName: "value"
-    property string parameterDescription: "value"
-    property string pageTitle: "value"  /* Add or Edit*/
-    property string value: "value"
-    property string annotation: "annotation"
-    property string nowDate: "value"
-    property string nowTime: "value"
-    property bool paired: false
+    property string parameterName
+    property string parameterDescription
+    property string pageTitle /* Add or Edit*/
+    property string value
+    property alias annotation: annotationField.text
+    property string nowDate
+    property string nowTime
+    property bool paired
 
     Component.onCompleted: {
         // Check are we adding new, or editing existing one
-        if (nowDate == "value" && nowTime == "value" && value == "value") {
+        if (nowDate === "" && nowTime === "") {
             var tmp = new Date()
             updateDateTime(Qt.formatDateTime(tmp, "yyyy-MM-dd"), Qt.formatDateTime(tmp, "hh:mm:ss"))
             pageTitle = qsTr("Add")
         } else {
             if (nowTime == "") nowTime = "00:00:00"
             updateDateTime(nowDate, nowTime)
-            valueField.text = (value == "value") ? "" : value
-            annotationField.text = (value == "value") ? "" : annotation
-            pageTitle = (value == "value") ? qsTr("Add") : qsTr("Edit")
+            valueField.text = value
+            pageTitle = qsTr("Edit")
         }
+        valueField.textChanged.connect(function() { value = valueField.text.replace(",",".") })
     }
 
     function updateDateTime(newDate, newTime) {
@@ -40,13 +41,6 @@ Dialog {
 
         dateNow.text = nowDate + " " + nowTime
         Debug.log("dateNow", dateNow.text)
-    }
-
-    onDone: {
-        if (result === DialogResult.Accepted) {
-            value = valueField.text.replace(",",".")
-            annotation = annotationField.text
-        }
     }
 
     DialogHeader {
@@ -216,7 +210,6 @@ Dialog {
                 font.pixelSize: Theme.fontSizeExtraLarge
                 color: Theme.primaryColor
                 placeholderText: qsTr("Enter new value here")
-                onTextChanged: addValuePage.canAccept = text.length > 0
                 inputMethodHints: Qt.ImhDigitsOnly
                 validator: RegExpValidator { regExp: /-?\d+([,|\.]?\d+)?/ }
                 EnterKey.enabled: text.length > 0
