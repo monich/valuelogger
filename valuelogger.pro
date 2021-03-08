@@ -35,7 +35,7 @@ OTHER_FILES += qml/valuelogger.qml \
     qml/icon-cover-plot.png \
     translations/harbour-valuelogger.ts
 
-CONFIG += sailfishapp_i18n
+CONFIG += sailfishapp_i18n sailfishapp_i18n_unfinished
 TRANSLATIONS += \
     translations/harbour-valuelogger_fi.ts \
     translations/harbour-valuelogger_sv.ts

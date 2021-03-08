@@ -79,6 +79,60 @@
     </message>
 </context>
 <context>
+    <name>MainPage</name>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="39"/>
+        <source>About...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="49"/>
+        <source>Export to CSV</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="50"/>
+        <source>Exported to:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="54"/>
+        <source>Add new parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="88"/>
+        <source>Show raw data</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="92"/>
+        <location filename="../qml/pages/MainPage.qml" line="130"/>
+        <source>Edit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="96"/>
+        <source>Pair</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="100"/>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="145"/>
+        <source>Deleting</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/pages/MainPage.qml" line="297"/>
+        <source>Plot selected</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>NewParameter</name>
     <message>
         <location filename="../qml/pages/NewParameter.qml" line="13"/>
@@ -146,60 +200,6 @@
     <message>
         <location filename="../qml/pages/ShowData.qml" line="136"/>
         <source>Empty</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>Valuelogger</name>
-    <message>
-        <location filename="../qml/pages/Valuelogger.qml" line="39"/>
-        <source>About...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Valuelogger.qml" line="49"/>
-        <source>Export to CSV</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Valuelogger.qml" line="50"/>
-        <source>Exported to:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Valuelogger.qml" line="54"/>
-        <source>Add new parameter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Valuelogger.qml" line="88"/>
-        <source>Show raw data</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Valuelogger.qml" line="92"/>
-        <location filename="../qml/pages/Valuelogger.qml" line="130"/>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Valuelogger.qml" line="96"/>
-        <source>Pair</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Valuelogger.qml" line="100"/>
-        <source>Remove</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Valuelogger.qml" line="145"/>
-        <source>Deleting</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../qml/pages/Valuelogger.qml" line="297"/>
-        <source>Plot selected</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

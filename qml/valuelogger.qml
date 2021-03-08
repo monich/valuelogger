@@ -13,7 +13,7 @@ ApplicationWindow {
                               "#00ff80", "#00ffff", "#0000ff", "#8000ff", "#ff00ff" ]
 
     initialPage: Component {
-        Valuelogger {
+        MainPage {
             allowedOrientations: valuelogger.allowedOrientations
             onPlotSelected: valuelogger.plotSelected(PageStackAction.Animated)
         }
