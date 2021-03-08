@@ -133,6 +133,6 @@ Page {
 
     ViewPlaceholder {
         enabled: dataListView.count === 0
-        text: qsTr("No data")
+        text: qsTr("Empty")
     }
 }

@@ -16,17 +16,6 @@ CONFIG(debug, debug|release) {
     DEFINES += DEBUG LOG_DBG
 }
 
-message($${DEFINES})
-
-#system(lupdate qml -ts $$PWD/i18n/*.ts)
-system(lrelease $$PWD/i18n/*.ts)
-
-i18n.path = /usr/share/harbour-valuelogger/i18n
-i18n.files = i18n/translations_fi.qm \
-             i18n/translations_sv.qm
-
-INSTALLS += i18n
-
 SOURCES += src/valuelogger.cpp \
         src/graph.cpp \
         src/logger.cpp
@@ -43,12 +32,13 @@ OTHER_FILES += qml/valuelogger.qml \
     qml/components/*.qml \
     qml/images/*.svg \
     qml/js/*.js \
-    i18n/translations_fi.ts \
-    i18n/translations_sv.ts \
-    qml/icon-cover-plot.png
+    qml/icon-cover-plot.png \
+    translations/harbour-valuelogger.ts
 
-TRANSLATIONS += i18n/translations_fi.ts \
-                i18n/translations_sv.ts
+CONFIG += sailfishapp_i18n
+TRANSLATIONS += \
+    translations/harbour-valuelogger_fi.ts \
+    translations/harbour-valuelogger_sv.ts
 
 # Icons
 ICON_SIZES = 86 108 128 256
