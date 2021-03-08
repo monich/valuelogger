@@ -527,18 +527,18 @@ void Logger::editParameterAt(int row, QString name, QString description, bool vi
                 emit dataChanged(idx, idx, roles);
 
                 /* Check the position */
-                if (row > 0 && parameters.at(row - 1).toMap().value(NAME) > name) {
+                if (row > 0 && parameters.at(row - 1).toMap().value(NAME).toString() > name) {
                     /* Move the row down */
                     int to = row - 1;
-                    while (to > 0 && parameters.at(to - 1).toMap().value(NAME) > name) to--;
+                    while (to > 0 && parameters.at(to - 1).toMap().value(NAME).toString() > name) to--;
                     DBG("Moving" << name << row << "=>" << to);
                     beginMoveRows(QModelIndex(), row, row, QModelIndex(), to);
                     parameters.move(row, to);
                     endMoveRows();
-                } else if ((row + 1) < rowCount() && parameters.at(row + 1).toMap().value(NAME) < name) {
+                } else if ((row + 1) < rowCount() && parameters.at(row + 1).toMap().value(NAME).toString() < name) {
                     /* Move the row up */
                     int to = row + 1;
-                    while ((to + 1) < rowCount() && parameters.at(to + 1).toMap().value(NAME) < name) to++;
+                    while ((to + 1) < rowCount() && parameters.at(to + 1).toMap().value(NAME).toString() < name) to++;
                     DBG("Moving" << name << row << "=>" << to);
                     beginMoveRows(QModelIndex(), row, row, QModelIndex(), to + 1);
                     parameters.move(row, to);
