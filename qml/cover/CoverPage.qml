@@ -8,6 +8,8 @@ CoverBackground {
     signal addValue()
     signal plotSelected()
 
+    readonly property bool darkOnLight: 'colorScheme' in Theme && Theme.colorScheme === Theme.DarkOnLight
+
     Image {
         id: icon
 
@@ -43,7 +45,7 @@ CoverBackground {
             onTriggered: addValue()
         }
         CoverAction {
-            iconSource: "../icon-cover-plot.png"
+            iconSource: Qt.resolvedUrl("../images/" + (darkOnLight ? "icon-cover-plot-dark.svg" : "icon-cover-plot.svg"))
             onTriggered: cover.plotSelected()
         }
     }

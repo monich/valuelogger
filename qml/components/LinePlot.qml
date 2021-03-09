@@ -40,6 +40,7 @@ Item {
     property date xstart: new Date()
     property date xend: new Date()
 
+    readonly property int thinLine: Math.max(2, Math.floor(Theme.paddingSmall/3))
     readonly property int fontSize: Theme.fontSizeTiny
     readonly property bool fontBold: true
 
@@ -156,7 +157,6 @@ Item {
         anchors.right: parent.right
         anchors.rightMargin: 0
         anchors.top: parent.top
-        text: "unk"
     }
 
     Text {
@@ -167,31 +167,26 @@ Item {
         anchors.left: parent.left
         anchors.top: parent.top
         horizontalAlignment: Text.AlignRight
-        text: "unk"
     }
 
     Text {
         id: valueMax
         color: Theme.primaryColor
-        width: 50
         font.pixelSize: fontSize
         font.bold: fontBold
         anchors.left: parent.left
         anchors.leftMargin: Theme.paddingSmall
         anchors.top: xEnd.bottom
-        text: "unk"
     }
 
     Text {
         id: valueMin
         color: Theme.primaryColor
-        width: 50
         font.pixelSize: fontSize
         font.bold: fontBold
         anchors.left: parent.left
         anchors.leftMargin: Theme.paddingSmall
         anchors.bottom: parent.bottom
-        text: "unk"
     }
 
     Repeater {
@@ -204,7 +199,6 @@ Item {
             font.bold: fontBold
             anchors.left: parent.left
             anchors.leftMargin: Theme.paddingSmall
-            text: "unk"
             y: valueMin.y + (index+1)*(valueMax.y + valueMax.height - valueMin.y)/5
             z: 10
         }
@@ -264,33 +258,45 @@ Item {
         }
     }
 
-    Repeater {
-        model: 7
-        delegate: Rectangle {
-            x: index * parent.width/6
-            width: 1
-            anchors.top: valueMax.bottom
-            anchors.bottom: valueMin.top
-            opacity: 0.3
+    ShaderEffectSource {
+        id: grid
+        width: parent.width
+        anchors {
+            top: valueMax.bottom
+            bottom: valueMin.top
         }
-    }
-
-    Repeater {
-        model: 6
-        delegate: Rectangle {
-            y: valueMin.y + index*(valueMax.y + valueMax.height - valueMin.y)/5 + height
-            width: parent.width
-            height: 1
-            opacity: 0.3
+        opacity: 0.3
+        sourceItem: Item {
+            width: grid.width
+            height: grid.height
+            Repeater {
+                model: 7
+                delegate: Rectangle {
+                    x: Math.round(index * (parent.width - width)/6)
+                    width: thinLine
+                    height: parent.height
+                    color: Theme.primaryColor
+                }
+            }
+            Repeater {
+                model: 6
+                delegate: Rectangle {
+                    y: Math.round(index * (parent.height - height)/5)
+                    width: parent.width
+                    height: thinLine
+                    color: Theme.primaryColor
+                }
+            }
         }
     }
 
     Item {
         id: canvas
         width: parent.width
-        anchors.top: valueMax.bottom
-        anchors.bottom: valueMin.top
-
+        anchors {
+            top: valueMax.bottom
+            bottom: valueMin.top
+        }
         PinchArea {
             id: pinchZoom
             anchors.fill: canvas
@@ -305,37 +311,28 @@ Item {
 
             property bool scaleInX
 
-            onPinchFinished:
-            {
+            onPinchFinished: {
             }
-            onPinchStarted:
-            {
+            onPinchStarted: {
                 iX = distanceX(pinch.point1, pinch.point2)
                 iY = distanceY(pinch.point1, pinch.point2)
 
                 scaleInX = (iX > iY)
             }
-            onPinchUpdated:
-            {
-                if (pinch.point1 !== pinch.point2)
-                {
+            onPinchUpdated: {
+                if (pinch.point1 !== pinch.point2) {
                     lv1 = pinch.point1
                     lv2 = pinch.point2
                 }
-
-                if (scaleInX)
-                {
+                if (scaleInX) {
                     var dX = distanceX(lv1, lv2) - iX
                     iX = distanceX(lv1, lv2)
                     deltaX += dX
-                }
-                else
-                {
+                } else {
                     var dY = distanceY(lv1, lv2) - iY
                     iY = distanceY(lv1, lv2)
                     deltaY += dY
                 }
-
                 updateGraph()
             }
 

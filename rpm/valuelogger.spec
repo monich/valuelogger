@@ -17,6 +17,7 @@ URL: https://github.com/monich/valuelogger
 Source0:    %{name}-%{version}.tar.bz2
 
 Requires:   sailfishsilica-qt5 >= 0.10.9
+Requires:   qt5-qtsvg-plugin-imageformat-svg
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Core)

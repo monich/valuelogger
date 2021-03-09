@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+  xmlns:svg="http://www.w3.org/2000/svg"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+  xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+  version="1.1"
+  x="0px"
+  y="0px"
+  viewBox="0 0 32 32"
+  style="enable-background:new 0 0 32 32;"
+  xml:space="preserve"
+  sodipodi:docname="icon-cover-plot.svg"
+  inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <path
+      inkscape:connector-curvature="0"
+      d="M -1.5e-7,-4.9999997e-8 V 32 H 32 V 30 H 23.998047 V 21.001953 H 32 V 19 H 23.998047 V 10.001953 H 32 v -2 H 23.998047 V -4.9999997e-8 h -2 V 8.001953 H 13 V -4.9999997e-8 H 10.998047 V 8.001953 H 1.9999998 V -4.9999997e-8 Z M 1.9999998,10.001953 H 10.998047 V 19 H 1.9999998 Z m 11.0000002,0 h 8.998047 V 19 H 13 Z m -11.0000002,11 H 10.998047 V 30 H 1.9999998 Z m 11.0000002,0 h 8.998047 V 30 H 13 Z"
+      style="fill:#ffffff;fill-opacity:1;opacity:0.4"/>
+  <path
+      d="m 28.195624,2.3749869 c -0.595336,-0.0076 -1.147126,0.292914 -1.437759,0.781493 L 15.998638,20.634678 10.998432,15.14174 C 10.297207,14.376801 9.2888751,14.046735 8.69342,14.887378 l -6.4977982,9.190034 c 0.00145,-0.0076 0,5.547742 0,5.547742 2.5463328,-3.675061 5.1413979,-7.318866 7.7324772,-10.966488 l 5.104043,5.598123 c 0.726932,0.798387 2.073993,0.683111 2.635891,-0.225638 L 29.56948,4.6894569 c 0.647257,-1.011704 -0.118746,-2.302148 -1.373858,-2.314432 z"
+      inkscape:connector-curvature="0"
+      sodipodi:nodetypes="ccccccccccccc"
+      style="fill:#ffffff;fill-opacity:1"/>
+</svg>
