@@ -14,6 +14,14 @@ Page {
 
     signal deleteData(var key)
 
+    SilicaFlickable {
+        anchors.fill: parent
+        ViewPlaceholder {
+            enabled: dataListView.count === 0
+            text: qsTr("Empty")
+        }
+    }
+
     PageHeader {
         id: pageHeader
 
@@ -129,10 +137,5 @@ Page {
                 }
             }
         }
-    }
-
-    ViewPlaceholder {
-        enabled: dataListView.count === 0
-        text: qsTr("Empty")
     }
 }

@@ -183,22 +183,22 @@
 <context>
     <name>ShowData</name>
     <message>
-        <location filename="../qml/pages/ShowData.qml" line="57"/>
+        <location filename="../qml/pages/ShowData.qml" line="65"/>
         <source>Deleting</source>
         <translation>Tar bort</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ShowData.qml" line="43"/>
+        <location filename="../qml/pages/ShowData.qml" line="51"/>
         <source>Edit</source>
         <translation>Redigera</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ShowData.qml" line="47"/>
+        <location filename="../qml/pages/ShowData.qml" line="55"/>
         <source>Remove</source>
         <translation>Ta bort</translation>
     </message>
     <message>
-        <location filename="../qml/pages/ShowData.qml" line="136"/>
+        <location filename="../qml/pages/ShowData.qml" line="21"/>
         <source>Empty</source>
         <translation type="unfinished">Tom</translation>
     </message>
