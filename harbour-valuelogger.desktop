@@ -5,3 +5,5 @@ Name=Value logger
 Icon=harbour-valuelogger
 Exec=harbour-valuelogger
 
+[X-HarbourBackup]
+BackupPathList = .local/share/harbour-valuelogger/
