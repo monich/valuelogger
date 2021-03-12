@@ -57,6 +57,9 @@ public:
 
 int main(int argc, char *argv[])
 {
+    /* Initialise random number generator */
+    qsrand(QDateTime::currentDateTime().toTime_t());
+
     const char *uri = "harbour.valuelogger";
     qmlRegisterType<Graph>(uri, 1, 0, "Graph");
     qmlRegisterSingletonType<Logger>(uri, 1, 0, "Logger", Logger::createSingleton);

@@ -25,10 +25,11 @@ DEALINGS IN THE SOFTWARE.
 #ifndef LOGGER_H
 #define LOGGER_H
 
+#include "database.h"
+
 #include <QColor>
 #include <QString>
 #include <QVariantList>
-#include <QSqlDatabase>
 #include <QAbstractListModel>
 
 class QQmlEngine;
@@ -79,23 +80,14 @@ signals:
     void defaultParameterNameChanged();
 
 private:
-    static QString generateHash(QString sometext);
-
-    bool insertOrReplace(QString datatable, QString name, QString description, bool visualize, QString plotolor, QString pairedtable = QString());
-    bool setPairedTable(QString datatable, QString pairedtable);
-    void deleteParameterEntry(QString datatable);
-    void dropDataTable(QString table);
-    void closeDatabase();
-    void createParameterTable();
-    void createDataTable(QString table);
     int currentVisualizeCount();
     int currentDefaultParameterIndex();
     void updateVisualizeCount();
     void updateDefaultParameter();
 
 private:
+    Database db;
     QVariantList parameters;
-    QSqlDatabase db;
     int visualizeCount;
     int defaultParameterIndex;
     QString defaultParameterName;

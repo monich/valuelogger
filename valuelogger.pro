@@ -16,11 +16,13 @@ CONFIG(debug, debug|release) {
     DEFINES += DEBUG LOG_DBG
 }
 
-SOURCES += src/valuelogger.cpp \
+SOURCES += src/database.cpp \
         src/graph.cpp \
-        src/logger.cpp
+        src/logger.cpp \
+        src/valuelogger.cpp \
 
-HEADERS += src/debuglog.h \
+HEADERS += src/database.h \
+        src/debuglog.h \
         src/graph.h \
         src/logger.h
 

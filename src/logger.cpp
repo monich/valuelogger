@@ -25,13 +25,10 @@ DEALINGS IN THE SOFTWARE.
 #include "logger.h"
 #include "debuglog.h"
 
-#include <QCoreApplication>
-#include <QCryptographicHash>
-#include <QtSql>
-#include <QTime>
 #include <QColor>
 #include <QFile>
 #include <QLocale>
+#include <QStandardPaths>
 
 enum LoggerRole {
     NameRole = Qt::UserRole,
@@ -42,24 +39,7 @@ enum LoggerRole {
     VisualizeRole
 };
 
-#define PARAMETERS_TABLE    "parameters"
-#define PARAMETER_COL       "parameter"    /* TEXT */
-#define DESCRIPTION_COL     "description"  /* TEXT */
-#define VISUALIZE_COL       "visualize"    /* INTEGER */
-#define PLOTCOLOR_COL       "plotcolor"    /* TEXT */
-#define DATATABLE_COL       "datatable"    /* TEXT */
-#define PAIREDTABLE_COL     "pairedtable"  /* TEXT */
-
-#define NAME_ROLE           "name"
-#define DESCRIPTION_ROLE    DESCRIPTION_COL
-#define VISUALIZE_ROLE      VISUALIZE_COL
-#define PLOTCOLOR_ROLE      PLOTCOLOR_COL
-#define DATATABLE_ROLE      DATATABLE_COL
-#define PAIREDTABLE_ROLE    PAIREDTABLE_COL
-
 namespace {
-    const QString DB_NAME;
-
     const QString PARAMETER(PARAMETER_COL);
     const QString NAME(NAME_ROLE);
     const QString DESCRIPTION(DESCRIPTION_ROLE);
@@ -75,29 +55,8 @@ namespace {
 }
 
 Logger::Logger(QObject *parent) :
-    QAbstractListModel(parent),
-    db(QSqlDatabase::addDatabase("QSQLITE"))
+    QAbstractListModel(parent)
 {
-    /* Initialise random number generator */
-    qsrand(QDateTime::currentDateTime().toTime_t());
-
-    /* Open the SQLite database */
-    QDir dbdir(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
-    if (!dbdir.exists()) {
-        dbdir.mkpath(dbdir.path());
-    }
-
-    const QString dbpath(dbdir.absoluteFilePath("valueLoggerDb.sqlite"));
-    DBG(dbpath);
-
-    db.setDatabaseName(dbpath);
-    if (db.open()) {
-        DBG("Open Success");
-    } else {
-        WARN("Open error" << db.lastError().text());
-    }
-
-    createParameterTable();
     parameters = readParameters();
     visualizeCount = currentVisualizeCount();
     defaultParameterIndex = currentDefaultParameterIndex();
@@ -204,110 +163,13 @@ void Logger::updateDefaultParameter()
 }
 
 /*
- * Create table for data storage, each parameter has its own table
- * table name is prefixed with _ to allow number-starting tables
- */
-
-void Logger::createDataTable(QString table)
-{
-    const QString datatable("_" + table);
-    QSqlQuery query(db);
-
-    if (query.exec("CREATE TABLE IF NOT EXISTS " + datatable +
-        " (key TEXT PRIMARY KEY, timestamp TEXT, value TEXT, annotation TEXT)")) {
-        DBG("datatable created" << datatable);
-    } else {
-        WARN("datatable not created" << datatable << ":" << query.lastError());
-    }
-}
-
-/*
- * When parameter is deleted, we need also to drop the datatable connected to it
- */
-
-void Logger::dropDataTable(QString table)
-{
-    const QString datatable("_" + table);
-    QSqlQuery query(db);
-
-    if (query.exec("DROP TABLE IF EXISTS " + datatable)) {
-        DBG("datatable dropped" << datatable);
-    } else {
-        WARN("datatable not dropped" << datatable << ":" << query.lastError());
-    }
-}
-
-/*
- * Parameter table collects parameters to which under data is being logged
- */
-
-void Logger::createParameterTable()
-{
-    QSqlQuery query(db);
-
-    if (query.exec("CREATE TABLE IF NOT EXISTS " PARAMETERS_TABLE " ("
-        PARAMETER_COL " TEXT, " DESCRIPTION_COL " TEXT, "
-        VISUALIZE_COL " INTEGER, " PLOTCOLOR_COL " TEXT, "
-        DATATABLE_COL " TEXT PRIMARY KEY, " PAIREDTABLE_COL " TEXT)")) {
-        DBG("parameter table created");
-    } else {
-        WARN("parameter table not created :" << query.lastError());
-    }
-}
-
-/*
- * Set paired table
- */
-bool Logger::setPairedTable(QString datatable, QString pairedtable)
-{
-    QSqlQuery pairedTableAtQuery("ALTER TABLE " PARAMETERS_TABLE " ADD COLUMN " PAIREDTABLE_COL " TEXT", db);
-
-    if (pairedTableAtQuery.exec()) {
-        DBG("column pairedtable added succesfully");
-    }
-
-    QSqlQuery pairQuery("UPDATE " PARAMETERS_TABLE " SET " PAIREDTABLE_COL " = ? WHERE " DATATABLE_COL " = ?", db);
-    pairQuery.addBindValue(pairedtable);
-    pairQuery.addBindValue(datatable);
-
-    if (pairQuery.exec()) {
-        DBG("paired table set" << datatable << "--" << pairedtable);
-        return true;
-    } else {
-        WARN("paring failed" << datatable << "--" << pairedtable << ":" << pairQuery.lastError());
-        return false;
-    }
-}
-
-/*
  * Add new data entry to a parameter
  * key = "" to generate new
  */
 
 QString Logger::addData(QString table, QString key, QString value, QString annotation, QString timestamp)
 {
-    const QString datatable("_" + table);
-    DBG("Adding" << value << "(" << timestamp << ")" << annotation << "to" << datatable);
-
-    QSqlQuery addColQuery(db);
-
-    if (addColQuery.exec("ALTER TABLE " + datatable + " ADD COLUMN annotation TEXT")) {
-        DBG("column annotation added succesfully");
-    }
-
-    QSqlQuery query("INSERT OR REPLACE INTO " + datatable + " (key,timestamp,value,annotation) VALUES (?,?,?,?)", db);
-    const QString objHash(key.isEmpty() ? generateHash(value) : key);
-    query.addBindValue(objHash);
-    query.addBindValue(timestamp);
-    query.addBindValue(value);
-    query.addBindValue(annotation);
-
-    if (query.exec()) {
-        DBG("data" << (key.isEmpty() ? "added" : "edited") << timestamp << "=" << value << "+" << annotation);
-    } else {
-        WARN("failed" << timestamp << "=" << value << ":" << query.lastError());
-    }
-    return objHash;
+    return db.addData(table, key, value, annotation, timestamp);
 }
 
 /*
@@ -316,27 +178,7 @@ QString Logger::addData(QString table, QString key, QString value, QString annot
 
 QVariantList Logger::readData(QString table)
 {
-    const QString datatable("_" + table);
-    QSqlQuery query(db);
-    QVariantList list;
-
-    if (query.exec("SELECT * FROM " + datatable + " ORDER BY timestamp ASC")) {
-        while (query.next()) {
-            const QSqlRecord record(query.record());
-            QVariantMap map;
-
-            map.insert(KEY, record.value(KEY));
-            map.insert(TIMESTAMP, record.value(TIMESTAMP));
-            map.insert(VALUE, record.value(VALUE));
-            map.insert(ANNOTATION, record.value(ANNOTATION));
-
-            list.append(map);
-        }
-    } else {
-        WARN("readData" << datatable << "failed" << query.lastError());
-    }
-
-    return list;
+    return db.readData(table);
 }
 
 /*
@@ -355,16 +197,7 @@ QVariantMap Logger::get(int row)
 
 void Logger::deleteData(QString table, QString key)
 {
-    const QString datatable("_" + table);
-
-    QSqlQuery query("DELETE FROM " + datatable + " WHERE key = ?", db);
-    query.addBindValue(key);
-
-    if (query.exec()) {
-        DBG("deleted" << key << "from" << datatable);
-    } else {
-        WARN("Failed to delete" << key << "from" << datatable << ":" << query.lastError());
-    }
+    db.deleteData(table, key);
 }
 
 /*
@@ -373,84 +206,16 @@ void Logger::deleteData(QString table, QString key)
 
 QVariantList Logger::readParameters()
 {
-    QSqlQuery query("SELECT * FROM " PARAMETERS_TABLE " ORDER BY " PARAMETER_COL " ASC", db);
-    QVariantList list;
-
-    if (query.exec()) {
-        while (query.next()) {
-            const QSqlRecord record(query.record());
-            QVariantMap map;
-
-            map.insert(NAME, record.value(PARAMETER));
-            map.insert(DESCRIPTION, record.value(DESCRIPTION));
-            map.insert(VISUALIZE, record.value(VISUALIZE).toInt() > 0);
-            map.insert(PLOTCOLOR, record.value(PLOTCOLOR));
-            map.insert(DATATABLE, record.value(DATATABLE));
-            map.insert(PAIREDTABLE, record.value(PAIREDTABLE));
-
-            list.append(map);
-        }
-    } else {
-        WARN("readParameters failed" << query.lastError());
-    }
-
-    return list;
-}
-
-/*
- * Generates md5 of some data
- */
-
-QString Logger::generateHash(QString sometext)
-{
-    int rnd = qrand();
-
-    QString tmp = QString("%1 %2 %3").arg(sometext).arg(rnd).arg(QTime::currentTime().hour());
-
-    return QString(QCryptographicHash::hash((tmp.toUtf8()),QCryptographicHash::Md5).toHex());
-}
-
-/*
- * Add created parameter entry to parameter table
- *
- * datatable name is md5 of timestamp + random number
- */
-
-bool Logger::insertOrReplace(QString datatable, QString name, QString description, bool visualize, QString plotColor, QString pairedtable)
-{
-    QSqlQuery addColQuery("ALTER TABLE " PARAMETERS_TABLE " ADD COLUMN " PAIREDTABLE_COL " TEXT", db);
-
-    if (addColQuery.exec()) {
-        DBG("column pairedtable added succesfully");
-    }
-
-    QSqlQuery query("INSERT OR REPLACE INTO " PARAMETERS_TABLE " ("
-        PARAMETER_COL "," DESCRIPTION_COL "," VISUALIZE_COL ","
-        PLOTCOLOR_COL "," DATATABLE_COL "," PAIREDTABLE_COL ") "
-        "VALUES (?,?,?,?,?,?)", db);
-    query.addBindValue(name);
-    query.addBindValue(description);
-    query.addBindValue(visualize ? 1:0 ); // store bool as integer
-    query.addBindValue(plotColor);
-    query.addBindValue(datatable);
-    query.addBindValue(pairedtable);
-
-    if (query.exec()) {
-        createDataTable(datatable);
-        return true;
-    } else {
-        WARN("insert or replace failed" << name << ":" << query.lastError());
-        return false;
-    }
+    return db.readParameters();
 }
 
 QString Logger::addParameter(QString name, QString description, bool visualize, QColor plotcolor)
 {
     DBG("Adding entry:" << name << "-" << description << "color" << plotcolor);
 
-    const QString datatable(generateHash(name));
     const QString colorName(plotcolor.name());
-    if (insertOrReplace(datatable, name, description, visualize, colorName)) {
+    const QString datatable(db.addParameter(name, description, visualize, colorName));
+    if (!datatable.isEmpty()) {
         DBG("parameter added:" << name);
 
         QVariantMap newpar;
@@ -476,10 +241,8 @@ QString Logger::addParameter(QString name, QString description, bool visualize, 
 
         updateVisualizeCount();
         updateDefaultParameter();
-        return datatable;
-    } else {
-        return QString();
     }
+    return datatable;
 }
 
 void Logger::editParameterAt(int row, QString name, QString description, bool visualize, QColor plotcolor, QString pairedtable)
@@ -521,7 +284,7 @@ void Logger::editParameterAt(int row, QString name, QString description, bool vi
         }
 
         if (!roles.isEmpty()) {
-            if (insertOrReplace(par.value(DATATABLE).toString(), name, description, visualize, colorName, pairedtable)) {
+            if (db.insertOrReplace(par.value(DATATABLE).toString(), name, description, visualize, colorName, pairedtable)) {
                 parameters.replace(row, par);
                 const QModelIndex idx(index(row));
                 emit dataChanged(idx, idx, roles);
@@ -555,22 +318,6 @@ void Logger::editParameterAt(int row, QString name, QString description, bool vi
     }
 }
 
-/*
- * Delete one parameter, deletes also associated datatable
- */
-
-void Logger::deleteParameterEntry(QString datatable)
-{
-    QSqlQuery query = QSqlQuery("DELETE FROM " PARAMETERS_TABLE " WHERE " DATATABLE_COL " = ?", db);
-    query.addBindValue(datatable);
-
-    if (!query.exec()) {
-        WARN("deleteParameterEntry failed");
-    }
-
-    dropDataTable(datatable);
-}
-
 void Logger::deleteParameterAt(int row)
 {
     if (row >= 0 && row < parameters.count()) {
@@ -578,7 +325,7 @@ void Logger::deleteParameterAt(int row)
         const QString dataTable(deleted.value(DATATABLE).toString());
 
         DBG("Deleting entry at" << row << ":" << deleted.value(NAME).toString());
-        deleteParameterEntry(dataTable);
+        db.deleteParameter(dataTable);
 
         beginRemoveRows(QModelIndex(), row, row);
         parameters.removeAt(row);
@@ -587,7 +334,7 @@ void Logger::deleteParameterAt(int row)
         for (int i = parameters.count() - 1; i >= 0; i--) {
             const QVariantMap par(parameters.at(i).toMap());
             if (par.value(PAIREDTABLE).toString() == dataTable) {
-                if (setPairedTable(par.value(DATATABLE).toString(), QString())) {
+                if (db.setPairedTable(par.value(DATATABLE).toString(), QString())) {
                     QVector<int> roles;
                     roles.append(PairedTableRole);
                     const QModelIndex idx(index(i));
@@ -599,13 +346,6 @@ void Logger::deleteParameterAt(int row)
         updateVisualizeCount();
         updateDefaultParameter();
     }
-}
-
-void Logger::closeDatabase()
-{
-    DBG("Closing db");
-    db.removeDatabase(DB_NAME);
-    db.close();
 }
 
 /*
@@ -657,7 +397,6 @@ QString Logger::exportToCSV()
 
 Logger::~Logger()
 {
-    closeDatabase();
 }
 
 /* QAbstractItemModel */
@@ -719,7 +458,7 @@ bool Logger::setData(const QModelIndex& idx, const QVariant& value, int role)
                 par.insert(VISUALIZE, bval);
                 QVector<int> roles;
                 roles.append(role);
-                if (insertOrReplace(par.value(DATATABLE).toString(),
+                if (db.insertOrReplace(par.value(DATATABLE).toString(),
                     par.value(NAME).toString(), par.value(DESCRIPTION).toString(),
                     bval, par.value(PLOTCOLOR).toString(),
                     par.value(PAIREDTABLE).toString())) {
@@ -738,7 +477,7 @@ bool Logger::setData(const QModelIndex& idx, const QVariant& value, int role)
                 DBG("Paired table at" << row << "=>" << sval);
                 QVector<int> roles;
                 roles.append(role);
-                if (setPairedTable(par.value(DATATABLE).toString(), sval)) {
+                if (db.setPairedTable(par.value(DATATABLE).toString(), sval)) {
                     par.insert(PAIREDTABLE, sval);
                     parameters.replace(row, par);
                     emit dataChanged(idx, idx, roles);
