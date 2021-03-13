@@ -110,14 +110,8 @@ Page {
                         "allowedOrientations": allowedOrientations,
                         "parName": parName,
                         "parDescription": parDescription,
-                        "dataList": Logger.readData(model.datatable),
                         "dataTable": model.datatable
                     })
-
-                    dialog.deleteData.connect(function(key) {
-                        Logger.deleteData(model.datatable, key)
-                        dialog.dataList = Logger.readData(model.datatable)
-                    });
                 }
 
                 function editParameter() {
@@ -260,8 +254,8 @@ Page {
                                         Debug.log("  paired annotation", pairdialog.annotation)
                                         Debug.log("  paired time", pairedtime)
 
-                                        Logger.addData(model.datatable, "", dialog.value, dialog.annotation, time)
-                                        Logger.addData(model.pairedtable, "", pairdialog.value, pairdialog.annotation, pairedtime)
+                                        Logger.addData(model.datatable, dialog.value, dialog.annotation, time)
+                                        Logger.addData(model.pairedtable, pairdialog.value, pairdialog.annotation, pairedtime)
                                     })
                                 } else {
                                     dialog.accepted.connect(function() {
@@ -272,7 +266,7 @@ Page {
                                         Debug.log(" date", dialog.nowDate)
                                         Debug.log(" time", dialog.nowTime)
 
-                                        Logger.addData(model.datatable, "", dialog.value, dialog.annotation, time)
+                                        Logger.addData(model.datatable, dialog.value, dialog.annotation, time)
                                     })
                                 }
                             }

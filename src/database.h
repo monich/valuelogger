@@ -28,12 +28,19 @@ DEALINGS IN THE SOFTWARE.
 #include <QVariantList>
 #include <QString>
 
-#define PARAMETER_COL       "parameter"    /* TEXT */
-#define DESCRIPTION_COL     "description"  /* TEXT */
-#define VISUALIZE_COL       "visualize"    /* INTEGER */
-#define PLOTCOLOR_COL       "plotcolor"    /* TEXT */
-#define DATATABLE_COL       "datatable"    /* TEXT */
-#define PAIREDTABLE_COL     "pairedtable"  /* TEXT */
+/* Parameter table */
+#define PARAMETER_COL       "parameter"     /* TEXT */
+#define DESCRIPTION_COL     "description"   /* TEXT */
+#define VISUALIZE_COL       "visualize"     /* INTEGER */
+#define PLOTCOLOR_COL       "plotcolor"     /* TEXT */
+#define DATATABLE_COL       "datatable"     /* TEXT */
+#define PAIREDTABLE_COL     "pairedtable"   /* TEXT */
+
+/* Data table */
+#define DATA_KEY_COL        "key"           /* TEXT */
+#define DATA_TIMESTAMP_COL  "timestamp"     /* TEXT */
+#define DATA_VALUE_COL      "value"         /* TEXT */
+#define DATA_ANNOTATION_COL "annotation"    /* TEXT */
 
 #define NAME_ROLE           "name"
 #define DESCRIPTION_ROLE    DESCRIPTION_COL
@@ -41,6 +48,12 @@ DEALINGS IN THE SOFTWARE.
 #define PLOTCOLOR_ROLE      PLOTCOLOR_COL
 #define DATATABLE_ROLE      DATATABLE_COL
 #define PAIREDTABLE_ROLE    PAIREDTABLE_COL
+
+#define DATA_KEY_ROLE       DATA_KEY_COL
+#define DATA_TIMESTAMP_ROLE DATA_TIMESTAMP_COL
+#define DATA_TIMESTAMP_UTC_ROLE "timestampUTC"
+#define DATA_VALUE_ROLE     DATA_VALUE_COL
+#define DATA_ANNOTATION_ROLE DATA_ANNOTATION_COL
 
 class Database
 {
@@ -52,6 +65,9 @@ public:
     ~Database();
 
     Database& operator=(const Database& aArea);
+
+    static QDateTime toDateTime(const QVariant& value);
+    static QString toString(const QDateTime& value);
 
     QVariantList readParameters();
     QVariantList readData(QString table);

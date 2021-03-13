@@ -1,3 +1,26 @@
+/*
+Copyright (c) 2021 Slava Monich <slava@monich.com>
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+*/
+
 #include "graph.h"
 #include "debuglog.h"
 
@@ -7,22 +30,23 @@
 
 #include <qmath.h>
 
-class Graph::Entry
-{
-public:
-    Entry(const QDateTime &t, qreal v) : time(t), value(v) {}
-    QDateTime time;
-    qreal value;
-};
+namespace {
+    // UTC times are signiticantly faster to compare.
+    // Local times are getting converted to UTC every time
+    // QDateTimePrivate::toMSecsSinceEpoch() is called.
+    const QByteArray TIMESTAMP_ROLE("timestampUTC");
+    const QByteArray VALUE_ROLE("value");
+}
 
-Graph::Graph(QQuickItem *parent) :
+Graph::Graph(QQuickItem* parent) :
     QQuickItem(parent),
     m_color(Qt::white),
     m_lineWidth(2),
     m_minValue(0),
     m_maxValue(0),
-    m_timestampKey("timestamp"),
-    m_valueKey("value")
+    m_timestampRole(-1),
+    m_valueRole(-1),
+    m_model(Q_NULLPTR)
 {
     setFlag(ItemHasContents);
     setClip(true);
@@ -30,12 +54,11 @@ Graph::Graph(QQuickItem *parent) :
 
 Graph::~Graph()
 {
-    qDeleteAll(m_paintData);
     // It may be too early to delete nodes at this point
     const int n = m_nodes.count();
-    QSGNode *const *nodes = m_nodes.constData();
+    QSGNode* const* nodes = m_nodes.constData();
     for (int i = 0; i < n; i++) {
-        QSGNode *node = nodes[i];
+        QSGNode* node = nodes[i];
         if (node->parent()) {
             // Let SG do it
             node->setFlag(QSGNode::OwnedByParent);
@@ -45,15 +68,55 @@ Graph::~Graph()
     }
 }
 
-void Graph::setColor(const QColor &color)
+void Graph::setModel(QObject* model)
+{
+    QAbstractItemModel* itemModel = qobject_cast<QAbstractItemModel*>(model);
+    if (m_model != itemModel) {
+        if (m_model) {
+            m_model->disconnect(this);
+        }
+        m_model = itemModel;
+        if (m_model) {
+            connect(m_model, SIGNAL(destroyed(QObject*)), SLOT(onModelDestroyed()));
+            const QHash<int,QByteArray> roleNames(m_model->roleNames());
+            const QList<int> roleIds(roleNames.keys());
+            m_timestampRole = -1;
+            m_valueRole = -1;
+            for (int i = roleIds.count() - 1;
+                 i >= 0 && (m_timestampRole < 0 || m_valueRole < 0);
+                 i--) {
+                const int roleId = roleIds.at(i);
+                const QByteArray roleName(roleNames.value(roleId));
+                if (m_timestampRole < 0 && roleName == TIMESTAMP_ROLE) {
+                    m_timestampRole = roleId;
+                    DBG(roleName << "=>" << m_timestampRole);
+                } else if (m_valueRole < 0 && roleName == VALUE_ROLE) {
+                    m_valueRole = roleId;
+                    DBG(roleName << "=>" << m_valueRole);
+                }
+            }
+            emit modelChanged();
+        }
+        update();
+    }
+}
+
+void Graph::onModelDestroyed()
+{
+    DBG("model destroyed");
+    m_model = Q_NULLPTR;
+    emit modelChanged();
+}
+
+void Graph::setColor(const QColor& color)
 {
     if (m_color != color) {
         m_color = color;
         const int n = m_nodes.count();
-        QSGNode *const *nodes = m_nodes.constData();
+        QSGNode* const* nodes = m_nodes.constData();
         for (int i = 0; i < n; i++) {
-            QSGGeometryNode *node = (QSGGeometryNode*)nodes[i];
-            QSGFlatColorMaterial *m = (QSGFlatColorMaterial*)node->material();
+            QSGGeometryNode* node = (QSGGeometryNode*)nodes[i];
+            QSGFlatColorMaterial* m = (QSGFlatColorMaterial*)node->material();
             m->setColor(color);
             node->markDirty(QSGNode::DirtyMaterial);
         }
@@ -65,6 +128,7 @@ void Graph::setLineWidth(qreal lineWidth)
 {
     if (m_lineWidth != lineWidth) {
         m_lineWidth = lineWidth;
+        DBG(lineWidth);
         emit lineWidthChanged();
         update();
     }
@@ -74,6 +138,7 @@ void Graph::setMinValue(qreal value)
 {
     if (m_minValue != value) {
         m_minValue = value;
+        DBG(value);
         emit minValueChanged();
         update();
     }
@@ -83,71 +148,33 @@ void Graph::setMaxValue(qreal value)
 {
     if (m_maxValue != value) {
         m_maxValue = value;
+        DBG(value);
         emit maxValueChanged();
         update();
     }
 }
 
-void Graph::setMinTime(const QDateTime &t)
+void Graph::setMinTime(const QDateTime& t)
 {
     if (m_minTime != t) {
         m_minTime = t;
+        DBG(t);
         emit minTimeChanged();
         update();
     }
 }
 
-void Graph::setMaxTime(const QDateTime &t)
+void Graph::setMaxTime(const QDateTime& t)
 {
     if (m_maxTime != t) {
         m_maxTime = t;
+        DBG(t);
         emit maxTimeChanged();
         update();
     }
 }
 
-void Graph::setData(const QVariantList &data)
-{
-    int k = 0;
-    const int n = data.count();
-    bool changed = false;
-    for (int i = 0; i < n; i++) {
-        bool ok;
-        const QVariantMap dataEntry(data.at(i).toMap());
-        const QDateTime time(dataEntry.value(m_timestampKey).toDateTime());
-        const qreal value = dataEntry.value(m_valueKey).toReal(&ok);
-        if (time.isValid() && ok) {
-            if (k < m_paintData.count()) {
-                Entry *entry = m_paintData.at(k++);
-                if (entry->value != value) {
-                    entry->value = value;
-                    changed = true;
-                }
-                if (entry->time != time) {
-                    entry->time = time;
-                    changed = true;
-                }
-            } else {
-                m_paintData.append(new Entry(time, value));
-                changed = true;
-                k++;
-            }
-        } else {
-            qWarning() << i << dataEntry;
-        }
-    }
-    while (m_paintData.count() > k) {
-        delete m_paintData.takeLast();
-        changed = true;
-    }
-    if (changed) {
-        m_data = data;
-        emit dataChanged();
-        update();
-    }
-}
-
-void Graph::updateCircleGeometry(QSGGeometry::Point2D *v, float x0, float y0, float r, int n)
+void Graph::updateCircleGeometry(QSGGeometry::Point2D* v, float x0, float y0, float r, int n)
 {
     v[0].x = x0;
     v[0].y = y0;
@@ -159,7 +186,7 @@ void Graph::updateCircleGeometry(QSGGeometry::Point2D *v, float x0, float y0, fl
     v[n + 1] = v[1];
 }
 
-void Graph::updateRectGeometry(QSGGeometry::Point2D *v, float x1, float y1, float x2, float y2, float thick)
+void Graph::updateRectGeometry(QSGGeometry::Point2D* v, float x1, float y1, float x2, float y2, float thick)
 {
     if (x1 == x2 || y1 == y2) {
         // Vertical or horizontal line
@@ -185,17 +212,17 @@ void Graph::updateRectGeometry(QSGGeometry::Point2D *v, float x1, float y1, floa
     }
 }
 
-QSGGeometry *Graph::newCircleGeometry(float x, float y, float radius, int n)
+QSGGeometry* Graph::newCircleGeometry(float x, float y, float radius, int n)
 {
-    QSGGeometry *g = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), n + 2);
+    QSGGeometry* g = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), n + 2);
     updateCircleGeometry(g->vertexDataAsPoint2D(), x, y, radius, n);
     g->setDrawingMode(GL_TRIANGLE_FAN);
     return g;
 }
 
-QSGGeometry *Graph::newRectGeometry(float x1, float y1, float x2, float y2, float thick)
+QSGGeometry* Graph::newRectGeometry(float x1, float y1, float x2, float y2, float thick)
 {
-    QSGGeometry *g = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 4);
+    QSGGeometry* g = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 4);
     updateRectGeometry(g->vertexDataAsPoint2D(), x1, y1, x2, y2, thick);
     g->setDrawingMode(GL_TRIANGLE_FAN);
     return g;
@@ -203,7 +230,7 @@ QSGGeometry *Graph::newRectGeometry(float x1, float y1, float x2, float y2, floa
 
 #define CIRCLE_NODES(r) roundf(8.f * (r))
 
-QSGGeometry *Graph::newNodeGeometry(float x1, float y1, float x2, float y2, float thick)
+QSGGeometry* Graph::newNodeGeometry(float x1, float y1, float x2, float y2, float thick)
 {
     if (x1 == x2 && y1 == y2) {
         const float r = thick/2.f;
@@ -213,9 +240,9 @@ QSGGeometry *Graph::newNodeGeometry(float x1, float y1, float x2, float y2, floa
     }
 }
 
-void Graph::updateNodeGeometry(QSGGeometryNode *node, float x1, float y1, float x2, float y2, float thick)
+void Graph::updateNodeGeometry(QSGGeometryNode* node, float x1, float y1, float x2, float y2, float thick)
 {
-    QSGGeometry *g = node->geometry();
+    QSGGeometry* g = node->geometry();
     if (x1 == x2 && y1 == y2) {
         // Dot
         const float r = thick/2.f;
@@ -236,11 +263,11 @@ void Graph::updateNodeGeometry(QSGGeometryNode *node, float x1, float y1, float 
     }
 }
 
-QSGGeometryNode *Graph::newNode(float x1, float y1, float x2, float y2)
+QSGGeometryNode* Graph::newNode(float x1, float y1, float x2, float y2)
 {
-    QSGFlatColorMaterial *m = new QSGFlatColorMaterial;
+    QSGFlatColorMaterial* m = new QSGFlatColorMaterial;
     m->setColor(m_color);
-    QSGGeometryNode *node = new QSGGeometryNode;
+    QSGGeometryNode* node = new QSGGeometryNode;
     node->setGeometry(newNodeGeometry(x1, y1, x2, y2, m_lineWidth));
     node->setMaterial(m);
     node->setFlag(QSGNode::OwnsGeometry);
@@ -260,9 +287,9 @@ bool Graph::lineVisible(float x1, float y1, float x2, float y2, float w, float h
     return true;
 }
 
-QSGNode *Graph::updatePaintNode(QSGNode *paintNode, UpdatePaintNodeData *)
+QSGNode* Graph::updatePaintNode(QSGNode* paintNode, UpdatePaintNodeData*)
 {
-    if (m_data.isEmpty()) {
+    if (!m_model || !m_model->rowCount()) {
         qDeleteAll(m_nodes);
         m_nodes.resize(0);
         delete paintNode;
@@ -274,39 +301,46 @@ QSGNode *Graph::updatePaintNode(QSGNode *paintNode, UpdatePaintNodeData *)
 
         const float w = width();
         const float h = height();
-        if (w > 0 && h > 0 && m_minValue < m_maxValue &&
+        if (m_model && m_timestampRole >= 0 && m_valueRole >= 0 &&
+            w > 0 && h > 0 && m_minValue < m_maxValue &&
             m_minTime.isValid() && m_maxTime.isValid() &&
             m_minTime < m_maxTime) {
             const float timeSpan = m_minTime.msecsTo(m_maxTime);
             const float valueSpan = m_maxValue - m_minValue;
-            const Entry *lastEntry = Q_NULLPTR;
             float lastX = 0, lastY = 0;
 
             // Reuse the existing nodes
-            QSGNode *node = paintNode->firstChild();
-            const int n = m_paintData.count();
+            QSGNode* node = paintNode->firstChild();
+            const int n = m_model->rowCount();
+            bool firstNode = true;
             for (int i = 0; i < n; i++) {
-                const Entry *entry = m_paintData.at(i);
-                const float x = w * m_minTime.msecsTo(entry->time) / timeSpan;
-                const float y = h * (m_maxValue - entry->value) / valueSpan;
-                if (lastEntry && lineVisible(lastX, lastY, x, y, w, h)) {
-                    if (node) {
-                        updateNodeGeometry((QSGGeometryNode*)node, lastX, lastY, x, y, m_lineWidth);
-                    } else {
-                        node = newNode(lastX, lastY, x, y);
-                        paintNode->appendChildNode(node);
-                        m_nodes.append(node);
+                bool ok;
+                const QModelIndex index(m_model->index(i, 0));
+                const QDateTime time(m_model->data(index, m_timestampRole).toDateTime());
+                const qreal value = m_model->data(index, m_valueRole).toReal(&ok);
+                if (ok) {
+                    const float x = w * m_minTime.msecsTo(time) / timeSpan;
+                    const float y = h * (m_maxValue - value) / valueSpan;
+                    if (!firstNode && lineVisible(lastX, lastY, x, y, w, h)) {
+                        if (node) {
+                            updateNodeGeometry((QSGGeometryNode*)node, lastX, lastY, x, y, m_lineWidth);
+                            node = node->nextSibling();
+                        } else {
+                            node = newNode(lastX, lastY, x, y);
+                            paintNode->appendChildNode(node);
+                            m_nodes.append(node);
+                            node = Q_NULLPTR;
+                        }
                     }
-                    node = node->nextSibling();
+                    firstNode = false;
+                    lastX = x;
+                    lastY = y;
                 }
-                lastEntry = entry;
-                lastX = x;
-                lastY = y;
             }
 
             // Drop nodes that we no longer need
             if (node) {
-                QSGNode *last;
+                QSGNode* last;
                 // Remove nodes that we no longer need. This may look dangerous
                 // but the last unused node must be in m_nodes list.
                 do {

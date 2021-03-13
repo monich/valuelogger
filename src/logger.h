@@ -48,19 +48,17 @@ public:
     explicit Logger(QObject* parent = Q_NULLPTR);
     ~Logger();
 
-    static QString getVersion();
-    int getVisualizeCount() const;
-    int getDefaultParameterIndex() const;
-    QString getDefaultParameterName() const;
+    static QString getVersion() { return APPVERSION; }
+    int getVisualizeCount() const { return visualizeCount; }
+    int getDefaultParameterIndex() const { return defaultParameterIndex; }
+    QString getDefaultParameterName() const { return defaultParameterName; }
 
     Q_INVOKABLE QString addParameter(QString name, QString description, bool visualize, QColor plotcolor);
     Q_INVOKABLE void editParameterAt(int row, QString name, QString description, bool visualize, QColor plotcolor, QString pairedtable);
     Q_INVOKABLE void deleteParameterAt(int row);
     Q_INVOKABLE QVariantList readParameters();
-    Q_INVOKABLE QVariantList readData(QString table);
     Q_INVOKABLE QVariantMap get(int row);
-    Q_INVOKABLE QString addData(QString table, QString key, QString value, QString annotation, QString timestamp);
-    Q_INVOKABLE void deleteData(QString table, QString key);
+    Q_INVOKABLE QString addData(QString table, QString value, QString annotation, QString timestamp);
     Q_INVOKABLE QString exportToCSV();
 
     /* QAbstractItemModel */

@@ -4,7 +4,6 @@ import Sailfish.Silica 1.0
 import "../components"
 
 Page {
-    property alias dataList: plot.dataListModel
     property alias parInfo: plot.parInfoModel
 
     backNavigation: !plot.dragging

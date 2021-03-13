@@ -48,10 +48,10 @@ namespace {
     const QString DATATABLE(DATATABLE_ROLE);
     const QString PAIREDTABLE(PAIREDTABLE_ROLE);
 
-    const QString KEY("key");
-    const QString TIMESTAMP("timestamp");
-    const QString VALUE("value");
-    const QString ANNOTATION("annotation");
+    const QString KEY(DATA_KEY_ROLE);
+    const QString TIMESTAMP(DATA_TIMESTAMP_ROLE);
+    const QString VALUE(DATA_VALUE_ROLE);
+    const QString ANNOTATION(DATA_ANNOTATION_ROLE);
 }
 
 Logger::Logger(QObject *parent) :
@@ -73,26 +73,6 @@ Logger::Logger(QObject *parent) :
 QObject* Logger::createSingleton(QQmlEngine* engine, QJSEngine* js)
 {
     return new Logger();
-}
-
-QString Logger::getVersion()
-{
-    return APPVERSION;
-}
-
-int Logger::getVisualizeCount() const
-{
-    return visualizeCount;
-}
-
-int Logger::getDefaultParameterIndex() const
-{
-    return defaultParameterIndex;
-}
-
-QString Logger::getDefaultParameterName() const
-{
-    return defaultParameterName;
 }
 
 int Logger::currentVisualizeCount()
@@ -164,21 +144,11 @@ void Logger::updateDefaultParameter()
 
 /*
  * Add new data entry to a parameter
- * key = "" to generate new
  */
 
-QString Logger::addData(QString table, QString key, QString value, QString annotation, QString timestamp)
+QString Logger::addData(QString table, QString value, QString annotation, QString timestamp)
 {
-    return db.addData(table, key, value, annotation, timestamp);
-}
-
-/*
- * Get all data of one parameter, to raw data show page or for plotting
- */
-
-QVariantList Logger::readData(QString table)
-{
-    return db.readData(table);
+    return db.addData(table, QString(), value, annotation, timestamp);
 }
 
 /*
@@ -189,15 +159,6 @@ QVariantMap Logger::get(int row)
 {
     return (row >= 0 && row < parameters.count()) ?
         parameters.at(row).toMap() : QVariantMap();
-}
-
-/*
- * Delete one data entry of a parameter
- */
-
-void Logger::deleteData(QString table, QString key)
-{
-    db.deleteData(table, key);
 }
 
 /*
@@ -369,23 +330,22 @@ QString Logger::exportToCSV()
     QTextStream out(&file);
     out.setCodec("UTF-8");
 
-    QVariantList eParameters = readParameters();
-    QListIterator<QVariant> i(eParameters);
+    const QVariantList parList = readParameters();
+    QListIterator<QVariant> i(parList);
 
     while (i.hasNext()) {
-        QVariantMap eParamData = i.next().value<QVariantMap>();
+        const QVariantMap par(i.next().value<QVariantMap>());
 
-        out << eParamData[NAME].toString() << separator << eParamData[DESCRIPTION].toString() << "\n";
+        out << par.value(NAME).toString() << separator << par.value(DESCRIPTION).toString() << "\n";
 
-        QVariantList eData = readData(eParamData[DATATABLE].toString());
-        QListIterator<QVariant> n(eData);
+        const QVariantList dataList(db.readData(par.value(DATATABLE).toString()));
+        QListIterator<QVariant> n(dataList);
 
         while (n.hasNext()) {
-            QVariantMap eDataData = n.next().value<QVariantMap>();
-
-            out << eDataData[TIMESTAMP].toString() << separator <<
-                   eDataData[VALUE].toString().replace('.', loc.decimalPoint()) << separator << "\"" <<
-                   eDataData[ANNOTATION].toString() << "\"\n";
+            const QVariantMap data(n.next().value<QVariantMap>());
+            out << data.value(TIMESTAMP).toString() << separator <<
+                   data.value(VALUE).toString().replace('.', loc.decimalPoint()) << separator << "\"" <<
+                   data.value(ANNOTATION).toString() << "\"\n";
         }
     }
 

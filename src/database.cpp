@@ -47,10 +47,13 @@ namespace {
     const QString DATATABLE(DATATABLE_ROLE);
     const QString PAIREDTABLE(PAIREDTABLE_ROLE);
 
-    const QString KEY("key");
-    const QString TIMESTAMP("timestamp");
-    const QString VALUE("value");
-    const QString ANNOTATION("annotation");
+    const QString KEY(DATA_KEY_COL);
+    const QString TIMESTAMP(DATA_TIMESTAMP_COL);
+    const QString VALUE(DATA_VALUE_COL);
+    const QString ANNOTATION(DATA_ANNOTATION_COL);
+
+    const QString FORMAT_DATE_TIME("yyyy-MM-dd hh:mm:ss");
+    const QString FORMAT_DATE("yyyy-MM-dd");
 }
 
 class Database::Private
@@ -136,8 +139,9 @@ void Database::Private::createDataTable(QString table)
     const QString datatable("_" + table);
     QSqlQuery query(db);
 
-    if (query.exec("CREATE TABLE IF NOT EXISTS " + datatable +
-        " (key TEXT PRIMARY KEY, timestamp TEXT, value TEXT, annotation TEXT)")) {
+    if (query.exec("CREATE TABLE IF NOT EXISTS " + datatable + " ("
+        DATA_KEY_COL " TEXT PRIMARY KEY, " DATA_TIMESTAMP_COL " TEXT, "
+        DATA_VALUE_COL " TEXT, " DATA_ANNOTATION_COL " TEXT)")) {
         DBG("datatable created" << datatable);
     } else {
         WARN("datatable not created" << datatable << ":" << query.lastError());
@@ -240,7 +244,7 @@ QVariantList Database::readData(QString table)
             QVariantMap map;
 
             map.insert(KEY, record.value(KEY));
-            map.insert(TIMESTAMP, record.value(TIMESTAMP));
+            map.insert(TIMESTAMP, toDateTime(record.value(TIMESTAMP)));
             map.insert(VALUE, record.value(VALUE));
             map.insert(ANNOTATION, record.value(ANNOTATION));
 
@@ -278,11 +282,11 @@ QString Database::addData(QString table, QString key, QString value, QString ann
 
     if (query.exec()) {
         DBG("data" << (key.isEmpty() ? "added" : "edited") << timestamp << "=" << value << "+" << annotation);
+        return objHash;
     } else {
         WARN("failed" << timestamp << "=" << value << ":" << query.lastError());
+        return QString();
     }
-
-    return objHash;
 }
 
 /*
@@ -358,6 +362,16 @@ bool Database::setPairedTable(QString datatable, QString pairedtable)
     }
 }
 
+Database::Database()
+{
+    static QWeakPointer<Private> shared;
+    p = shared;
+    if (p.isNull()) {
+        p = QSharedPointer<Private>::create();
+        shared = p;
+    }
+}
+
 Database::Database(const Database& that) :
     p(that.p)
 {
@@ -373,12 +387,24 @@ Database& Database::operator=(const Database& that)
     return *this;
 }
 
-Database::Database()
+QDateTime Database::toDateTime(const QVariant& value)
 {
-    static QWeakPointer<Private> shared;
-    p = shared;
-    if (p.isNull()) {
-        p = QSharedPointer<Private>::create();
-        shared = p;
+    const QString s(value.toString().trimmed());
+    QDateTime t = QDateTime::fromString(s, FORMAT_DATE_TIME);
+    if (!t.isValid()) {
+        t = QDateTime::fromString(s, FORMAT_DATE);
+#if LOG_DBG
+        if (t.isValid()) {
+            DBG(s << "=>" << t);
+        } else {
+            DBG("Failed to convert" << s << "to QDateTime");
+        }
+#endif
     }
+    return t;
+}
+
+QString Database::toString(const QDateTime& value)
+{
+    return value.toString(FORMAT_DATE_TIME);
 }

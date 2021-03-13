@@ -17,11 +17,13 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += src/database.cpp \
+        src/datamodel.cpp \
         src/graph.cpp \
         src/logger.cpp \
         src/valuelogger.cpp \
 
 HEADERS += src/database.h \
+        src/datamodel.h \
         src/debuglog.h \
         src/graph.h \
         src/logger.h

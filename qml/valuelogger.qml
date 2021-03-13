@@ -92,8 +92,8 @@ ApplicationWindow {
                     Debug.log("  paired annotation", pairdialog.annotation)
                     Debug.log("  paired time", pairedtime)
 
-                    Logger.addData(par.datatable, "", dialog.value, dialog.annotation, time)
-                    Logger.addData(par.pairedtable, "", pairdialog.value, pairdialog.annotation, pairedtime)
+                    Logger.addData(par.datatable, dialog.value, dialog.annotation, time)
+                    Logger.addData(par.pairedtable, pairdialog.value, pairdialog.annotation, pairedtime)
                     valuelogger.deactivate()
                 })
             } else {
@@ -105,7 +105,7 @@ ApplicationWindow {
                     Debug.log(" annotation", dialog.annotation)
                     Debug.log(" time", time)
 
-                    Logger.addData(par.datatable, "", dialog.value, dialog.annotation, time)
+                    Logger.addData(par.datatable, dialog.value, dialog.annotation, time)
                     valuelogger.deactivate()
                 })
             }
@@ -119,26 +119,26 @@ ApplicationWindow {
 
     function plotSelected(operationType) {
         if (Logger.count > 0) {
-            Debug.log(Logger.count, "item(s) in list.")
-
-            var l = []
             var parInfo = []
 
+            Debug.log(Logger.count, "item(s) in list.")
             for (var i = 0; i < Logger.count; i++) {
                 var par = Logger.get(i)
                 if (par.visualize) {
-                    var data = Logger.readData(par.datatable)
-                    Debug.log("showing", data.length,"item(s) from", par.name)
-                    parInfo.push({"name": par.name, "plotcolor": par.plotcolor})
-                    l.push(data)
+                    Debug.log("showing", par.name)
+                    parInfo.push({
+                        "name": par.name,
+                        "plotcolor": par.plotcolor,
+                        "datatable": par.datatable
+                    })
                 }
             }
 
             pageStack.push(Qt.resolvedUrl("pages/DrawData.qml"), {
                 "allowedOrientations": allowedOrientations,
-                "dataList": l,
                 "parInfo": parInfo
             }, operationType)
+
             return true
         } else {
             return false

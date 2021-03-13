@@ -1,27 +1,27 @@
 /*
-	Original Copyright (c) 2013 Jussi Sainio
+    Original Copyright (c) 2013 Jussi Sainio
  
-	Modified to support multiple lines for valuelogger 2014 Kimmo Lindholm
+    Modified to support multiple lines for valuelogger 2014 Kimmo Lindholm
 
     More or less completely rewritten in 2021 by Slava Monich
 
-	Permission is hereby granted, free of charge, to any person obtaining a copy
-	of this software and associated documentation files (the "Software"), to deal
-	in the Software without restriction, including without limitation the rights
-	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-	copies of the Software, and to permit persons to whom the Software is
-	furnished to do so, subject to the following conditions:
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
 
-	The above copyright notice and this permission notice shall be included in
-	all copies or substantial portions of the Software.
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
 
-	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-	THE SOFTWARE.
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
 */
 
 import QtQuick 2.0
@@ -29,9 +29,7 @@ import Sailfish.Silica 1.0
 import harbour.valuelogger 1.0
 
 Item {
-    property var dataListModel
     property var parInfoModel
-    property string column: "value"
     property bool dragging
 
     property real min: 0.0
@@ -50,33 +48,6 @@ Item {
 
     function distanceY(p1, p2) {
         return Math.max(p1.y, p2.y) - Math.min(p1.y, p2.y)
-    }
-
-    function getMinMax(data) {
-        if (data.length > 0) {
-            var last = data.length - 1;
-            var first = 0;
-
-            var s = new Date(data[0]["timestamp"])
-
-            if (s.getTime() < xstart.getTime())
-                xstart = s
-
-            s = new Date(data[data.length-1]["timestamp"])
-
-            if (s.getTime() > xend.getTime())
-                xend = s
-
-            first = 0;
-            last = data.length - 1;
-
-            for (var i = first; i <= last; i++) {
-                var l = data[i]
-
-                if (l[column] > max) max = l[column]
-                if (l[column] < min) min = l[column]
-            }
-        }
     }
 
     function updateVerticalScale() {
@@ -125,15 +96,33 @@ Item {
     }
 
     function updateGraph() {
-        // assign some timestamp which is in range as start/end default for further expanding
-        xstart = new Date(dataListModel[0][0]["timestamp"])
-        xend = new Date(dataListModel[0][0]["timestamp"])
+        if (graphs.count > 0) {
+            var model = graphs.itemAt(0).model
 
-        min = 99999999.9
-        max = -99999999.9
+            xstart = model.minTime
+            xend = model.maxTime
+            min = model.minValue
+            max = model.maxValue
 
-        for (var n=0; n<dataListModel.length; n++)
-            getMinMax(dataListModel[n])
+            for (var i=1; i<graphs.count; i++) {
+                model = graphs.itemAt(i).model
+                if (xstart.getTime() > model.minTime.getTime()) {
+                    xstart = model.minTime
+                }
+                if (xend.getTime() < model.maxTime.getTime()) {
+                    xend = model.maxTime
+                }
+                if (min > model.minValue) {
+                    min = model.minValue
+                }
+                if (max < model.maxValue) {
+                    max = model.maxValue
+                }
+            }
+        } else {
+            xstart = xend = new Date()
+            min = max = 0
+        }
 
         updateVerticalScale()
         updateHorizontalScale()
@@ -376,16 +365,19 @@ Item {
         }
 
         Repeater {
-            model: dataListModel
+            id: graphs
+            model: parInfoModel
             delegate: Graph {
                 anchors.fill: parent
                 minValue: min
                 maxValue: max
                 minTime: xstart
                 maxTime: xend
-                data: modelData
-                lineWidth: Math.max(Math.min(Math.round(Theme.paddingSmall/2), width/modelData.length), 2)
-                color: parInfoModel[index].plotcolor
+                lineWidth: model.count ? Math.max(Math.min(Math.round(Theme.paddingSmall/2), width/model.count), 2) : 2
+                color: modelData.plotcolor
+                model: DataModel {
+                    dataTable: modelData.datatable
+                }
             }
         }
     }

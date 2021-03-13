@@ -7,12 +7,9 @@ import "../js/debug.js" as Debug
 Page {
     id: showDataPage
 
-    property var dataList : []
     property string parName : "Name goes here"
     property string parDescription : "Description goes here"
-    property string dataTable : "Data table name here"
-
-    signal deleteData(var key)
+    property alias dataTable: dataModel.dataTable
 
     SilicaFlickable {
         anchors.fill: parent
@@ -20,6 +17,10 @@ Page {
             enabled: dataListView.count === 0
             text: qsTr("Empty")
         }
+    }
+
+    DataModel {
+        id: dataModel
     }
 
     PageHeader {
@@ -34,7 +35,7 @@ Page {
 
         VerticalScrollDecorator { flickable: dataListView }
 
-        model: dataList
+        model: dataModel
 
         width: parent.width
         height: parent.height - pageHeader.height
@@ -61,8 +62,8 @@ Page {
             ListView.onRemove: animateRemoval(dataItem)
 
             function removeEntry() {
-                Debug.log("deleting", modelData.key ,"...")
-                remorseAction(qsTr("Deleting"), function() { showDataPage.deleteData(modelData.key)}, 2500)
+                Debug.log("deleting", model.key ,"...")
+                remorseAction(qsTr("Deleting"), function() { dataModel.deleteRow(model.index)}, 2500)
             }
 
             function editData() {
@@ -72,8 +73,8 @@ Page {
                     "parameterDescription": parDescription,
                     "value": valueLabel.text,
                     "annotation": annotationLabel.text,
-                    "nowDate": Qt.formatDateTime(new Date(timestampLabel.text), "yyyy-MM-dd"),
-                    "nowTime": Qt.formatDateTime(new Date(timestampLabel.text), "h:mm:ss")
+                    "nowDate": Qt.formatDateTime(model.timestamp, "yyyy-MM-dd"),
+                    "nowTime": Qt.formatDateTime(model.timestamp, "hh:mm:ss")
                 })
 
                 editDialog.accepted.connect( function() {
@@ -84,13 +85,7 @@ Page {
                     Debug.log(" annotation", editDialog.annotation)
                     Debug.log(" time", timestamp)
 
-                    Logger.addData(dataTable, modelData.key, editDialog.value, editDialog.annotation, timestamp)
-
-                    /* Break the bindings for now.
-                     * TODO: use a real modifiable data model */
-                    valueLabel.text = editDialog.value
-                    annotationLabel.text = editDialog.annotation
-                    timestampLabel.text = timestamp
+                    dataModel.updateRow(model.index, editDialog.value, editDialog.annotation, timestamp)
                 })
             }
 
@@ -107,19 +102,20 @@ Page {
                     Label {
                         id: timestampLabel
 
-                        text: modelData.timestamp
+                        text: Qt.formatDateTime(model.timestamp, "yyyy-MM-dd hh:mm:ss")
                         width: parent.width
+                        color: dataItem.highlighted ? Theme.highlightColor : Theme.primaryColor
                         truncationMode: TruncationMode.Fade
                     }
 
                     Label {
                         id: annotationLabel
 
-                        text: modelData.annotation
+                        text: model.annotation
                         width: parent.width
                         truncationMode: TruncationMode.Fade
                         visible: text !== ""
-                        color: Theme.secondaryColor
+                        color: dataItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
                         font {
                             italic: true
                             pixelSize: Theme.fontSizeSmall
@@ -131,9 +127,10 @@ Page {
                     id: valueLabel
 
                     anchors.verticalCenter: parent.verticalCenter
-                    text: modelData.value
+                    text: model.value
                     horizontalAlignment: Text.AlignRight
                     font.pixelSize: Theme.fontSizeExtraLarge
+                    color: dataItem.highlighted ? Theme.highlightColor : Theme.primaryColor
                 }
             }
         }

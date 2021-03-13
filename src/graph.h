@@ -1,10 +1,33 @@
+/*
+Copyright (c) 2021 Slava Monich <slava@monich.com>
+
+Permission is hereby granted, free of charge, to any person
+obtaining a copy of this software and associated documentation
+files (the "Software"), to deal in the Software without restriction,
+including without limitation the rights to use, copy, modify, merge,
+publish, distribute, sublicense, and/or sell copies of the Software,
+and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+*/
+
 #ifndef GRAPH_H
 #define GRAPH_H
 
 #include <QColor>
 #include <QDateTime>
 #include <QQuickItem>
-#include <QVariantList>
+#include <QAbstractItemModel>
 #include <QSGGeometry>
 #include <QSGNode>
 
@@ -17,14 +40,14 @@ class Graph : public QQuickItem
     Q_PROPERTY(qreal maxValue READ maxValue WRITE setMaxValue NOTIFY maxValueChanged)
     Q_PROPERTY(QDateTime minTime READ minTime WRITE setMinTime NOTIFY minTimeChanged)
     Q_PROPERTY(QDateTime maxTime READ maxTime WRITE setMaxTime NOTIFY maxTimeChanged)
-    Q_PROPERTY(QVariantList data READ data WRITE setData NOTIFY dataChanged)
+    Q_PROPERTY(QObject* model READ getModel WRITE setModel NOTIFY modelChanged)
 
 public:
-    explicit Graph(QQuickItem *parent = Q_NULLPTR);
+    explicit Graph(QQuickItem* parent = Q_NULLPTR);
     ~Graph();
 
-    const QColor &color() const { return m_color; }
-    void setColor(const QColor &color);
+    const QColor& color() const { return m_color; }
+    void setColor(const QColor& color);
 
     qreal lineWidth() const { return m_lineWidth; }
     void setLineWidth(qreal lineWidth);
@@ -35,27 +58,30 @@ public:
     qreal maxValue() const { return m_maxValue; }
     void setMaxValue(qreal value);
 
-    const QDateTime &minTime() const { return m_minTime; }
-    void setMinTime(const QDateTime &t);
+    const QDateTime& minTime() const { return m_minTime; }
+    void setMinTime(const QDateTime& t);
 
-    const QDateTime &maxTime() const { return m_maxTime; }
-    void setMaxTime(const QDateTime &t);
+    const QDateTime& maxTime() const { return m_maxTime; }
+    void setMaxTime(const QDateTime& t);
 
-    const QVariantList &data() const { return m_data; }
-    void setData(const QVariantList &data);
+    QAbstractItemModel* getModel() const { return m_model; }
+    void setModel(QObject* model);
 
 protected:
-    QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *) Q_DECL_OVERRIDE;
+    QSGNode* updatePaintNode(QSGNode* node, UpdatePaintNodeData* data) Q_DECL_OVERRIDE;
 
 private:
-    static void updateCircleGeometry(QSGGeometry::Point2D *v, float x0, float y0, float r, int n);
-    static void updateRectGeometry(QSGGeometry::Point2D *v, float x1, float y1, float x2, float y2, float thick);
-    static void updateNodeGeometry(QSGGeometryNode *node, float x1, float y1, float x2, float y2, float thick);
-    static QSGGeometry *newCircleGeometry(float x, float y, float r, int n);
-    static QSGGeometry *newRectGeometry(float x1, float y1, float x2, float y2, float thick);
-    static QSGGeometry *newNodeGeometry(float x1, float y1, float x2, float y2, float thick);
+    static void updateCircleGeometry(QSGGeometry::Point2D* v, float x0, float y0, float r, int n);
+    static void updateRectGeometry(QSGGeometry::Point2D* v, float x1, float y1, float x2, float y2, float thick);
+    static void updateNodeGeometry(QSGGeometryNode* node, float x1, float y1, float x2, float y2, float thick);
+    static QSGGeometry* newCircleGeometry(float x, float y, float r, int n);
+    static QSGGeometry* newRectGeometry(float x1, float y1, float x2, float y2, float thick);
+    static QSGGeometry* newNodeGeometry(float x1, float y1, float x2, float y2, float thick);
     static bool lineVisible(float x1, float y1, float x2, float y2, float w, float h);
-    QSGGeometryNode *newNode(float x1, float y1, float x2, float y2);
+    QSGGeometryNode* newNode(float x1, float y1, float x2, float y2);
+
+private slots:
+    void onModelDestroyed();
 
 signals:
     void colorChanged();
@@ -64,21 +90,19 @@ signals:
     void maxValueChanged();
     void minTimeChanged();
     void maxTimeChanged();
-    void dataChanged();
+    void modelChanged();
 
 private:
-    class Entry;
     QColor m_color;
     qreal m_lineWidth;
     qreal m_minValue;
     qreal m_maxValue;
     QDateTime m_minTime;
     QDateTime m_maxTime;
-    QString m_timestampKey;
-    QString m_valueKey;
-    QVariantList m_data;
-    QList<Entry*> m_paintData;
+    int m_timestampRole;
+    int m_valueRole;
     QVector<QSGNode*> m_nodes;
+    QAbstractItemModel* m_model;
 };
 
 #endif // GRAPH_H
