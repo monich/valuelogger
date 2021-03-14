@@ -41,7 +41,7 @@ Page {
                     "allowedOrientations": allowedOrientations,
                     "version": Logger.version,
                     "name": "Value Logger",
-                    "imagelocation": Qt.resolvedUrl("../images/harbour-valuelogger.svg")
+                    "imagelocation": Qt.resolvedUrl("../images/harbour-valuelogger2.svg")
                 })
             }
 

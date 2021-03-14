@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     QLocale locale;
     QTranslator translator;
     const QString transDir = SailfishApp::pathTo("translations").toLocalFile();
-    if (translator.load(locale, "harbour-valuelogger", "_", transDir)) {
+    if (translator.load(locale, "harbour-valuelogger2", "_", transDir)) {
         app->installTranslator(&translator);
     } else {
         DBG("Failed to load translator for" << locale);

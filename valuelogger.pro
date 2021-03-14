@@ -1,14 +1,18 @@
 #
-# Project valuelogger, Value Logger
+# Value Logger, rewritten
 #
 
-TARGET = harbour-valuelogger
+TARGET = harbour-valuelogger2
 
 CONFIG += sailfishapp
 
 QT += sql
 
 QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-psabi
+
+isEmpty(SPECVERSION) {
+    SPECVERSION=1.0.0
+}
 
 DEFINES += "APPVERSION=\\\"$${SPECVERSION}\\\""
 
@@ -30,7 +34,7 @@ HEADERS += src/database.h \
 
 OTHER_FILES += qml/valuelogger.qml \
     rpm/valuelogger.spec \
-    harbour-valuelogger.desktop \
+    harbour-valuelogger2.desktop \
     qml/cover/*.qml \
     qml/pages/*.qml \
     qml/components/*.qml \

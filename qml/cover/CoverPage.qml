@@ -14,8 +14,8 @@ CoverBackground {
         id: icon
 
         y: x
-        width: Math.floor(parent.width * 0.56) & (-2)
-        source: Qt.resolvedUrl("../images/harbour-valuelogger.svg")
+        width: parent.width / 2
+        source: Qt.resolvedUrl("../images/harbour-valuelogger2.svg")
         anchors.horizontalCenter: parent.horizontalCenter
         sourceSize.width: width
     }

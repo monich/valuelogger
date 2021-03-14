@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+X-Nemo-Application-Type=silica-qt5
+Name=Value logger
+Icon=harbour-valuelogger2
+Exec=harbour-valuelogger2
+
+[X-HarbourBackup]
+BackupPathList = .local/share/harbour-valuelogger/

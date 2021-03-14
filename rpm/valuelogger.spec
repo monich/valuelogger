@@ -2,7 +2,7 @@
 # spec file for valuelogger, Value Logger
 # 
 
-Name:       harbour-valuelogger
+Name:       harbour-valuelogger2
 
 %{!?qtc_qmake:%define qtc_qmake %qmake}
 %{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
@@ -10,8 +10,8 @@ Name:       harbour-valuelogger
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 
 Summary:    Value Logger
-Version:    0.5.3
-Release:        1
+Version:    1.0.0
+Release:    1
 License:    LICENSE
 URL: https://github.com/monich/valuelogger
 Source0:    %{name}-%{version}.tar.bz2

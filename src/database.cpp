@@ -74,8 +74,9 @@ public:
 Database::Private::Private() :
     db(QSqlDatabase::addDatabase(DB_NAME))
 {
-    /* Open the SQLite database */
-    QDir dbdir(QStandardPaths::writableLocation(QStandardPaths::DataLocation));
+    /* Open the harbour-valuelogger (not harbour-valuelogger2) database */
+    const QString shareDir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation));
+    QDir dbdir(shareDir + "/harbour-valuelogger/harbour-valuelogger");
     if (!dbdir.exists()) {
         dbdir.mkpath(dbdir.path());
     }
