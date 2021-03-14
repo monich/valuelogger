@@ -71,14 +71,14 @@ protected:
     QSGNode* updatePaintNode(QSGNode* node, UpdatePaintNodeData* data) Q_DECL_OVERRIDE;
 
 private:
-    static void updateCircleGeometry(QSGGeometry::Point2D* v, float x0, float y0, float r, int n);
-    static void updateRectGeometry(QSGGeometry::Point2D* v, float x1, float y1, float x2, float y2, float thick);
-    static void updateNodeGeometry(QSGGeometryNode* node, float x1, float y1, float x2, float y2, float thick);
-    static QSGGeometry* newCircleGeometry(float x, float y, float r, int n);
-    static QSGGeometry* newRectGeometry(float x1, float y1, float x2, float y2, float thick);
-    static QSGGeometry* newNodeGeometry(float x1, float y1, float x2, float y2, float thick);
+    static void updateSquareGeometry(QSGGeometry::Point2D* v, float x, float y, float size);
+    static void updateLineGeometry(QSGGeometry::Point2D* v, float x1, float y1, float x2, float y2, float thick);
+    static void updateSquareNode(QSGGeometryNode* node, float x, float y, float size);
+    static void updateLineNode(QSGGeometryNode* node, float x1, float y1, float x2, float y2, float thick);
+    static QSGGeometry* newSquareGeometry(float x, float y, float size);
+    static QSGGeometry* newLineGeometry(float x1, float y1, float x2, float y2, float thick);
     static bool lineVisible(float x1, float y1, float x2, float y2, float w, float h);
-    QSGGeometryNode* newNode(float x1, float y1, float x2, float y2);
+    QSGGeometryNode* newNode(QSGGeometry* g);
 
 private slots:
     void onModelDestroyed();

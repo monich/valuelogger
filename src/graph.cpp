@@ -174,19 +174,20 @@ void Graph::setMaxTime(const QDateTime& t)
     }
 }
 
-void Graph::updateCircleGeometry(QSGGeometry::Point2D* v, float x0, float y0, float r, int n)
+void Graph::updateSquareGeometry(QSGGeometry::Point2D* v, float x, float y, float size)
 {
-    v[0].x = x0;
-    v[0].y = y0;
-    for (int i = 0; i < n; i++) {
-        const float theta = i * 2 * M_PI / n;
-        v[i + 1].x = x0 + r * cosf(theta);
-        v[i + 1].y = y0 + r * sinf(theta);
-    }
-    v[n + 1] = v[1];
+    const float d = size/2.f;
+    const float xmin = x - d;
+    const float xmax = xmin + size;
+    const float ymin = y - d;
+    const float ymax = ymin + size;
+    v[0].x = xmin; v[0].y = ymin;
+    v[1].x = xmin; v[1].y = ymax;
+    v[2].x = xmax; v[2].y = ymax;
+    v[3].x = xmax; v[3].y = ymin;
 }
 
-void Graph::updateRectGeometry(QSGGeometry::Point2D* v, float x1, float y1, float x2, float y2, float thick)
+void Graph::updateLineGeometry(QSGGeometry::Point2D* v, float x1, float y1, float x2, float y2, float thick)
 {
     if (x1 == x2 || y1 == y2) {
         // Vertical or horizontal line
@@ -212,63 +213,40 @@ void Graph::updateRectGeometry(QSGGeometry::Point2D* v, float x1, float y1, floa
     }
 }
 
-QSGGeometry* Graph::newCircleGeometry(float x, float y, float radius, int n)
-{
-    QSGGeometry* g = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), n + 2);
-    updateCircleGeometry(g->vertexDataAsPoint2D(), x, y, radius, n);
-    g->setDrawingMode(GL_TRIANGLE_FAN);
-    return g;
-}
-
-QSGGeometry* Graph::newRectGeometry(float x1, float y1, float x2, float y2, float thick)
+QSGGeometry* Graph::newSquareGeometry(float x, float y, float size)
 {
     QSGGeometry* g = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 4);
-    updateRectGeometry(g->vertexDataAsPoint2D(), x1, y1, x2, y2, thick);
+    updateSquareGeometry(g->vertexDataAsPoint2D(), x, y, size);
     g->setDrawingMode(GL_TRIANGLE_FAN);
     return g;
 }
 
-#define CIRCLE_NODES(r) roundf(8.f * (r))
-
-QSGGeometry* Graph::newNodeGeometry(float x1, float y1, float x2, float y2, float thick)
+QSGGeometry* Graph::newLineGeometry(float x1, float y1, float x2, float y2, float thick)
 {
-    if (x1 == x2 && y1 == y2) {
-        const float r = thick/2.f;
-        return newCircleGeometry(x1, y1, r, CIRCLE_NODES(r));
-    } else {
-        return newRectGeometry(x1, y1, x2, y2, thick);
-    }
+    QSGGeometry* g = new QSGGeometry(QSGGeometry::defaultAttributes_Point2D(), 4);
+    updateLineGeometry(g->vertexDataAsPoint2D(), x1, y1, x2, y2, thick);
+    g->setDrawingMode(GL_TRIANGLE_FAN);
+    return g;
 }
 
-void Graph::updateNodeGeometry(QSGGeometryNode* node, float x1, float y1, float x2, float y2, float thick)
+void Graph::updateSquareNode(QSGGeometryNode* node, float x, float y, float size)
 {
-    QSGGeometry* g = node->geometry();
-    if (x1 == x2 && y1 == y2) {
-        // Dot
-        const float r = thick/2.f;
-        const int n = CIRCLE_NODES(r);
-        if (g->vertexCount() == (n + 2)) {
-            updateCircleGeometry(g->vertexDataAsPoint2D(), x1, y1, r, n);
-            node->markDirty(QSGNode::DirtyGeometry);
-        } else {
-            node->setGeometry(newCircleGeometry(x1, y1, r, n));
-        }
-    } else {
-        if (g->vertexCount() == 4) {
-            updateRectGeometry(g->vertexDataAsPoint2D(), x1, y1, x2, y2, thick);
-            node->markDirty(QSGNode::DirtyGeometry);
-        } else {
-            node->setGeometry(newNodeGeometry(x1, y1, x2, y2, thick));
-        }
-    }
+    updateSquareGeometry(node->geometry()->vertexDataAsPoint2D(), x, y, size);
+    node->markDirty(QSGNode::DirtyGeometry);
 }
 
-QSGGeometryNode* Graph::newNode(float x1, float y1, float x2, float y2)
+void Graph::updateLineNode(QSGGeometryNode* node, float x1, float y1, float x2, float y2, float thick)
+{
+    updateLineGeometry(node->geometry()->vertexDataAsPoint2D(), x1, y1, x2, y2, thick);
+    node->markDirty(QSGNode::DirtyGeometry);
+}
+
+QSGGeometryNode* Graph::newNode(QSGGeometry* g)
 {
     QSGFlatColorMaterial* m = new QSGFlatColorMaterial;
     m->setColor(m_color);
-    QSGGeometryNode* node = new QSGGeometryNode;
-    node->setGeometry(newNodeGeometry(x1, y1, x2, y2, m_lineWidth));
+    QSGGeometryNode* node = new QSGGeometryNode();
+    node->setGeometry(g);
     node->setMaterial(m);
     node->setFlag(QSGNode::OwnsGeometry);
     node->setFlag(QSGNode::OwnsMaterial);
@@ -307,13 +285,15 @@ QSGNode* Graph::updatePaintNode(QSGNode* paintNode, UpdatePaintNodeData*)
             m_minTime < m_maxTime) {
             const float timeSpan = m_minTime.msecsTo(m_maxTime);
             const float valueSpan = m_maxValue - m_minValue;
-            float lastX = 0, lastY = 0;
 
-            // Reuse the existing nodes
-            QSGNode* node = paintNode->firstChild();
+            // Calculate points and figure out if we need squares
+            int i;
+            bool drawSquares = true;
             const int n = m_model->rowCount();
-            bool firstNode = true;
-            for (int i = 0; i < n; i++) {
+            const float minDistSquared = 4 * m_lineWidth * m_lineWidth;
+            QVector<QPointF> points;
+            points.reserve(n);
+            for (i = 0; i < n; i++) {
                 bool ok;
                 const QModelIndex index(m_model->index(i, 0));
                 const QDateTime time(m_model->data(index, m_timestampRole).toDateTime());
@@ -321,21 +301,62 @@ QSGNode* Graph::updatePaintNode(QSGNode* paintNode, UpdatePaintNodeData*)
                 if (ok) {
                     const float x = w * m_minTime.msecsTo(time) / timeSpan;
                     const float y = h * (m_maxValue - value) / valueSpan;
-                    if (!firstNode && lineVisible(lastX, lastY, x, y, w, h)) {
-                        if (node) {
-                            updateNodeGeometry((QSGGeometryNode*)node, lastX, lastY, x, y, m_lineWidth);
-                            node = node->nextSibling();
-                        } else {
-                            node = newNode(lastX, lastY, x, y);
-                            paintNode->appendChildNode(node);
-                            m_nodes.append(node);
-                            node = Q_NULLPTR;
+                    if (drawSquares && !points.isEmpty()) {
+                        const QPointF& last(points.last());
+                        const float lastX = last.x();
+                        const float lastY = last.y();
+                        if (lineVisible(lastX, lastY, x, y, w, h)) {
+                            const float dx = x - lastX;
+                            const float dy = y - lastY;
+                            const float distSquared = dx * dx + dy * dy;
+                            if (distSquared < minDistSquared) {
+                                drawSquares = false;
+                                DBG("Not drawing squares");
+                            }
                         }
                     }
-                    firstNode = false;
-                    lastX = x;
-                    lastY = y;
+                    points.append(QPointF(x, y));
                 }
+            }
+
+            // Reuse the existing nodes
+            QSGNode* node = paintNode->firstChild();
+            const float xmin = -m_lineWidth;
+            const float ymin = -m_lineWidth;
+            const float xmax = w + m_lineWidth;
+            const float ymax = h + m_lineWidth;
+            const int np = points.count();
+            const QPointF* pa = points.constData();
+            float lastX = 0, lastY = 0;
+            for (i = 0; i < np; i++) {
+                const float x = pa[i].x();
+                const float y = pa[i].y();
+
+                if (drawSquares && x >= xmin && x < xmax && y >= ymin && y < ymax) {
+                    const float d = 2 * m_lineWidth;
+                    if (node) {
+                        updateSquareNode((QSGGeometryNode*)node, x, y, d);
+                        node = node->nextSibling();
+                    } else {
+                        QSGNode* child = newNode(newSquareGeometry(x, y, d));
+                        paintNode->appendChildNode(child);
+                        m_nodes.append(child);
+                    }
+                }
+
+                if (i > 0 && lineVisible(lastX, lastY, x, y, w, h)) {
+                    if (node) {
+                        updateLineNode((QSGGeometryNode*)node, lastX, lastY, x, y, m_lineWidth);
+                        node = node->nextSibling();
+                    } else {
+                        QSGNode* child = newNode(newLineGeometry(lastX, lastY, x, y, m_lineWidth));
+                        paintNode->appendChildNode(child);
+                        m_nodes.append(child);
+                    }
+                }
+
+                lastX = x;
+                lastY = y;
             }
 
             // Drop nodes that we no longer need
