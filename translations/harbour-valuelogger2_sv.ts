@@ -142,10 +142,6 @@
         <source>Plot color</source>
         <translation>Diagramfärg</translation>
     </message>
-    <message>
-        <source>Change</source>
-        <translation>Ändra</translation>
-    </message>
 </context>
 <context>
     <name>ShowData</name>

@@ -142,10 +142,6 @@
         <source>Plot color</source>
         <translation>Käppyrän väri</translation>
     </message>
-    <message>
-        <source>Change</source>
-        <translation>Muuta</translation>
-    </message>
 </context>
 <context>
     <name>ShowData</name>

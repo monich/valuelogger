@@ -1,6 +1,8 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+
 import "../js/debug.js" as Debug
+import "../components"
 
 Dialog {
     id: newParamaterPage
@@ -21,27 +23,30 @@ Dialog {
         }
     }
 
+    DialogHeader {
+        id: dialogHeader
+
+        acceptText: pageTitle + qsTr(" parameter")
+        cancelText: qsTr("Cancel")
+    }
 
     SilicaFlickable {
         id: flick
 
-        anchors.fill: parent
+        clip: true
         contentHeight: col.height
         width: parent.width
+        anchors {
+            top: dialogHeader.bottom
+            bottom: parent.bottom
+        }
 
         VerticalScrollDecorator { flickable: flick }
 
         Column {
             id: col
 
-            spacing: Theme.paddingLarge
-            width: newParamaterPage.width
-
-            DialogHeader {
-                id: pageHeader
-                acceptText: pageTitle + qsTr(" parameter")
-                cancelText: qsTr("Cancel")
-            }
+            width: parent.width
 
             TextField {
                 id: parNameField
@@ -56,6 +61,8 @@ Dialog {
                 EnterKey.onClicked: parDescField.focus = true
             }
 
+            VerticalGap { }
+
             TextField {
                 id: parDescField
                 width: parent.width
@@ -67,32 +74,41 @@ Dialog {
                 EnterKey.onClicked: parNameField.focus = true
             }
 
-            SectionHeader {
-                text: qsTr("Plot color")
-            }
+            BackgroundItem {
+                id: colorItem
 
-            Row {
-                anchors.horizontalCenter: parent.horizontalCenter
-                spacing: 50
+                width: parent.width
 
-                Rectangle {
-                    id: plotColorLegend
-                    height: 50
-                    width: 50
-                    color: plotColor
+                Row {
+                    anchors.verticalCenter: parent.verticalCenter
+                    spacing: Theme.paddingLarge
+                    x: Theme.horizontalPageMargin
+
+                    Rectangle {
+                        id: plotColorLegend
+
+                        width: parent.height
+                        height: width
+                        color: plotColor
+                        anchors.verticalCenter: parent.verticalCenter
+                        layer.enabled: colorItem.highlighted
+                        layer.effect: PressEffect { source: plotColorLegend }
+                    }
+
+                    Label {
+                        text: qsTr("Plot color")
+                        anchors.verticalCenter: parent.verticalCenter
+                        color: colorItem.highlighted ? Theme.highlightColor : Theme.primaryColor
+                    }
                 }
 
-                Button {
-                    text: qsTr("Change")
-                    anchors.verticalCenter: plotColorLegend.verticalCenter
-                    onClicked: {
-                        var dialog = pageStack.push("Sailfish.Silica.ColorPickerDialog", { "colors": plotColors })
-                        dialog.accepted.connect(function() {
-                            Debug.log("Changed color to", dialog.color)
-                            plotColorLegend.color = dialog.color
-                            plotColor = dialog.color
-                        })
-                    }
+                onClicked: {
+                    var dialog = pageStack.push("Sailfish.Silica.ColorPickerDialog", { "colors": plotColors })
+                    dialog.accepted.connect(function() {
+                        Debug.log("Changed color to", dialog.color)
+                        plotColorLegend.color = dialog.color
+                        plotColor = dialog.color
+                    })
                 }
             }
         }
