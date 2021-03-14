@@ -28,6 +28,8 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.valuelogger 1.0
 
+import "../js/debug.js" as Debug
+
 Item {
     property var parInfoModel
     property bool dragging
@@ -42,6 +44,52 @@ Item {
     readonly property int fontSize: Theme.fontSizeTiny
     readonly property bool fontBold: true
 
+    property real minValue
+    property real maxValue
+
+    property date minTime
+    property date maxTime
+
+    Component.onCompleted: {
+        if (graphs.count > 0) {
+            var model = graphs.itemAt(0).model
+
+            minTime = model.minTime
+            maxTime = model.maxTime
+            minValue = model.minValue
+            maxValue = model.maxValue
+
+            Debug.log("minTime:", minTime, minTime.getTime())
+            Debug.log("maxTime:", maxTime, maxTime.getTime())
+            Debug.log("minValue:", minValue)
+            Debug.log("maxValue:", maxValue)
+
+            for (var i=1; i<graphs.count; i++) {
+                model = graphs.itemAt(i).model
+                if (start.getTime() > model.minTime.getTime()) {
+                    Debug.log("minTime:", minTime, "=>", model.minTime, model.minTime.getTime())
+                    minTime = model.minTime
+                }
+                if (end.getTime() < model.maxTime.getTime()) {
+                    Debug.log("maxTime:", maxTime, "=>", model.maxTime, model.maxTime.getTime())
+                    maxTime = model.maxTime
+                }
+                if (minValue > model.minValue) {
+                    Debug.log("min:", minValue, "=>", model.minValue)
+                    minValue = model.minValue
+                }
+                if (maxValue < model.maxValue) {
+                    Debug.log("max:", maxValue, "=>", model.maxValue)
+                    maxValue = model.maxValue
+                }
+            }
+        } else {
+            minTime = maxTime = new Date()
+            minValue = maxValue = 0
+        }
+        updateGraph()
+    }
+
     function distanceX(p1, p2){
         return Math.max(p1.x, p2.x) - Math.min(p1.x, p2.x)
     }
@@ -51,79 +99,50 @@ Item {
     }
 
     function updateVerticalScale() {
-        var m = (((max-min))/canvas.height)*pinchZoom.deltaY
+        var fullSpan = maxValue - minValue, visibleSpan, shift
+        if (fullSpan > 0) {
+            visibleSpan = fullSpan / pinchZoom.scaleY
+            shift = fullSpan * ( 1 +  pinchMove.moveY / canvas.height / pinchZoom.scaleY) - visibleSpan
+        } else {
+            visibleSpan = 1
+            shift = -0.5
+        }
 
-        max = max - m/2
-        min = min + m/2
-
-        var d = (((max-min))/canvas.height)*pinchMove.movementY
-
-        max = max + d
-        min = min + d
+        min = minValue + shift
+        max = min + visibleSpan
 
         valueMax.text = max.toFixed(2)
         valueMin.text = min.toFixed(2)
 
         var n = valueMiddle.count + 1
-        for (var midIndex=0; midIndex<valueMiddle.count; midIndex++) {
-            valueMiddle.itemAt(midIndex).text = (min+(((max-min)/n)*(midIndex+1))).toFixed(2)
+        for (var i = 0; i < valueMiddle.count; i++) {
+            valueMiddle.itemAt(i).text = (min+(((max-min)/n)*(i+1))).toFixed(2)
         }
     }
 
     function updateHorizontalScale() {
-        var mm = (((xstart.getTime() - xend.getTime()))/canvas.width)*pinchZoom.deltaX
+        var t1 = new Date()
+        var t2 = new Date()
+        var fullSpan = maxTime.getTime() - minTime.getTime(), visibleSpan, shift
+        if (fullSpan > 0) {
+            visibleSpan = fullSpan / pinchZoom.scaleX
+            shift = fullSpan * pinchMove.moveX / canvas.width / pinchZoom.scaleX
+        } else {
+            visibleSpan = 1000
+            shift = -500
+        }
 
-        var t = new Date()
-        t.setTime(xstart.getTime() - Math.floor(mm))
-        xstart = t
+        t1.setTime(minTime.getTime() - shift)
+        t2.setTime(t1.getTime() + visibleSpan)
 
-        var u = new Date()
-        u.setTime(xend.getTime() + Math.floor(mm))
-        xend = u
+        xstart = t1
+        xend = t2
 
-        var dd = (((xstart.getTime() - xend.getTime()))/canvas.width)*pinchMove.movementX
-
-        t = new Date()
-        t.setTime(xstart.getTime() + Math.floor(dd))
-        xstart = t
-
-        u = new Date()
-        u.setTime(xend.getTime() + Math.floor(dd))
-        xend = u
-
-        xStart.text = Qt.formatDateTime(xend, "dd.MM.yyyy hh:mm")
-        xEnd.text = Qt.formatDateTime(xstart, "dd.MM.yyyy hh:mm")
+        xStart.text = Qt.formatDateTime(xstart, "dd.MM.yyyy hh:mm")
+        xEnd.text = Qt.formatDateTime(xend, "dd.MM.yyyy hh:mm")
     }
 
     function updateGraph() {
-        if (graphs.count > 0) {
-            var model = graphs.itemAt(0).model
-
-            xstart = model.minTime
-            xend = model.maxTime
-            min = model.minValue
-            max = model.maxValue
-
-            for (var i=1; i<graphs.count; i++) {
-                model = graphs.itemAt(i).model
-                if (xstart.getTime() > model.minTime.getTime()) {
-                    xstart = model.minTime
-                }
-                if (xend.getTime() < model.maxTime.getTime()) {
-                    xend = model.maxTime
-                }
-                if (min > model.minValue) {
-                    min = model.minValue
-                }
-                if (max < model.maxValue) {
-                    max = model.maxValue
-                }
-            }
-        } else {
-            xstart = xend = new Date()
-            min = max = 0
-        }
-
         updateVerticalScale()
         updateHorizontalScale()
     }
@@ -141,53 +160,71 @@ Item {
     Text {
         id: xStart
         color: Theme.primaryColor
-        font.pixelSize: fontSize
-        font.bold: fontBold
-        anchors.right: parent.right
-        anchors.rightMargin: 0
-        anchors.top: parent.top
+        font {
+            pixelSize: fontSize
+            bold: fontBold
+        }
+        anchors {
+            left: parent.left
+            top: parent.top
+        }
     }
 
     Text {
         id: xEnd
         color: Theme.primaryColor
-        font.pixelSize: fontSize
-        font.bold: fontBold
-        anchors.left: parent.left
-        anchors.top: parent.top
-        horizontalAlignment: Text.AlignRight
+        font {
+            pixelSize: fontSize
+            bold: fontBold
+        }
+        anchors {
+            right: parent.right
+            top: parent.top
+        }
     }
 
     Text {
         id: valueMax
         color: Theme.primaryColor
-        font.pixelSize: fontSize
-        font.bold: fontBold
-        anchors.left: parent.left
-        anchors.leftMargin: Theme.paddingSmall
-        anchors.top: xEnd.bottom
+        font {
+            pixelSize: fontSize
+            bold: fontBold
+        }
+        anchors {
+            left: parent.left
+            leftMargin: Theme.paddingSmall
+            top: xStart.bottom
+        }
     }
 
     Text {
         id: valueMin
         color: Theme.primaryColor
-        font.pixelSize: fontSize
-        font.bold: fontBold
-        anchors.left: parent.left
-        anchors.leftMargin: Theme.paddingSmall
-        anchors.bottom: parent.bottom
+        font {
+            pixelSize: fontSize
+            bold: fontBold
+        }
+        anchors {
+            left: parent.left
+            leftMargin: Theme.paddingSmall
+            bottom: parent.bottom
+        }
     }
 
     Repeater {
         id: valueMiddle
-        model:4
+        model: 4
 
         Text {
             color: Theme.primaryColor
-            font.pixelSize: fontSize
-            font.bold: fontBold
-            anchors.left: parent.left
-            anchors.leftMargin: Theme.paddingSmall
+            font {
+                pixelSize: fontSize
+                bold: fontBold
+            }
+            anchors {
+                left: parent.left
+                leftMargin: Theme.paddingSmall
+            }
             y: valueMin.y + (index+1)*(valueMax.y + valueMax.height - valueMin.y)/5
             z: 10
         }
@@ -195,12 +232,14 @@ Item {
 
     ListView {
         id: legend
-        x: parent.width/12
-        y: x
+
+        x: Math.round(parent.width/12)
+        y: Math.round(parent.height/10)
         z: 11
         width: parent.width - 2 * x
         height: contentHeight
         model: parInfoModel
+        visible: opacity > 0
 
         delegate: ListItem {
             id: legendItem
@@ -215,35 +254,37 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
             }
             Label {
-                text: modelData.name
                 anchors {
                     verticalCenter: parent.verticalCenter
                     left: legendColor.right
                     leftMargin: Theme.paddingSmall
                     right: parent.right
                 }
-                truncationMode: TruncationMode.Fade
                 font {
                     pixelSize: fontSize
                     bold: fontBold
                 }
+                text: modelData.name
+                truncationMode: TruncationMode.Fade
             }
         }
 
         Behavior on opacity {
-            FadeAnimation {}
+            FadeAnimation { duration: 500 }
         }
 
         onOpacityChanged: {
-            if (opacity == 1.0)
+            if (opacity === 1.0) {
                 legendVisibility.start()
+            }
         }
 
         Timer {
             id: legendVisibility
+
             interval: 2000
             running: true
-            onTriggered:  legend.opacity = 0.0
+            onTriggered: legend.opacity = 0.0
         }
     }
 
@@ -281,82 +322,86 @@ Item {
 
     Item {
         id: canvas
+
         width: parent.width
         anchors {
             top: valueMax.bottom
             bottom: valueMin.top
         }
+
         PinchArea {
             id: pinchZoom
             anchors.fill: canvas
 
-            property real iX
-            property real iY
-            property real deltaX : 0
-            property real deltaY : 0
-
-            property point lv1
-            property point lv2
-
-            property bool scaleInX
+            property real scaleX: 1
+            property real scaleY: 1
+            property real pinchScaleX: 1
+            property real pinchScaleY: 1
+            property point pinchCenter
+            property bool scalingHorizontally
 
             onPinchFinished: {
             }
             onPinchStarted: {
-                iX = distanceX(pinch.point1, pinch.point2)
-                iY = distanceY(pinch.point1, pinch.point2)
+                pinchScaleX = scaleX
+                pinchScaleY = scaleY
+                pinchMove.startMoveX = pinchMove.moveX
+                pinchMove.startMoveY = pinchMove.moveY
+                pinchCenter = pinch.center
 
-                scaleInX = (iX > iY)
+                var dx = distanceX(pinch.point1, pinch.point2)
+                var dy = distanceY(pinch.point1, pinch.point2)
+                scalingHorizontally = (dx > dy)
             }
             onPinchUpdated: {
-                if (pinch.point1 !== pinch.point2) {
-                    lv1 = pinch.point1
-                    lv2 = pinch.point2
-                }
-                if (scaleInX) {
-                    var dX = distanceX(lv1, lv2) - iX
-                    iX = distanceX(lv1, lv2)
-                    deltaX += dX
+                if (scalingHorizontally) {
+                    scaleX = pinchScaleX * pinch.scale
+                    pinchMove.moveX = pinchCenter.x - (pinchCenter.x - pinchMove.startMoveX) / pinchScaleX * scaleX
                 } else {
-                    var dY = distanceY(lv1, lv2) - iY
-                    iY = distanceY(lv1, lv2)
-                    deltaY += dY
+                    scaleY = pinchScaleY * pinch.scale
+                    pinchMove.moveY = pinchCenter.y - (pinchCenter.y - pinchMove.startMoveY) / pinchScaleY * scaleY
                 }
                 updateGraph()
             }
 
             MouseArea {
-                property real iX
-                property real iY
-                property real movementX : 0
-                property real movementY : 0
-
                 id: pinchMove
+
                 anchors.fill: parent
 
-                onClicked: legend.opacity = 1.0
+                property real moveX
+                property real moveY
+                property real startMoveX
+                property real startMoveY
+                property real pressX
+                property real pressY
+
+                onClicked: {
+                    legend.opacity = 1.0
+                    legendVisibility.restart()
+                }
 
                 onPressed: {
                     dragging = true
-                    iX = mouseX
-                    iY = mouseY
+                    startMoveX = moveX
+                    startMoveY = moveY
+                    pressX = mouseX
+                    pressY = mouseY
                 }
                 onDoubleClicked: {
-                    movementX = 0
-                    movementY = 0
-                    pinchZoom.deltaX = 0
-                    pinchZoom.deltaY = 0
-
+                    Debug.log("resetting the graph")
+                    mouse.accepted = true
+                    pinchZoom.scaleX = 1
+                    pinchZoom.scaleY = 1
+                    startMoveX = moveX = 0
+                    startMoveX = moveY = 0
+                    pressX = mouseX
+                    pressY = mouseY
                     updateGraph()
                 }
                 onPositionChanged: {
-                    var dX = mouseX - iX
-                    iX = mouseX
-                    movementX += dX
-                    var dY = mouseY - iY
-                    iY = mouseY
-                    movementY += dY
-
+                    moveX = startMoveX + (mouseX - pressX)
+                    moveY = startMoveY + (mouseY - pressY)
                     updateGraph()
                 }
                 onReleased: dragging = false
@@ -366,6 +411,7 @@ Item {
 
         Repeater {
             id: graphs
+
             model: parInfoModel
             delegate: Graph {
                 anchors.fill: parent
