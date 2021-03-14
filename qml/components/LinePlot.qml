@@ -52,42 +52,52 @@ Item {
 
     Component.onCompleted: {
         if (graphs.count > 0) {
-            var model = graphs.itemAt(0).model
+            var model, i = 0
 
-            minTime = model.minTime
-            maxTime = model.maxTime
-            minValue = model.minValue
-            maxValue = model.maxValue
+            /* Find first non-empty model */
+            while (i < graphs.count) {
+                model = graphs.itemAt(i++).model
+                if (model.count > 0) {
+                    minTime = model.minTime
+                    maxTime = model.maxTime
+                    minValue = model.minValue
+                    maxValue = model.maxValue
+                    break;
+                }
+            }
 
             Debug.log("minTime:", minTime, minTime.getTime())
             Debug.log("maxTime:", maxTime, maxTime.getTime())
             Debug.log("minValue:", minValue)
             Debug.log("maxValue:", maxValue)
 
-            for (var i=1; i<graphs.count; i++) {
-                model = graphs.itemAt(i).model
-                if (start.getTime() > model.minTime.getTime()) {
-                    Debug.log("minTime:", minTime, "=>", model.minTime, model.minTime.getTime())
-                    minTime = model.minTime
-                }
-                if (end.getTime() < model.maxTime.getTime()) {
-                    Debug.log("maxTime:", maxTime, "=>", model.maxTime, model.maxTime.getTime())
-                    maxTime = model.maxTime
-                }
-                if (minValue > model.minValue) {
-                    Debug.log("min:", minValue, "=>", model.minValue)
-                    minValue = model.minValue
-                }
-                if (maxValue < model.maxValue) {
-                    Debug.log("max:", maxValue, "=>", model.maxValue)
-                    maxValue = model.maxValue
+            /* Process the remaining models */
+            while (i < graphs.count) {
+                model = graphs.itemAt(i++).model
+                if (model.count > 0) {
+                    if (minTime.getTime() > model.minTime.getTime()) {
+                        Debug.log("minTime:", minTime, "=>", model.minTime, model.minTime.getTime())
+                        minTime = model.minTime
+                    }
+                    if (maxTime.getTime() < model.maxTime.getTime()) {
+                        Debug.log("maxTime:", maxTime, "=>", model.maxTime, model.maxTime.getTime())
+                        maxTime = model.maxTime
+                    }
+                    if (minValue > model.minValue) {
+                        Debug.log("min:", minValue, "=>", model.minValue)
+                        minValue = model.minValue
+                    }
+                    if (maxValue < model.maxValue) {
+                        Debug.log("max:", maxValue, "=>", model.maxValue)
+                        maxValue = model.maxValue
+                    }
                 }
             }
         } else {
             minTime = maxTime = new Date()
             minValue = maxValue = 0
         }
-        updateGraph()
+        updateScale()
     }
 
     function distanceX(p1, p2){
@@ -142,7 +152,7 @@ Item {
         xEnd.text = Qt.formatDateTime(xend, "dd.MM.yyyy hh:mm")
     }
 
-    function updateGraph() {
+    function updateScale() {
         updateVerticalScale()
         updateHorizontalScale()
     }
@@ -154,7 +164,7 @@ Item {
         id: sizeChangedTimer
         interval: 0
         repeat: false
-        onTriggered: updateGraph()
+        onTriggered: updateScale()
     }
 
     Text {
@@ -233,17 +243,18 @@ Item {
     ListView {
         id: legend
 
+        readonly property real itemHeight: Math.round(fontSize * 3 / 2)
+
         x: Math.round(parent.width/12)
         y: Math.round(parent.height/10)
         z: 11
         width: parent.width - 2 * x
-        height: contentHeight
+        height: itemHeight * count
         model: parInfoModel
         visible: opacity > 0
 
-        delegate: ListItem {
-            id: legendItem
-            height: Math.floor(fontSize * 3 / 2)
+        delegate: Item {
+            height: legend.itemHeight
             width: legend.width
 
             Rectangle {
@@ -253,6 +264,7 @@ Item {
                 color: modelData.plotcolor
                 anchors.verticalCenter: parent.verticalCenter
             }
+
             Label {
                 anchors {
                     verticalCenter: parent.verticalCenter
@@ -361,7 +373,7 @@ Item {
                     scaleY = pinchScaleY * pinch.scale
                     pinchMove.moveY = pinchCenter.y - (pinchCenter.y - pinchMove.startMoveY) / pinchScaleY * scaleY
                 }
-                updateGraph()
+                updateScale()
             }
 
             MouseArea {
@@ -397,12 +409,12 @@ Item {
                     startMoveX = moveY = 0
                     pressX = mouseX
                     pressY = mouseY
-                    updateGraph()
+                    updateScale()
                 }
                 onPositionChanged: {
                     moveX = startMoveX + (mouseX - pressX)
                     moveY = startMoveY + (mouseY - pressY)
-                    updateGraph()
+                    updateScale()
                 }
                 onReleased: dragging = false
                 onCanceled: dragging = false
