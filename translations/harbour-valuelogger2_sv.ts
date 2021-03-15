@@ -166,8 +166,8 @@
         <translation>Ta bort</translation>
     </message>
     <message>
-        <source>Empty</source>
-        <translation type="unfinished">Tom</translation>
+        <source>No data.</source>
+        <translation type="unfinished">Inga data.</translation>
     </message>
 </context>
 </TS>

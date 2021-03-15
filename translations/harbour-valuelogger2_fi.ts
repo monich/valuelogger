@@ -166,8 +166,8 @@
         <translation>Poista</translation>
     </message>
     <message>
-        <source>Empty</source>
-        <translation type="unfinished">Tyhjä</translation>
+        <source>No data.</source>
+        <translation type="unfinished">Ei arvoja.</translation>
     </message>
 </context>
 </TS>

@@ -15,7 +15,7 @@ Page {
         anchors.fill: parent
         ViewPlaceholder {
             enabled: dataListView.count === 0
-            text: qsTr("Empty")
+            text: qsTr("No data.")
         }
     }
 

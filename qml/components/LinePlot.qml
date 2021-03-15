@@ -467,7 +467,10 @@ Item {
 
             model: parInfoModel
             delegate: Graph {
-                anchors.fill: parent
+                anchors {
+                    fill: parent
+                    margins: thinLine
+                }
                 minValue: min
                 maxValue: max
                 minTime: xstart

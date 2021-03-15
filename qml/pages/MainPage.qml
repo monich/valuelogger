@@ -197,7 +197,10 @@ Page {
                         }
                         Label {
                             width: parent.width
-                            font.pixelSize: Theme.fontSizeSmall
+                            font {
+                                pixelSize: Theme.fontSizeSmall
+                                italic: true
+                            }
                             truncationMode: TruncationMode.Fade
                             color: parameterItem.highlighted ? Theme.secondaryHighlightColor : Theme.secondaryColor
                             text: parDescription
