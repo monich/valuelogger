@@ -107,6 +107,14 @@
         <source>Plot selected</source>
         <translation>Markerat diagram</translation>
     </message>
+    <message>
+        <source>No parameters.</source>
+        <translation type="unfinished">Inga parametrar.</translation>
+    </message>
+    <message>
+        <source>Open the pulley menu to add one.</source>
+        <translation type="unfinished">Öppna rullgardinsmenyn för att lägga till en.</translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>

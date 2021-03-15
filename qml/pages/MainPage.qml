@@ -30,6 +30,8 @@ Page {
     Messagebox { id: messagebox  }
 
     SilicaFlickable {
+        id: mainFlickable
+
         width: parent.width
         height: fullHeight
         contentHeight: height
@@ -60,6 +62,18 @@ Page {
             id: header
 
             title: "Value Logger"
+        }
+
+        Loader {
+            active: Logger.count === 0
+            sourceComponent: Component {
+                ViewPlaceholder {
+                    enabled: true
+                    flickable: mainFlickable
+                    text: qsTr("No parameters.")
+                    hintText: qsTr("Open the pulley menu to add one.")
+                }
+            }
         }
 
         SilicaListView {
@@ -290,6 +304,7 @@ Page {
 
             text: qsTr("Plot selected")
             enabled: Logger.visualizeCount > 0
+            visible: Logger.count > 0
             onClicked: mainPage.plotSelected()
         }
     }

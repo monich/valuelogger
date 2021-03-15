@@ -107,6 +107,14 @@
         <source>Plot selected</source>
         <translation>Piirrä käppyrä</translation>
     </message>
+    <message>
+        <source>No parameters.</source>
+        <translation type="unfinished">Ei ole parametreja.</translation>
+    </message>
+    <message>
+        <source>Open the pulley menu to add one.</source>
+        <translation type="unfinished">Avaa vetovalikko ja lisää parametri.</translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
