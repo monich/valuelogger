@@ -34,15 +34,15 @@ Item {
     property var parInfoModel
     property bool dragging
 
+    readonly property int thinLine: Math.max(2, Math.floor(Theme.paddingSmall/3))
+    readonly property int fontSize: Theme.fontSizeTiny
+    readonly property bool fontBold: true
+
     property real min: 0.0
     property real max: 1.0
 
     property date xstart: new Date()
     property date xend: new Date()
-
-    readonly property int thinLine: Math.max(2, Math.floor(Theme.paddingSmall/3))
-    readonly property int fontSize: Theme.fontSizeTiny
-    readonly property bool fontBold: true
 
     property real minValue
     property real maxValue
@@ -50,7 +50,17 @@ Item {
     property date minTime
     property date maxTime
 
+    property real lastKnownWidth
+    property real lastKnownHeight
+
+    /* Called by the container when it gets its geometry settled */
+    function enableSizeTracking() {
+        lastKnownWidth = width
+        lastKnownHeight = height
+    }
+
     Component.onCompleted: {
+        /* Calculate optimal time and value ranges */
         if (graphs.count > 0) {
             var model, i = 0
 
@@ -157,13 +167,37 @@ Item {
         updateHorizontalScale()
     }
 
-    onWidthChanged: sizeChangedTimer.restart()
-    onHeightChanged: sizeChangedTimer.restart()
+    onWidthChanged: {
+        if (lastKnownWidth > 0) {
+            var newMoveX = Math.round(pinchMove.moveX + ((width - lastKnownWidth) / 2))
+            var newScaleX = pinchZoom.scaleX * lastKnownWidth / width
+            Debug.log("width", lastKnownWidth, "=>", width)
+            Debug.log("moveX", pinchMove.moveX, "=>", newMoveX)
+            Debug.log("scaleX", pinchZoom.scaleX, "=>", newScaleX)
+            pinchMove.moveX = newMoveX
+            pinchZoom.scaleX = newScaleX
+            lastKnownWidth = width
+            sizeChangedTimer.restart()
+        }
+    }
+
+    onHeightChanged: {
+        if (lastKnownHeight  > 0) {
+            var newMoveY = Math.round(pinchMove.moveY + ((height - lastKnownHeight)/2))
+            var newScaleY = pinchZoom.scaleY * lastKnownHeight / height
+            Debug.log("height", lastKnownHeight, "=>", height)
+            Debug.log("moveY", pinchMove.moveY, "=>", newMoveY)
+            Debug.log("scaleY", pinchZoom.scaleY, "=>", newScaleY)
+            pinchMove.moveY = newMoveY
+            pinchZoom.scaleY = newScaleY
+            lastKnownHeight = height
+            sizeChangedTimer.restart()
+        }
+    }
 
     Timer {
         id: sizeChangedTimer
         interval: 0
-        repeat: false
         onTriggered: updateScale()
     }
 
@@ -402,22 +436,29 @@ Item {
                 }
                 onDoubleClicked: {
                     Debug.log("resetting the graph")
-                    mouse.accepted = true
+                    blockPositionChanges.restart()
                     pinchZoom.scaleX = 1
                     pinchZoom.scaleY = 1
                     startMoveX = moveX = 0
-                    startMoveX = moveY = 0
+                    startMoveY = moveY = 0
                     pressX = mouseX
                     pressY = mouseY
                     updateScale()
                 }
                 onPositionChanged: {
-                    moveX = startMoveX + (mouseX - pressX)
-                    moveY = startMoveY + (mouseY - pressY)
-                    updateScale()
+                    if (!blockPositionChanges.running) {
+                        moveX = Math.round(startMoveX + (mouseX - pressX))
+                        moveY = Math.round(startMoveY + (mouseY - pressY))
+                        updateScale()
+                    }
                 }
                 onReleased: dragging = false
                 onCanceled: dragging = false
+
+                Timer {
+                    id: blockPositionChanges
+                    interval: 250
+                }
             }
         }
 

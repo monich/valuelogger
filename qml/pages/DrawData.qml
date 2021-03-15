@@ -8,6 +8,8 @@ Page {
 
     backNavigation: !plot.dragging
 
+    Component.onCompleted: plot.enableSizeTracking()
+
     PageHeader {
         id: ph
         title: qsTr("Plot")
