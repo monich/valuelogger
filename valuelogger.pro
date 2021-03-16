@@ -40,7 +40,8 @@ OTHER_FILES += qml/valuelogger.qml \
     qml/components/*.qml \
     qml/images/*.svg \
     qml/js/*.js \
-    LICENSE
+    LICENSE \
+    README.md
 
 # Icons
 ICON_SIZES = 86 108 128 256
