@@ -40,7 +40,7 @@ OTHER_FILES += qml/valuelogger.qml \
     qml/components/*.qml \
     qml/images/*.svg \
     qml/js/*.js \
-    qml/icon-cover-plot.png
+    LICENSE
 
 # Icons
 ICON_SIZES = 86 108 128 256
