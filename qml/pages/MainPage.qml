@@ -49,6 +49,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Export to CSV")
+                enabled: Logger.count > 0
                 onClicked: messagebox.showMessage(qsTr("Exported to:") + "<br>" + Logger.exportToCSV(), 2500)
             }
 
