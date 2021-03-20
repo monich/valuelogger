@@ -251,7 +251,7 @@ Item {
 
     Repeater {
         id: valueMiddle
-        model: 4
+        model: grid.verticalCount - 1
 
         Text {
             color: Theme.primaryColor
@@ -263,7 +263,7 @@ Item {
                 left: parent.left
                 leftMargin: Theme.paddingSmall
             }
-            y: valueMin.y + (index+1)*(valueMax.y + valueMax.height - valueMin.y)/5
+            y: valueMin.y + (index+1)*(valueMax.y + valueMax.height - valueMin.y)/grid.verticalCount
             z: 10
         }
     }
@@ -272,11 +272,20 @@ Item {
         id: legend
 
         readonly property real itemHeight: Math.round(fontSize * 3 / 2)
+        readonly property real horizontalMargin: Theme.horizontalPageMargin
+        readonly property real valueLabelWidth: Math.max(valueMin.width, valueMax.width)
+        readonly property bool moveToTheRight: (valueLabelWidth >= horizontalMargin && (Theme.paddingLarge + height) > grid.height/grid.verticalCount)
 
-        x: Math.round(parent.width/12)
-        y: Math.round(parent.height/10)
+        anchors {
+            left: grid.left
+            leftMargin: horizontalMargin + (moveToTheRight ? Math.round(grid.width/grid.horizontalCount) : 0)
+            right: grid.right
+            rightMargin: horizontalMargin
+            top: grid.top
+            topMargin: Theme.paddingLarge
+        }
+
         z: 11
-        width: parent.width - 2 * x
         height: itemHeight * count
         model: parInfoModel
         visible: opacity > 0
@@ -330,6 +339,10 @@ Item {
 
     ShaderEffectSource {
         id: grid
+
+        readonly property int horizontalCount: 6
+        readonly property int verticalCount: 5
+
         width: parent.width
         anchors {
             top: valueMax.bottom
@@ -340,7 +353,7 @@ Item {
             width: grid.width
             height: grid.height
             Repeater {
-                model: 7
+                model: grid.horizontalCount + 1
                 delegate: Rectangle {
                     x: Math.round(index * (parent.width - width)/6)
                     width: thinLine
@@ -349,7 +362,7 @@ Item {
                 }
             }
             Repeater {
-                model: 6
+                model: grid.verticalCount + 1
                 delegate: Rectangle {
                     y: Math.round(index * (parent.height - height)/5)
                     width: parent.width
