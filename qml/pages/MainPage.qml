@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import org.nemomobile.notifications 1.0
 import harbour.valuelogger 1.0
 
 import "../components"
@@ -9,6 +10,7 @@ Page {
     id: mainPage
 
     readonly property real fullHeight: isPortrait ? Screen.height : Screen.width
+    readonly property bool darkOnLight: 'colorScheme' in Theme && Theme.colorScheme === Theme.DarkOnLight
 
     signal plotSelected()
 
@@ -27,7 +29,16 @@ Page {
         })
     }
 
-    Messagebox { id: messagebox  }
+    Notification {
+        id: notification
+        expireTimeout: 2500
+        Component.onCompleted: {
+            if ("icon" in notification) {
+                notification.icon = Qt.binding(function() { return Qt.resolvedUrl("../images/" + (darkOnLight ? "icon-cover-plot-dark.svg" : "icon-cover-plot.svg")) })
+                Debug.log(notification.icon)
+            }
+        }
+    }
 
     SilicaFlickable {
         id: mainFlickable
@@ -50,7 +61,10 @@ Page {
             MenuItem {
                 text: qsTr("Export to CSV")
                 enabled: Logger.count > 0
-                onClicked: messagebox.showMessage(qsTr("Exported to:") + "<br>" + Logger.exportToCSV(), 2500)
+                onClicked: {
+                    notification.previewBody = qsTr("Exported to %1").arg(Logger.exportToCSV())
+                    notification.publish()
+                }
             }
 
             MenuItem {

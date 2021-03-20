@@ -76,8 +76,8 @@
         <translation>Vie CSV muotoon</translation>
     </message>
     <message>
-        <source>Exported to:</source>
-        <translation>Viety tiedostoon:</translation>
+        <source>Exported to %1</source>
+        <translation>Viety tiedostoon %1</translation>
     </message>
     <message>
         <source>Add new parameter</source>

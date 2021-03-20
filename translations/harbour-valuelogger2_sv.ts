@@ -76,8 +76,8 @@
         <translation>Exportera till CSV</translation>
     </message>
     <message>
-        <source>Exported to:</source>
-        <translation>Exporterad till:</translation>
+        <source>Exported to %1</source>
+        <translation>Exporterad till %1</translation>
     </message>
     <message>
         <source>Add new parameter</source>

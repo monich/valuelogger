@@ -76,7 +76,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Exported to:</source>
+        <source>Exported to %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
