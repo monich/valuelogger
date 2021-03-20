@@ -9,6 +9,7 @@ CoverBackground {
     signal plotSelected()
 
     readonly property bool darkOnLight: 'colorScheme' in Theme && Theme.colorScheme === Theme.DarkOnLight
+    readonly property url plotIcon: Qt.resolvedUrl("../images/" + (darkOnLight ? "icon-cover-plot-dark.svg" : "icon-cover-plot.svg"))
 
     Image {
         id: icon
@@ -45,7 +46,7 @@ CoverBackground {
             onTriggered: addValue()
         }
         CoverAction {
-            iconSource: Qt.resolvedUrl("../images/" + (darkOnLight ? "icon-cover-plot-dark.svg" : "icon-cover-plot.svg"))
+            iconSource: plotIcon
             onTriggered: cover.plotSelected()
         }
     }
@@ -54,7 +55,7 @@ CoverBackground {
         enabled: Logger.visualizeCount > 1
 
         CoverAction {
-            iconSource: "../icon-cover-plot.png"
+            iconSource: plotIcon
             onTriggered: cover.plotSelected()
         }
     }
