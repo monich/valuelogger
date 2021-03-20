@@ -169,13 +169,10 @@ Item {
 
     onWidthChanged: {
         if (lastKnownWidth > 0) {
-            var newMoveX = Math.round(pinchMove.moveX + ((width - lastKnownWidth) / 2))
-            var newScaleX = pinchZoom.scaleX * lastKnownWidth / width
+            var newMoveX = Math.round(pinchMove.moveX * width / lastKnownWidth)
             Debug.log("width", lastKnownWidth, "=>", width)
             Debug.log("moveX", pinchMove.moveX, "=>", newMoveX)
-            Debug.log("scaleX", pinchZoom.scaleX, "=>", newScaleX)
             pinchMove.moveX = newMoveX
-            pinchZoom.scaleX = newScaleX
             lastKnownWidth = width
             sizeChangedTimer.restart()
         }
@@ -183,13 +180,10 @@ Item {
 
     onHeightChanged: {
         if (lastKnownHeight  > 0) {
-            var newMoveY = Math.round(pinchMove.moveY + ((height - lastKnownHeight)/2))
-            var newScaleY = pinchZoom.scaleY * lastKnownHeight / height
+            var newMoveY = Math.round(pinchMove.moveY * height / lastKnownHeight)
             Debug.log("height", lastKnownHeight, "=>", height)
             Debug.log("moveY", pinchMove.moveY, "=>", newMoveY)
-            Debug.log("scaleY", pinchZoom.scaleY, "=>", newScaleY)
             pinchMove.moveY = newMoveY
-            pinchZoom.scaleY = newScaleY
             lastKnownHeight = height
             sizeChangedTimer.restart()
         }
