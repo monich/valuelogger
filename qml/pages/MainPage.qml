@@ -35,7 +35,6 @@ Page {
         Component.onCompleted: {
             if ("icon" in notification) {
                 notification.icon = Qt.binding(function() { return Qt.resolvedUrl("../images/" + (darkOnLight ? "icon-cover-plot-dark.svg" : "icon-cover-plot.svg")) })
-                Debug.log(notification.icon)
             }
         }
     }
