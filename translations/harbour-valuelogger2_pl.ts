@@ -76,10 +76,6 @@
         <translation>Eksportuj do CSV</translation>
     </message>
     <message>
-        <source>Exported to:</source>
-        <translation>Wyeskportowane do:</translation>
-    </message>
-    <message>
         <source>Add new parameter</source>
         <translation>dodaj nowy parametr</translation>
     </message>
@@ -114,6 +110,10 @@
     <message>
         <source>Open the pulley menu to add one.</source>
         <translation>Otwórz wysuwane menu, aby dodać parametr.</translation>
+    </message>
+    <message>
+        <source>Exported to %1</source>
+        <translation>Wyeskportowane do %1</translation>
     </message>
 </context>
 <context>
