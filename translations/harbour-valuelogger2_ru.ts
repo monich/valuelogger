@@ -4,8 +4,8 @@
 <context>
     <name>AboutPage</name>
     <message>
-        <source>Version: </source>
-        <translation>Версия: </translation>
+        <source>Version: %1</source>
+        <translation>Версия: %1</translation>
     </message>
 </context>
 <context>
@@ -21,22 +21,6 @@
 </context>
 <context>
     <name>AddValue</name>
-    <message>
-        <source>Add</source>
-        <translation>Добавить</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Изменить</translation>
-    </message>
-    <message>
-        <source> value</source>
-        <translation> значение</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Отменить</translation>
-    </message>
     <message>
         <source>Timestamp</source>
         <translation>Дата и время</translation>
@@ -56,6 +40,14 @@
     <message>
         <source>Enter annotation here</source>
         <translation>Введите примечание</translation>
+    </message>
+    <message>
+        <source>Add value</source>
+        <translation>Добавить</translation>
+    </message>
+    <message>
+        <source>Edit value</source>
+        <translation>Изменить</translation>
     </message>
 </context>
 <context>
@@ -115,21 +107,13 @@
         <source>Open the pulley menu to add one.</source>
         <translation>Используйте меню, чтобы добавить параметр.</translation>
     </message>
+    <message>
+        <source>Edit parameter</source>
+        <translation>Изменить</translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
-    <message>
-        <source>Add</source>
-        <translation>Добавить</translation>
-    </message>
-    <message>
-        <source> parameter</source>
-        <translation> параметр</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Отменить</translation>
-    </message>
     <message>
         <source>Parameter name</source>
         <translation>Имя параметра</translation>
@@ -149,6 +133,10 @@
     <message>
         <source>Plot color</source>
         <translation>Цвет графика</translation>
+    </message>
+    <message>
+        <source>Add parameter</source>
+        <translation>Добавить</translation>
     </message>
 </context>
 <context>

@@ -4,8 +4,8 @@
 <context>
     <name>AboutPage</name>
     <message>
-        <source>Version: </source>
-        <translation>Versio: </translation>
+        <source>Version: %1</source>
+        <translation>Versio: %1</translation>
     </message>
 </context>
 <context>
@@ -21,22 +21,6 @@
 </context>
 <context>
     <name>AddValue</name>
-    <message>
-        <source>Add</source>
-        <translation>Lisää</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Muokkaa</translation>
-    </message>
-    <message>
-        <source> value</source>
-        <translation> arvo</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Peru</translation>
-    </message>
     <message>
         <source>Timestamp</source>
         <translation>Aikaleima</translation>
@@ -56,6 +40,14 @@
     <message>
         <source>Enter annotation here</source>
         <translation>Kirjoita selitys tähän</translation>
+    </message>
+    <message>
+        <source>Add value</source>
+        <translation>Lisää arvo</translation>
+    </message>
+    <message>
+        <source>Edit value</source>
+        <translation>Muokkaa arvo</translation>
     </message>
 </context>
 <context>
@@ -115,21 +107,13 @@
         <source>Open the pulley menu to add one.</source>
         <translation type="unfinished">Avaa vetovalikko ja lisää parametri.</translation>
     </message>
+    <message>
+        <source>Edit parameter</source>
+        <translation>Muokkaa parametri</translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
-    <message>
-        <source>Add</source>
-        <translation>Lisää</translation>
-    </message>
-    <message>
-        <source> parameter</source>
-        <translation> parametri</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Peru</translation>
-    </message>
     <message>
         <source>Parameter name</source>
         <translation>Parametrin nimi</translation>
@@ -149,6 +133,10 @@
     <message>
         <source>Plot color</source>
         <translation>Käppyrän väri</translation>
+    </message>
+    <message>
+        <source>Add parameter</source>
+        <translation>Lisää parametri</translation>
     </message>
 </context>
 <context>

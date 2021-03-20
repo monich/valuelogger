@@ -4,8 +4,8 @@
 <context>
     <name>AboutPage</name>
     <message>
-        <source>Version: </source>
-        <translation>Version: </translation>
+        <source>Version: %1</source>
+        <translation>Version: %1</translation>
     </message>
 </context>
 <context>
@@ -21,22 +21,6 @@
 </context>
 <context>
     <name>AddValue</name>
-    <message>
-        <source>Add</source>
-        <translation>Lägg till</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Redigera</translation>
-    </message>
-    <message>
-        <source> value</source>
-        <translation> värde</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Avbryt</translation>
-    </message>
     <message>
         <source>Timestamp</source>
         <translation>Tidsstämpel</translation>
@@ -56,6 +40,14 @@
     <message>
         <source>Enter annotation here</source>
         <translation>Anteckna här</translation>
+    </message>
+    <message>
+        <source>Add value</source>
+        <translation>Lägg till värde</translation>
+    </message>
+    <message>
+        <source>Edit value</source>
+        <translation>Redigera värde</translation>
     </message>
 </context>
 <context>
@@ -115,21 +107,13 @@
         <source>Open the pulley menu to add one.</source>
         <translation type="unfinished">Öppna rullgardinsmenyn för att lägga till en.</translation>
     </message>
+    <message>
+        <source>Edit parameter</source>
+        <translation>Redigera parameter</translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
-    <message>
-        <source>Add</source>
-        <translation>Lägg till</translation>
-    </message>
-    <message>
-        <source> parameter</source>
-        <translation> parameter</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Avbryt</translation>
-    </message>
     <message>
         <source>Parameter name</source>
         <translation>Parameternamn</translation>
@@ -149,6 +133,10 @@
     <message>
         <source>Plot color</source>
         <translation>Diagramfärg</translation>
+    </message>
+    <message>
+        <source>Add parameter</source>
+        <translation>Lägg till parameter</translation>
     </message>
 </context>
 <context>

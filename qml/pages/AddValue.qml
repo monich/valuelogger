@@ -11,7 +11,6 @@ Dialog {
 
     property string parameterName
     property string parameterDescription
-    property string pageTitle /* Add or Edit*/
     property string value
     property alias annotation: annotationField.text
     property string nowDate
@@ -24,20 +23,17 @@ Dialog {
             var tmp = new Date()
             nowDate = Qt.formatDateTime(tmp, "yyyy-MM-dd")
             nowTime = Qt.formatDateTime(tmp, "hh:mm:ss")
-            pageTitle = qsTr("Add")
+            dialogHeader.acceptText = qsTr("Add value")
         } else {
             if (nowTime == "") nowTime = "00:00:00"
             valueField.text = value
-            pageTitle = qsTr("Edit")
+            dialogHeader.acceptText = qsTr("Edit value")
         }
         valueField.textChanged.connect(function() { value = valueField.text.replace(",",".") })
     }
 
     DialogHeader {
         id: dialogHeader
-
-        acceptText: pageTitle + qsTr(" value")
-        cancelText: qsTr("Cancel")
     }
 
     SilicaFlickable {

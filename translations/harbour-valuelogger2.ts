@@ -4,7 +4,7 @@
 <context>
     <name>AboutPage</name>
     <message>
-        <source>Version: </source>
+        <source>Version: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -21,22 +21,6 @@
 </context>
 <context>
     <name>AddValue</name>
-    <message>
-        <source>Add</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> value</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Timestamp</source>
         <translation type="unfinished"></translation>
@@ -55,6 +39,14 @@
     </message>
     <message>
         <source>Enter annotation here</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add value</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Edit value</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -115,21 +107,13 @@
         <source>Open the pulley menu to add one.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Edit parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
-    <message>
-        <source>Add</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source> parameter</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation type="unfinished"></translation>
-    </message>
     <message>
         <source>Parameter name</source>
         <translation type="unfinished"></translation>
@@ -148,6 +132,10 @@
     </message>
     <message>
         <source>Plot color</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Add parameter</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

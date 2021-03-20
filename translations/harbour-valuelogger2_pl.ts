@@ -4,8 +4,8 @@
 <context>
     <name>AboutPage</name>
     <message>
-        <source>Version: </source>
-        <translation>Wersja: </translation>
+        <source>Version: %1</source>
+        <translation>Wersja: %1</translation>
     </message>
 </context>
 <context>
@@ -21,22 +21,6 @@
 </context>
 <context>
     <name>AddValue</name>
-    <message>
-        <source>Add</source>
-        <translation>Dodaj</translation>
-    </message>
-    <message>
-        <source>Edit</source>
-        <translation>Edytuj</translation>
-    </message>
-    <message>
-        <source> value</source>
-        <translation> wartość</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Anuluj</translation>
-    </message>
     <message>
         <source>Timestamp</source>
         <translation>Sygnatura czasowa</translation>
@@ -56,6 +40,14 @@
     <message>
         <source>Enter annotation here</source>
         <translation>Wprowadź adnotację</translation>
+    </message>
+    <message>
+        <source>Add value</source>
+        <translation>Dodaj wartość</translation>
+    </message>
+    <message>
+        <source>Edit value</source>
+        <translation>Edytuj wartość</translation>
     </message>
 </context>
 <context>
@@ -115,21 +107,13 @@
         <source>Exported to %1</source>
         <translation>Wyeskportowane do %1</translation>
     </message>
+    <message>
+        <source>Edit parameter</source>
+        <translation>Edytuj parametr</translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
-    <message>
-        <source>Add</source>
-        <translation>Dodaj</translation>
-    </message>
-    <message>
-        <source> parameter</source>
-        <translation> parametr</translation>
-    </message>
-    <message>
-        <source>Cancel</source>
-        <translation>Anuluj</translation>
-    </message>
     <message>
         <source>Parameter name</source>
         <translation>nazwa parametru</translation>
@@ -149,6 +133,10 @@
     <message>
         <source>Plot color</source>
         <translation>kolor wykresu</translation>
+    </message>
+    <message>
+        <source>Add parameter</source>
+        <translation>Dodaj parametr</translation>
     </message>
 </context>
 <context>

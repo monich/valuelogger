@@ -12,7 +12,7 @@ Dialog {
     property string parameterName
     property string parameterDescription
     property string plotColor: plotColors[0]
-    property string pageTitle: qsTr("Add")
+    property alias pageTitle: dialogHeader.acceptText
 
     onDone: {
         Debug.log("closing:", result)
@@ -26,8 +26,7 @@ Dialog {
     DialogHeader {
         id: dialogHeader
 
-        acceptText: pageTitle + qsTr(" parameter")
-        cancelText: qsTr("Cancel")
+        acceptText: qsTr("Add parameter")
     }
 
     SilicaFlickable {

@@ -149,7 +149,7 @@ Page {
                         "parameterName": parName,
                         "parameterDescription": parDescription,
                         "plotColor": model.plotcolor,
-                        "pageTitle": qsTr("Edit")
+                        "pageTitle": qsTr("Edit parameter")
                     })
 
                     dialog.accepted.connect(function() {

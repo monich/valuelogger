@@ -33,7 +33,7 @@ Page {
 
             Label {
                 width: parent.width
-                text: qsTr("Version: ") + version
+                text: qsTr("Version: %1").arg(version)
                 minimumPixelSize: Theme.fontSizeTiny
                 fontSizeMode: Text.Fit
                 horizontalAlignment: Text.AlignHCenter
