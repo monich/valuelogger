@@ -20,19 +20,25 @@ CONFIG(debug, debug|release) {
     DEFINES += DEBUG LOG_DBG
 }
 
-SOURCES += src/database.cpp \
+SOURCES += src/dashline.cpp \
+        src/database.cpp \
         src/datamodel.cpp \
         src/graph.cpp \
         src/gridmodel.cpp \
+        src/hdashline.cpp \
         src/logger.cpp \
         src/valuelogger.cpp \
+        src/vdashline.cpp
 
-HEADERS += src/database.h \
+HEADERS += src/dashline.h \
+        src/database.h \
         src/datamodel.h \
         src/debuglog.h \
         src/graph.h \
         src/gridmodel.h \
-        src/logger.h
+        src/hdashline.h \
+        src/logger.h \
+        src/vdashline.h
 
 OTHER_FILES += qml/valuelogger.qml \
     rpm/valuelogger.spec \

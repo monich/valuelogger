@@ -24,9 +24,11 @@ DEALINGS IN THE SOFTWARE.
 
 #include "graph.h"
 #include "gridmodel.h"
+#include "hdashline.h"
 #include "logger.h"
 #include "datamodel.h"
 #include "debuglog.h"
+#include "vdashline.h"
 
 #include <sailfishapp.h>
 
@@ -66,6 +68,8 @@ int main(int argc, char *argv[])
     qmlRegisterType<Graph>(uri, 1, 0, "Graph");
     qmlRegisterType<GridModel>(uri, 1, 0, "GridModel");
     qmlRegisterType<DataModel>(uri, 1, 0, "DataModel");
+    qmlRegisterType<HDashLine>(uri, 1, 0, "HDashLine");
+    qmlRegisterType<VDashLine>(uri, 1, 0, "VDashLine");
     qmlRegisterSingletonType<Logger>(uri, 1, 0, "Logger", Logger::createSingleton);
     qmlRegisterSingletonType<DebugLog>(uri, 1, 0, "DebugLog", DebugLog::createSingleton);
 

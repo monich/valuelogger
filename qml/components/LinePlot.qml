@@ -328,16 +328,29 @@ Item {
         sourceItem: Item {
             width: grid.width
             height: grid.height
+            /* Vertical grid lines */
+            Rectangle {
+                x: 0
+                width: thinLine
+                height: parent.height
+                color: Theme.primaryColor
+            }
+            Rectangle {
+                x: parent.width - width
+                width: thinLine
+                height: parent.height
+                color: Theme.primaryColor
+            }
             Repeater {
-                model: grid.horizontalCount + 1
-                delegate: Rectangle {
-                    x: Math.round(index * (parent.width - width)/6)
+                model: grid.horizontalCount - 1
+                delegate: VDashLine {
+                    x: Math.round((index + 1) * (parent.width - width)/6)
                     width: thinLine
                     height: parent.height
                     color: Theme.primaryColor
                 }
             }
-            /* Horizontal grids */
+            /* Horizontal grid lines */
             Rectangle {
                 y: 0
                 width: parent.width
@@ -359,15 +372,14 @@ Item {
                     fixedGrids: !dynamicHorizontalGridLines
                 }
                 delegate: Column {
-                    id: gridItem
-                    y: Math.round(parent.height - model.coordinate - thinLine)
-                    width: parent.width
+                    y: Math.round(grid.height - model.coordinate - thinLine)
+                    width: grid.width
                     /* Hide is when it gets too close to the edge */
                     visible: opacity > 0
-                    opacity: y < Theme.paddingLarge ? (y/Theme.paddingLarge) :
-                        ((parent.height - y - height) < gridItem.height) ? ((parent.height - y - height)/gridItem.height) : 1
+                    opacity: y < Theme.paddingLarge ? (y / Theme.paddingLarge) :
+                        ((grid.height - y) < 2*height) ? ((grid.height - y) / (2*height)) : 1
 
-                    Rectangle {
+                    HDashLine {
                         width: parent.width
                         height: thinLine
                         color: Theme.primaryColor
