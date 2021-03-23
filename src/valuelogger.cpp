@@ -23,6 +23,7 @@ DEALINGS IN THE SOFTWARE.
 */
 
 #include "graph.h"
+#include "gridmodel.h"
 #include "logger.h"
 #include "datamodel.h"
 #include "debuglog.h"
@@ -63,6 +64,7 @@ int main(int argc, char *argv[])
 
     const char *uri = "harbour.valuelogger";
     qmlRegisterType<Graph>(uri, 1, 0, "Graph");
+    qmlRegisterType<GridModel>(uri, 1, 0, "GridModel");
     qmlRegisterType<DataModel>(uri, 1, 0, "DataModel");
     qmlRegisterSingletonType<Logger>(uri, 1, 0, "Logger", Logger::createSingleton);
     qmlRegisterSingletonType<DebugLog>(uri, 1, 0, "DebugLog", DebugLog::createSingleton);

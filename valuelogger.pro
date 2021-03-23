@@ -23,6 +23,7 @@ CONFIG(debug, debug|release) {
 SOURCES += src/database.cpp \
         src/datamodel.cpp \
         src/graph.cpp \
+        src/gridmodel.cpp \
         src/logger.cpp \
         src/valuelogger.cpp \
 
@@ -30,6 +31,7 @@ HEADERS += src/database.h \
         src/datamodel.h \
         src/debuglog.h \
         src/graph.h \
+        src/gridmodel.h \
         src/logger.h
 
 OTHER_FILES += qml/valuelogger.qml \

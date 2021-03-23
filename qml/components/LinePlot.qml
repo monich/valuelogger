@@ -53,6 +53,11 @@ Item {
     property real lastKnownWidth
     property real lastKnownHeight
 
+    /* These should eventually become configurable: */
+    readonly property bool dynamicHorizontalGridLines: true
+    readonly property bool leftGridLabels: true
+    readonly property bool rightGridLabels: true
+
     /* Called by the container when it gets its geometry settled */
     function enableSizeTracking() {
         lastKnownWidth = width
@@ -133,11 +138,6 @@ Item {
 
         valueMax.text = max.toFixed(2)
         valueMin.text = min.toFixed(2)
-
-        var n = valueMiddle.count + 1
-        for (var i = 0; i < valueMiddle.count; i++) {
-            valueMiddle.itemAt(i).text = (min+(((max-min)/n)*(i+1))).toFixed(2)
-        }
     }
 
     function updateHorizontalScale() {
@@ -230,7 +230,6 @@ Item {
         }
         anchors {
             left: parent.left
-            leftMargin: Theme.paddingSmall
             top: xStart.bottom
         }
     }
@@ -244,27 +243,7 @@ Item {
         }
         anchors {
             left: parent.left
-            leftMargin: Theme.paddingSmall
             bottom: parent.bottom
-        }
-    }
-
-    Repeater {
-        id: valueMiddle
-        model: grid.verticalCount - 1
-
-        Text {
-            color: Theme.primaryColor
-            font {
-                pixelSize: fontSize
-                bold: fontBold
-            }
-            anchors {
-                left: parent.left
-                leftMargin: Theme.paddingSmall
-            }
-            y: valueMin.y + (index+1)*(valueMax.y + valueMax.height - valueMin.y)/grid.verticalCount
-            z: 10
         }
     }
 
@@ -272,15 +251,12 @@ Item {
         id: legend
 
         readonly property real itemHeight: Math.round(fontSize * 3 / 2)
-        readonly property real horizontalMargin: Theme.horizontalPageMargin
-        readonly property real valueLabelWidth: Math.max(valueMin.width, valueMax.width)
-        readonly property bool moveToTheRight: (valueLabelWidth >= horizontalMargin && (Theme.paddingLarge + height) > grid.height/grid.verticalCount)
 
         anchors {
             left: grid.left
-            leftMargin: horizontalMargin + (moveToTheRight ? Math.round(grid.width/grid.horizontalCount) : 0)
+            leftMargin: Math.round(grid.width/grid.horizontalCount/2)
             right: grid.right
-            rightMargin: horizontalMargin
+            rightMargin: Theme.horizontalPageMargin
             top: grid.top
             topMargin: Theme.paddingLarge
         }
@@ -361,13 +337,73 @@ Item {
                     color: Theme.primaryColor
                 }
             }
+            /* Horizontal grids */
+            Rectangle {
+                y: 0
+                width: parent.width
+                height: thinLine
+                color: Theme.primaryColor
+            }
+            Rectangle {
+                y: parent.height - thinLine
+                width: parent.width
+                height: thinLine
+                color: Theme.primaryColor
+            }
             Repeater {
-                model: grid.verticalCount + 1
-                delegate: Rectangle {
-                    y: Math.round(index * (parent.height - height)/5)
+                model: GridModel {
+                    minValue: min
+                    maxValue: max
+                    size: canvas.height
+                    maxCount: fixedGrids ? 4 : 7
+                    fixedGrids: !dynamicHorizontalGridLines
+                }
+                delegate: Column {
+                    id: gridItem
+                    y: Math.round(parent.height - model.coordinate - thinLine)
                     width: parent.width
-                    height: thinLine
-                    color: Theme.primaryColor
+                    /* Hide is when it gets too close to the edge */
+                    visible: opacity > 0
+                    opacity: y < Theme.paddingLarge ? (y/Theme.paddingLarge) :
+                        ((parent.height - y - height) < gridItem.height) ? ((parent.height - y - height)/gridItem.height) : 1
+
+                    Rectangle {
+                        width: parent.width
+                        height: thinLine
+                        color: Theme.primaryColor
+                    }
+
+                    Row {
+                        anchors.horizontalCenter: parent.horizontalCenter
+
+                        Text {
+                            x: Theme.paddingSmall
+                            width: grid.width/2 - Theme.paddingSmall
+                            color: Theme.primaryColor
+                            text: model.text
+                            horizontalAlignment: Text.AlignLeft
+                            font {
+                                pixelSize: fontSize
+                                bold: fontBold
+                            }
+                            /* Keep is visible to participate in the layout */
+                            opacity: leftGridLabels ? 1 : 0
+                        }
+
+                        Text {
+                            x: Theme.paddingSmall
+                            width: grid.width/2 - Theme.paddingSmall
+                            color: Theme.primaryColor
+                            text: model.text
+                            horizontalAlignment: Text.AlignRight
+                            font {
+                                pixelSize: fontSize
+                                bold: fontBold
+                            }
+                            /* This one can be hidden if it's not needed */
+                            visible: rightGridLabels
+                        }
+                    }
                 }
             }
         }
