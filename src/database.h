@@ -64,7 +64,7 @@ public:
     Database(const Database& db);
     ~Database();
 
-    Database& operator=(const Database& aArea);
+    Database& operator=(const Database& db);
 
     static QDateTime toDateTime(const QVariant& value);
     static QString toString(const QDateTime& value);

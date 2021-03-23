@@ -157,41 +157,6 @@ void DataModel::setDataTable(QString table)
     }
 }
 
-/* QAbstractItemModel */
-
-QHash<int,QByteArray> DataModel::roleNames() const
-{
-    QHash<int,QByteArray> roles;
-
-    roles.insert(KeyRole, DATA_KEY_ROLE);
-    roles.insert(TimestampRole, DATA_TIMESTAMP_ROLE);
-    roles.insert(TimestampUtcRole, DATA_TIMESTAMP_UTC_ROLE);
-    roles.insert(ValueRole, DATA_VALUE_ROLE);
-    roles.insert(AnnotationRole, DATA_ANNOTATION_ROLE);
-    return roles;
-}
-
-int DataModel::rowCount(const QModelIndex& parent) const
-{
-    return m_data.count();
-}
-
-QVariant DataModel::data(const QModelIndex& idx, int role) const
-{
-    const int row = idx.row();
-    if (row >= 0 && row < m_data.count()) {
-        const Data* data = m_data.at(row);
-        switch (role) {
-        case KeyRole: return data->key;
-        case TimestampRole: return data->timestamp;
-        case TimestampUtcRole: return data->timestampUtc;
-        case ValueRole: return data->value;
-        case AnnotationRole: return data->annotation;
-        }
-    }
-    return QVariant();
-}
-
 void DataModel::deleteRow(int row)
 {
     if (!m_dataTable.isEmpty() && row >= 0 && row < m_data.count()) {
@@ -232,4 +197,39 @@ void DataModel::updateRow(int row, QString value, QString annotation, QString ti
             emit dataChanged(idx, idx, roles);
         }
     }
+}
+
+/* QAbstractItemModel */
+
+QHash<int,QByteArray> DataModel::roleNames() const
+{
+    QHash<int,QByteArray> roles;
+
+    roles.insert(KeyRole, DATA_KEY_ROLE);
+    roles.insert(TimestampRole, DATA_TIMESTAMP_ROLE);
+    roles.insert(TimestampUtcRole, DATA_TIMESTAMP_UTC_ROLE);
+    roles.insert(ValueRole, DATA_VALUE_ROLE);
+    roles.insert(AnnotationRole, DATA_ANNOTATION_ROLE);
+    return roles;
+}
+
+int DataModel::rowCount(const QModelIndex& parent) const
+{
+    return m_data.count();
+}
+
+QVariant DataModel::data(const QModelIndex& idx, int role) const
+{
+    const int row = idx.row();
+    if (row >= 0 && row < m_data.count()) {
+        const Data* data = m_data.at(row);
+        switch (role) {
+        case KeyRole: return data->key;
+        case TimestampRole: return data->timestamp;
+        case TimestampUtcRole: return data->timestampUtc;
+        case ValueRole: return data->value;
+        case AnnotationRole: return data->annotation;
+        }
+    }
+    return QVariant();
 }
