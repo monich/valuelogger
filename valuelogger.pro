@@ -4,8 +4,8 @@
 
 TARGET = harbour-valuelogger2
 
-CONFIG += sailfishapp
-
+CONFIG += sailfishapp link_pkgconfig
+PKGCONFIG += sailfishapp mlite5
 QT += sql
 
 QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-psabi
@@ -27,6 +27,7 @@ SOURCES += src/dashline.cpp \
         src/gridmodel.cpp \
         src/hdashline.cpp \
         src/logger.cpp \
+        src/settings.cpp \
         src/valuelogger.cpp \
         src/vdashline.cpp
 
@@ -38,6 +39,7 @@ HEADERS += src/dashline.h \
         src/gridmodel.h \
         src/hdashline.h \
         src/logger.h \
+        src/settings.h \
         src/vdashline.h
 
 OTHER_FILES += qml/valuelogger.qml \

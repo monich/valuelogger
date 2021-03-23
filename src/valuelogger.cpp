@@ -28,6 +28,7 @@ DEALINGS IN THE SOFTWARE.
 #include "logger.h"
 #include "datamodel.h"
 #include "debuglog.h"
+#include "settings.h"
 #include "vdashline.h"
 
 #include <sailfishapp.h>
@@ -70,6 +71,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<DataModel>(uri, 1, 0, "DataModel");
     qmlRegisterType<HDashLine>(uri, 1, 0, "HDashLine");
     qmlRegisterType<VDashLine>(uri, 1, 0, "VDashLine");
+    qmlRegisterSingletonType<Settings>(uri, 1, 0, "Settings", Settings::createSingleton);
     qmlRegisterSingletonType<Logger>(uri, 1, 0, "Logger", Logger::createSingleton);
     qmlRegisterSingletonType<DebugLog>(uri, 1, 0, "DebugLog", DebugLog::createSingleton);
 

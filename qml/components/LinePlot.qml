@@ -53,11 +53,6 @@ Item {
     property real lastKnownWidth
     property real lastKnownHeight
 
-    /* These should eventually become configurable: */
-    readonly property bool dynamicHorizontalGridLines: true
-    readonly property bool leftGridLabels: true
-    readonly property bool rightGridLabels: true
-
     /* Called by the container when it gets its geometry settled */
     function enableSizeTracking() {
         lastKnownWidth = width
@@ -77,7 +72,7 @@ Item {
                     maxTime = model.maxTime
                     minValue = model.minValue
                     maxValue = model.maxValue
-                    break;
+                    break
                 }
             }
 
@@ -369,7 +364,7 @@ Item {
                     maxValue: max
                     size: canvas.height
                     maxCount: fixedGrids ? 4 : 7
-                    fixedGrids: !dynamicHorizontalGridLines
+                    fixedGrids: Settings.horizontalGridLinesStyle == Settings.GridLinesFixed
                 }
                 delegate: Column {
                     y: Math.round(grid.height - model.coordinate - thinLine)
@@ -386,11 +381,11 @@ Item {
                     }
 
                     Row {
-                        anchors.horizontalCenter: parent.horizontalCenter
+                        x: Theme.paddingSmall
 
                         Text {
                             x: Theme.paddingSmall
-                            width: grid.width/2 - Theme.paddingSmall
+                            width: grid.width/2 - parent.x
                             color: Theme.primaryColor
                             text: model.text
                             horizontalAlignment: Text.AlignLeft
@@ -399,12 +394,12 @@ Item {
                                 bold: fontBold
                             }
                             /* Keep is visible to participate in the layout */
-                            opacity: leftGridLabels ? 1 : 0
+                            opacity: Settings.leftGridLabels ? 1 : 0
                         }
 
                         Text {
                             x: Theme.paddingSmall
-                            width: grid.width/2 - Theme.paddingSmall
+                            width: grid.width/2 - parent.x
                             color: Theme.primaryColor
                             text: model.text
                             horizontalAlignment: Text.AlignRight
@@ -413,7 +408,8 @@ Item {
                                 bold: fontBold
                             }
                             /* This one can be hidden if it's not needed */
-                            visible: rightGridLabels
+                            visible: Settings.rightGridLabels
+                            onXChanged: Debug.log(x)
                         }
                     }
                 }
