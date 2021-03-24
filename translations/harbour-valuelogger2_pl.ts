@@ -109,7 +109,7 @@
     </message>
     <message>
         <source>Settings</source>
-        <translation type="unfinished">Ustawienia</translation>
+        <translation>Ustawienia</translation>
     </message>
 </context>
 <context>
@@ -143,31 +143,31 @@
     <name>SettingsView</name>
     <message>
         <source>Settings</source>
-        <translation type="unfinished">Ustawienia</translation>
+        <translation>Ustawienia</translation>
     </message>
     <message>
         <source>Horizontal grid lines</source>
-        <translation type="unfinished">Poziome linie siatki</translation>
+        <translation>Poziome linie siatki</translation>
     </message>
     <message>
         <source>Position</source>
-        <translation type="unfinished">Pozycja</translation>
+        <translation>Pozycja</translation>
     </message>
     <message>
         <source>Dynamic</source>
-        <translation type="unfinished">Dynamiczny</translation>
+        <translation>Dynamiczna</translation>
     </message>
     <message>
         <source>Fixed</source>
-        <translation type="unfinished">Niezmienny</translation>
+        <translation>Niezmienna</translation>
     </message>
     <message>
         <source>Left labels</source>
-        <translation type="unfinished">Lewe etykiety</translation>
+        <translation>Lewe etykiety</translation>
     </message>
     <message>
         <source>Right labels</source>
-        <translation type="unfinished">Właściwe etykiety</translation>
+        <translation>Prawe etykiety</translation>
     </message>
 </context>
 <context>
