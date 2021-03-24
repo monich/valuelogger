@@ -2,10 +2,10 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="sv">
 <context>
-    <name>AboutPage</name>
+    <name>AboutView</name>
     <message>
         <source>Version: %1</source>
-        <translation>Version: %1</translation>
+        <translation type="unfinished">Version: %1</translation>
     </message>
 </context>
 <context>
@@ -60,10 +60,6 @@
 <context>
     <name>MainPage</name>
     <message>
-        <source>About...</source>
-        <translation>Om...</translation>
-    </message>
-    <message>
         <source>Export to CSV</source>
         <translation>Exportera till CSV</translation>
     </message>
@@ -111,6 +107,10 @@
         <source>Edit parameter</source>
         <translation>Redigera parameter</translation>
     </message>
+    <message>
+        <source>Settings</source>
+        <translation>Inställningar</translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
@@ -137,6 +137,37 @@
     <message>
         <source>Add parameter</source>
         <translation>Lägg till parameter</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsView</name>
+    <message>
+        <source>Settings</source>
+        <translation>Inställningar</translation>
+    </message>
+    <message>
+        <source>Horizontal grid lines</source>
+        <translation type="unfinished">Horisontella rutnät</translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished">Placera</translation>
+    </message>
+    <message>
+        <source>Dynamic</source>
+        <translation type="unfinished">Dynamisk</translation>
+    </message>
+    <message>
+        <source>Fixed</source>
+        <translation type="unfinished">Fast</translation>
+    </message>
+    <message>
+        <source>Left labels</source>
+        <translation type="unfinished">Etiketter till vänster</translation>
+    </message>
+    <message>
+        <source>Right labels</source>
+        <translation type="unfinished">Etiketter till höger</translation>
     </message>
 </context>
 <context>

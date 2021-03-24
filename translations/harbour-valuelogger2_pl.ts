@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="pl">
 <context>
-    <name>AboutPage</name>
+    <name>AboutView</name>
     <message>
         <source>Version: %1</source>
         <translation>Wersja: %1</translation>
@@ -60,10 +60,6 @@
 <context>
     <name>MainPage</name>
     <message>
-        <source>About...</source>
-        <translation>O...</translation>
-    </message>
-    <message>
         <source>Export to CSV</source>
         <translation>Eksportuj do CSV</translation>
     </message>
@@ -111,6 +107,10 @@
         <source>Edit parameter</source>
         <translation>Edytuj parametr</translation>
     </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished">Ustawienia</translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
@@ -137,6 +137,37 @@
     <message>
         <source>Add parameter</source>
         <translation>Dodaj parametr</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsView</name>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished">Ustawienia</translation>
+    </message>
+    <message>
+        <source>Horizontal grid lines</source>
+        <translation type="unfinished">Poziome linie siatki</translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished">Pozycja</translation>
+    </message>
+    <message>
+        <source>Dynamic</source>
+        <translation type="unfinished">Dynamiczny</translation>
+    </message>
+    <message>
+        <source>Fixed</source>
+        <translation type="unfinished">Niezmienny</translation>
+    </message>
+    <message>
+        <source>Left labels</source>
+        <translation type="unfinished">Lewe etykiety</translation>
+    </message>
+    <message>
+        <source>Right labels</source>
+        <translation type="unfinished">Właściwe etykiety</translation>
     </message>
 </context>
 <context>

@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
-    <name>AboutPage</name>
+    <name>AboutView</name>
     <message>
         <source>Version: %1</source>
         <translation type="unfinished"></translation>
@@ -60,10 +60,6 @@
 <context>
     <name>MainPage</name>
     <message>
-        <source>About...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Export to CSV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -111,6 +107,10 @@
         <source>Edit parameter</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
@@ -136,6 +136,37 @@
     </message>
     <message>
         <source>Add parameter</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SettingsView</name>
+    <message>
+        <source>Settings</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Horizontal grid lines</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dynamic</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Fixed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Left labels</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Right labels</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

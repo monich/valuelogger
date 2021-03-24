@@ -48,12 +48,9 @@ Page {
 
         PullDownMenu {
             MenuItem {
-                text: qsTr("About...")
-                onClicked: pageStack.push(Qt.resolvedUrl("AboutPage.qml"), {
-                    "allowedOrientations": allowedOrientations,
-                    "version": Logger.version,
-                    "name": "Value Logger",
-                    "imagelocation": Qt.resolvedUrl("../images/harbour-valuelogger2.svg")
+                text: qsTr("Settings")
+                onClicked: pageStack.push(Qt.resolvedUrl("SettingsPage.qml"), {
+                    "allowedOrientations": allowedOrientations
                 })
             }
 

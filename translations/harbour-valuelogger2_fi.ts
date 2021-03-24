@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="fi">
 <context>
-    <name>AboutPage</name>
+    <name>AboutView</name>
     <message>
         <source>Version: %1</source>
         <translation>Versio: %1</translation>
@@ -60,10 +60,6 @@
 <context>
     <name>MainPage</name>
     <message>
-        <source>About...</source>
-        <translation>Tietoja...</translation>
-    </message>
-    <message>
         <source>Export to CSV</source>
         <translation>Vie CSV muotoon</translation>
     </message>
@@ -111,6 +107,10 @@
         <source>Edit parameter</source>
         <translation>Muokkaa parametri</translation>
     </message>
+    <message>
+        <source>Settings</source>
+        <translation>Asetukset</translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
@@ -137,6 +137,37 @@
     <message>
         <source>Add parameter</source>
         <translation>Lisää parametri</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsView</name>
+    <message>
+        <source>Settings</source>
+        <translation>Asetukset</translation>
+    </message>
+    <message>
+        <source>Horizontal grid lines</source>
+        <translation type="unfinished">Vaakasuuntaiset ristikkoviivat</translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation type="unfinished">Positio</translation>
+    </message>
+    <message>
+        <source>Dynamic</source>
+        <translation type="unfinished">Dynaaminen </translation>
+    </message>
+    <message>
+        <source>Fixed</source>
+        <translation type="unfinished">Kiinteä</translation>
+    </message>
+    <message>
+        <source>Left labels</source>
+        <translation type="unfinished">Vasen etiketit</translation>
+    </message>
+    <message>
+        <source>Right labels</source>
+        <translation type="unfinished">Oikeat etiketit</translation>
     </message>
 </context>
 <context>

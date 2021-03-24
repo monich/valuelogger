@@ -2,7 +2,7 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="ru">
 <context>
-    <name>AboutPage</name>
+    <name>AboutView</name>
     <message>
         <source>Version: %1</source>
         <translation>Версия: %1</translation>
@@ -60,10 +60,6 @@
 <context>
     <name>MainPage</name>
     <message>
-        <source>About...</source>
-        <translation>О программе...</translation>
-    </message>
-    <message>
         <source>Export to CSV</source>
         <translation>Сохранить в CSV</translation>
     </message>
@@ -111,6 +107,10 @@
         <source>Edit parameter</source>
         <translation>Изменить</translation>
     </message>
+    <message>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
 </context>
 <context>
     <name>NewParameter</name>
@@ -137,6 +137,37 @@
     <message>
         <source>Add parameter</source>
         <translation>Добавить</translation>
+    </message>
+</context>
+<context>
+    <name>SettingsView</name>
+    <message>
+        <source>Settings</source>
+        <translation>Настройки</translation>
+    </message>
+    <message>
+        <source>Horizontal grid lines</source>
+        <translation>Горизонтальная сетка</translation>
+    </message>
+    <message>
+        <source>Position</source>
+        <translation>Расположение</translation>
+    </message>
+    <message>
+        <source>Dynamic</source>
+        <translation>Динамическое</translation>
+    </message>
+    <message>
+        <source>Fixed</source>
+        <translation>Фиксированное</translation>
+    </message>
+    <message>
+        <source>Left labels</source>
+        <translation>Значения слева</translation>
+    </message>
+    <message>
+        <source>Right labels</source>
+        <translation>Значения справа</translation>
     </message>
 </context>
 <context>
