@@ -179,6 +179,18 @@ Page {
                     })
                 }
 
+                Rectangle {
+                    id: plotColorLegend
+
+                    width: Theme.paddingSmall
+                    height: Theme.itemSizeSmall/2
+                    anchors.verticalCenter: parent.verticalCenter
+                    layer.enabled: parameterItem.highlighted && !parameterItem.menuOpen
+                    layer.effect: PressEffect { source: plotColorLegend }
+                    color: plotcolor
+                    visible: visualize
+                }
+
                 Item {
                     width: parent.width - Theme.horizontalPageMargin
                     height: parent.height
