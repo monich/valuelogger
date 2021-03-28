@@ -10,7 +10,7 @@ Name:       harbour-valuelogger2
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 
 Summary:    Value Logger
-Version:    1.0.4
+Version:    1.0.5
 Release:    1
 License:    LICENSE
 URL: https://github.com/monich/valuelogger
