@@ -69,6 +69,11 @@ Logger::Logger(QObject *parent) :
     connect(this, SIGNAL(modelReset()), SIGNAL(rowCountChanged()));
 }
 
+int Logger::dataTableRole()
+{
+    return DataTableRole;
+}
+
 /* Callback for qmlRegisterSingletonType<Logger> */
 QObject* Logger::createSingleton(QQmlEngine* engine, QJSEngine* js)
 {

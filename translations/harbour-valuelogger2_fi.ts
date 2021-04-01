@@ -15,8 +15,8 @@
         <translation>Poista pari</translation>
     </message>
     <message>
-        <source>Add pair</source>
-        <translation>Lisää pari</translation>
+        <source>Pair</source>
+        <translation>Parita</translation>
     </message>
 </context>
 <context>

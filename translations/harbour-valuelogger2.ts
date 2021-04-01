@@ -11,11 +11,11 @@
 <context>
     <name>AddPair</name>
     <message>
-        <source>Add pair</source>
+        <source>Clear pair</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Clear pair</source>
+        <source>Pair</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

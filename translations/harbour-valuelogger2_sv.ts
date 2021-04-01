@@ -5,7 +5,7 @@
     <name>AboutView</name>
     <message>
         <source>Version: %1</source>
-        <translation type="unfinished">Version: %1</translation>
+        <translation>Version: %1</translation>
     </message>
 </context>
 <context>
@@ -15,8 +15,8 @@
         <translation>Rensa par</translation>
     </message>
     <message>
-        <source>Add pair</source>
-        <translation>Lägg till par</translation>
+        <source>Pair</source>
+        <translation type="unfinished">Par</translation>
     </message>
 </context>
 <context>

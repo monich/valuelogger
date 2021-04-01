@@ -27,6 +27,7 @@ SOURCES += src/dashline.cpp \
         src/gridmodel.cpp \
         src/hdashline.cpp \
         src/logger.cpp \
+        src/pairmodel.cpp \
         src/settings.cpp \
         src/valuelogger.cpp \
         src/vdashline.cpp
@@ -39,6 +40,7 @@ HEADERS += src/dashline.h \
         src/gridmodel.h \
         src/hdashline.h \
         src/logger.h \
+        src/pairmodel.h \
         src/settings.h \
         src/vdashline.h
 

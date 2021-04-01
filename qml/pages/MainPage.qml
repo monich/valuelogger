@@ -171,7 +171,8 @@ Page {
                     var dialog = pageStack.push(Qt.resolvedUrl("AddPair.qml"), {
                         "allowedOrientations": allowedOrientations,
                         "pairFirstTable": model.datatable,
-                        "pairSecondTable": model.pairedtable
+                        "pairSecondTable": model.pairedtable,
+                        "title": parName
                     })
                     dialog.accepted.connect(function() {
                         Debug.log("Add pair dialog accepted")
@@ -239,11 +240,12 @@ Page {
                         spacing: Theme.paddingLarge
                         anchors.right: parent.right
 
-                        Image {
+                        HighlightIcon {
                             id: pairIcon
                             source: "image://theme/icon-m-link"
                             anchors.verticalCenter: parent.verticalCenter
                             sourceSize: Qt.size(Theme.iconSizeMedium, Theme.iconSizeMedium)
+                            highlightColor: Theme.primaryColor
                             visible: model.pairedtable !== ""
                         }
 

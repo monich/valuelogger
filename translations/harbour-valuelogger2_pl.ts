@@ -11,12 +11,12 @@
 <context>
     <name>AddPair</name>
     <message>
-        <source>Add pair</source>
-        <translation>Dodaj parę</translation>
-    </message>
-    <message>
         <source>Clear pair</source>
         <translation>Wyczyść parę</translation>
+    </message>
+    <message>
+        <source>Pair</source>
+        <translation type="unfinished">Paruj</translation>
     </message>
 </context>
 <context>

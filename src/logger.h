@@ -48,6 +48,8 @@ public:
     explicit Logger(QObject* parent = Q_NULLPTR);
     ~Logger();
 
+    static int dataTableRole();
+
     static QString getVersion() { return APPVERSION; }
     int getVisualizeCount() const { return visualizeCount; }
     int getDefaultParameterIndex() const { return defaultParameterIndex; }
