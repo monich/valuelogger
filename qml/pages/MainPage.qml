@@ -119,6 +119,7 @@ Page {
                         }
                         MenuItem {
                             text: qsTr("Pair")
+                            enabled: Logger.count > 1
                             onClicked: parameterItem.pairParameter()
                         }
                         MenuItem {
