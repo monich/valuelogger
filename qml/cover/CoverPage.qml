@@ -2,6 +2,8 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.valuelogger 1.0
 
+import "../components"
+
 CoverBackground {
     id: cover
 
@@ -10,6 +12,15 @@ CoverBackground {
 
     readonly property bool darkOnLight: 'colorScheme' in Theme && Theme.colorScheme === Theme.DarkOnLight
     readonly property url plotIcon: Qt.resolvedUrl("../images/" + (darkOnLight ? "icon-cover-plot-dark.svg" : "icon-cover-plot.svg"))
+
+    HighlightIcon {
+        source: "../images/icon-background.svg"
+        highlightColor: Theme.primaryColor
+        anchors.centerIn: icon
+        sourceSize.width: icon.width + Theme.paddingSmall
+        sourceSize.height: icon.height + Theme.paddingSmall
+        opacity: 0.2
+    }
 
     Image {
         id: icon
