@@ -526,7 +526,7 @@ Item {
                 maxValue: max
                 minTime: xstart
                 maxTime: xend
-                lineWidth: model.count ? Math.max(Math.min(Math.round(Theme.paddingSmall/2), width/model.count), 2) : 2
+                lineWidth: paintedCount ? Math.max(Math.min(Math.round(Theme.paddingSmall/2), width/paintedCount), 2) : 2
                 color: modelData.plotcolor
                 model: DataModel {
                     dataTable: modelData.datatable

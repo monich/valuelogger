@@ -46,7 +46,8 @@ Graph::Graph(QQuickItem* parent) :
     m_maxValue(0),
     m_timestampRole(-1),
     m_valueRole(-1),
-    m_model(Q_NULLPTR)
+    m_model(Q_NULLPTR),
+    m_paintedCount(0)
 {
     setFlag(ItemHasContents);
     setClip(true);
@@ -267,11 +268,12 @@ bool Graph::lineVisible(float x1, float y1, float x2, float y2, float w, float h
 
 QSGNode* Graph::updatePaintNode(QSGNode* paintNode, UpdatePaintNodeData*)
 {
+    int paintedCount = 0;
     if (!m_model || !m_model->rowCount()) {
         qDeleteAll(m_nodes);
         m_nodes.resize(0);
         delete paintNode;
-        return Q_NULLPTR;
+        paintNode = Q_NULLPTR;
     } else {
         if (!paintNode) {
             paintNode = new QSGNode;
@@ -290,7 +292,7 @@ QSGNode* Graph::updatePaintNode(QSGNode* paintNode, UpdatePaintNodeData*)
             int i;
             bool drawSquares = true;
             const int n = m_model->rowCount();
-            const float minDistSquared = 4 * m_lineWidth * m_lineWidth;
+            const float minDistSquared = 9 * m_lineWidth * m_lineWidth;
             QVector<QPointF> points;
             points.reserve(n);
             for (i = 0; i < n; i++) {
@@ -332,15 +334,18 @@ QSGNode* Graph::updatePaintNode(QSGNode* paintNode, UpdatePaintNodeData*)
                 const float x = pa[i].x();
                 const float y = pa[i].y();
 
-                if (drawSquares && x >= xmin && x < xmax && y >= ymin && y < ymax) {
-                    const float d = 2 * m_lineWidth;
-                    if (node) {
-                        updateSquareNode((QSGGeometryNode*)node, x, y, d);
-                        node = node->nextSibling();
-                    } else {
-                        QSGNode* child = newNode(newSquareGeometry(x, y, d));
-                        paintNode->appendChildNode(child);
-                        m_nodes.append(child);
+                if (x >= xmin && x < xmax && y >= ymin && y < ymax) {
+                    paintedCount++;
+                    if (drawSquares) {
+                        const float d = 2 * m_lineWidth;
+                        if (node) {
+                            updateSquareNode((QSGGeometryNode*)node, x, y, d);
+                            node = node->nextSibling();
+                        } else {
+                            QSGNode* child = newNode(newSquareGeometry(x, y, d));
+                            paintNode->appendChildNode(child);
+                            m_nodes.append(child);
+                        }
                     }
                 }
 
@@ -378,6 +383,11 @@ QSGNode* Graph::updatePaintNode(QSGNode* paintNode, UpdatePaintNodeData*)
         }
 
         DBG(m_nodes.count());
-        return paintNode;
     }
+
+    if (m_paintedCount != paintedCount) {
+        m_paintedCount = paintedCount;
+        Q_EMIT paintedCountChanged();
+    }
+    return paintNode;
 }

@@ -41,6 +41,7 @@ class Graph : public QQuickItem
     Q_PROPERTY(QDateTime minTime READ minTime WRITE setMinTime NOTIFY minTimeChanged)
     Q_PROPERTY(QDateTime maxTime READ maxTime WRITE setMaxTime NOTIFY maxTimeChanged)
     Q_PROPERTY(QObject* model READ getModel WRITE setModel NOTIFY modelChanged)
+    Q_PROPERTY(int paintedCount READ paintedCount NOTIFY paintedCountChanged)
 
 public:
     explicit Graph(QQuickItem* parent = Q_NULLPTR);
@@ -67,6 +68,8 @@ public:
     QAbstractItemModel* getModel() const { return m_model; }
     void setModel(QObject* model);
 
+    int paintedCount() const { return m_paintedCount; }
+
 protected:
     QSGNode* updatePaintNode(QSGNode* node, UpdatePaintNodeData* data) Q_DECL_OVERRIDE;
 
@@ -91,6 +94,7 @@ signals:
     void minTimeChanged();
     void maxTimeChanged();
     void modelChanged();
+    void paintedCountChanged();
 
 private:
     QColor m_color;
@@ -103,6 +107,7 @@ private:
     int m_valueRole;
     QVector<QSGNode*> m_nodes;
     QAbstractItemModel* m_model;
+    int m_paintedCount;
 };
 
 #endif // GRAPH_H
