@@ -15,7 +15,7 @@ Page {
     signal plotSelected()
 
     function addParameter(index, oldParName, oldParDesc, oldPlotColor) {
-        var dialog = pageStack.push(Qt.resolvedUrl("NewParameter.qml"), {
+        var dialog = pageStack.push(Qt.resolvedUrl("ParameterPage.qml"), {
             "allowedOrientations": allowedOrientations
         })
 
@@ -142,7 +142,7 @@ Page {
 
                 function editParameter() {
                     Debug.log("EDIT", model.index, parName)
-                    var dialog = pageStack.push(Qt.resolvedUrl("NewParameter.qml"), {
+                    var dialog = pageStack.push(Qt.resolvedUrl("ParameterPage.qml"), {
                         "allowedOrientations": allowedOrientations,
                         "parameterName": parName,
                         "parameterDescription": parDescription,

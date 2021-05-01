@@ -113,7 +113,7 @@
     </message>
 </context>
 <context>
-    <name>NewParameter</name>
+    <name>ParameterPage</name>
     <message>
         <source>Parameter name</source>
         <translation>Имя параметра</translation>
