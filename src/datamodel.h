@@ -60,6 +60,9 @@ public:
     int rowCount(const QModelIndex& parent = QModelIndex()) const Q_DECL_OVERRIDE;
     QVariant data(const QModelIndex& idx, int role) const Q_DECL_OVERRIDE;
 
+private:
+    void updateRanges();
+
 signals:
     void dataTableChanged();
     void minTimeChanged();

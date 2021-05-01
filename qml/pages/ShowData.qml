@@ -62,8 +62,13 @@ Page {
             ListView.onRemove: animateRemoval(dataItem)
 
             function removeEntry() {
-                Debug.log("deleting", model.key ,"...")
-                remorseAction(qsTr("Deleting"), function() { dataModel.deleteRow(model.index)}, 2500)
+                Debug.log("preparing to delete", model.key, "...")
+                remorseAction(qsTr("Deleting"), removalConfirmed, 2500)
+            }
+
+            function removalConfirmed() {
+                Debug.log("deleting", model.key, "at", model.index)
+                dataModel.deleteRow(model.index)
             }
 
             function editData() {

@@ -161,7 +161,14 @@ void DataModel::deleteRow(int row)
 {
     if (!m_dataTable.isEmpty() && row >= 0 && row < m_data.count()) {
         DBG("deleting row" << row);
-        m_db.deleteData(m_dataTable, m_data.at(row)->key);
+        beginRemoveRows(QModelIndex(), row, row);
+        Data* entry = m_data.at(row);
+        m_db.deleteData(m_dataTable, entry->key);
+        m_data.remove(row);
+        delete entry;
+        endRemoveRows();
+        updateRanges();
+        Q_EMIT countChanged();
     }
 }
 
@@ -195,7 +202,74 @@ void DataModel::updateRow(int row, QString value, QString annotation, QString ti
             !m_db.addData(m_dataTable, data->key, value, annotation, timestamp).isEmpty()) {
             const QModelIndex idx(index(row));
             emit dataChanged(idx, idx, roles);
+            updateRanges();
         }
+    }
+}
+
+void DataModel::updateRanges()
+{
+    const QDateTime prevMinTime(m_minTime);
+    const QDateTime prevMaxTime(m_maxTime);
+    const qreal prevMinValue(m_minValue);
+    const qreal prevMaxValue(m_maxValue);
+
+    m_minTime = m_maxTime = QDateTime();
+    m_minValue = m_maxValue = 0.0;
+
+    #define FIRST_TIME 0x01
+    #define FIRST_VALUE 0x02
+
+    int first = (FIRST_TIME | FIRST_VALUE);
+    const int n = m_data.count();
+    for (int i = 0; i < n; i++) {
+        const Data* data = m_data.at(i);
+
+        if (data->timestampUtc.isValid()) {
+            if (first & FIRST_TIME) {
+                first &= ~FIRST_TIME;
+                m_minTime = m_maxTime = data->timestampUtc;
+            } else if (m_minTime > data->timestampUtc) {
+                m_minTime = data->timestampUtc;
+            } else if (m_maxTime < data->timestampUtc) {
+                m_maxTime = data->timestampUtc;
+            }
+        }
+
+        bool ok;
+        const qreal value = data->value.toFloat(&ok);
+        if (ok) {
+            if (first & FIRST_VALUE) {
+                first &= ~FIRST_VALUE;
+                m_minValue = m_maxValue = value;
+            } else if (m_minValue > value) {
+                m_minValue = value;
+            } else if (m_maxValue < value) {
+                m_maxValue = value;
+            }
+        }
+    }
+    // Convert back to local
+    m_minTime = m_minTime.toLocalTime();
+    m_maxTime = m_maxTime.toLocalTime();
+
+    DBG("Start:" << m_minTime);
+    DBG("End:" << m_maxTime);
+    DBG("Min:" << m_minValue);
+    DBG("Max:" << m_maxValue);
+
+    emit dataTableChanged();
+    if (m_minTime != prevMinTime) {
+        emit minTimeChanged();
+    }
+    if (m_maxTime != prevMaxTime) {
+        emit maxTimeChanged();
+    }
+    if (m_minValue != prevMinValue) {
+        emit minValueChanged();
+    }
+    if (m_maxValue != prevMaxValue) {
+        emit maxValueChanged();
     }
 }
 
