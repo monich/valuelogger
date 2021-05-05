@@ -41,9 +41,10 @@ CoverBackground {
             bottom: parent.bottom
             bottomMargin: (Theme.itemSizeSmall + Theme.iconSizeSmall)/2/cover.parent.scale
         }
+        width: Math.min(implicitWidth, parent.width - 2 * Theme.paddingLarge)
         verticalAlignment: Text.AlignVCenter
         truncationMode: TruncationMode.Fade
-        minimumPixelSize: Theme.fontSizeTiny
+        minimumPixelSize: Theme.fontSizeExtraSmall
         fontSizeMode: Text.Fit
         color: Theme.highlightColor
         text: Logger.defaultParameterName ? Logger.defaultParameterName : "Value logger"
