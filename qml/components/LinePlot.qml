@@ -517,19 +517,26 @@ Item {
             id: graphs
 
             model: parInfoModel
-            delegate: Graph {
+            delegate: ShaderEffectSource {
+                id: graphItem
+
                 anchors {
                     fill: parent
                     margins: thinLine
                 }
-                minValue: min
-                maxValue: max
-                minTime: xstart
-                maxTime: xend
-                lineWidth: paintedCount ? Math.max(Math.min(Math.round(Theme.paddingSmall/2), width/paintedCount), 2) : 2
-                color: modelData.plotcolor
-                model: DataModel {
-                    dataTable: modelData.datatable
+                readonly property var model: sourceItem.model
+                sourceItem: Graph {
+                    width: graphItem.width
+                    height: graphItem.height
+                    minValue: min
+                    maxValue: max
+                    minTime: xstart
+                    maxTime: xend
+                    lineWidth: paintedCount ? Math.max(Math.min(Math.round(Theme.paddingSmall/2), width/paintedCount), 2) : 2
+                    color: modelData.plotcolor
+                    model: DataModel {
+                        dataTable: modelData.datatable
+                    }
                 }
             }
         }
