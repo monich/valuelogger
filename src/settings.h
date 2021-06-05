@@ -35,6 +35,7 @@ class Settings : public QObject
 {
     Q_OBJECT
     Q_ENUMS(GridLinesStyle)
+    Q_PROPERTY(QString configRoot READ getConfigRoot CONSTANT)
     Q_PROPERTY(GridLinesStyle horizontalGridLinesStyle READ getHorizontalGridLinesStyle WRITE setHorizontalGridLinesStyle NOTIFY horizontalGridLinesStyleChanged)
     Q_PROPERTY(bool leftGridLabels READ getLeftGridLabels WRITE setLeftGridLabels NOTIFY leftGridLabelsChanged)
     Q_PROPERTY(bool rightGridLabels READ getRightGridLabels WRITE setRightGridLabels NOTIFY rightGridLabelsChanged)
@@ -55,6 +56,9 @@ public:
 
     bool getRightGridLabels() const { return m_rightGridLabels->value(true).toBool(); }
     void setRightGridLabels(bool value) { m_rightGridLabels->set(value); }
+
+    static const QString ConfigRoot;
+    static const QString getConfigRoot() { return ConfigRoot; }
 
     /* Callback for qmlRegisterSingletonType<Settings> */
     static QObject* createSingleton(QQmlEngine* engine, QJSEngine* js);

@@ -21,26 +21,41 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include "settings.h"
+#ifndef COLORMODEL_H
+#define COLORMODEL_H
 
-#define CONFIG_ROOT  "/apps/harbour-valuelogger2/"
-#define DCONF_KEY(x)  CONFIG_ROOT x
+#include <QList>
+#include <QColor>
+#include <QAbstractListModel>
 
-const QString Settings::ConfigRoot(CONFIG_ROOT);
-
-Settings::Settings(QObject* parent) :
-    QObject(parent),
-    m_horizontalGridLinesStyle(new MGConfItem(DCONF_KEY("horizontalGridLinesStyle"), this)),
-    m_leftGridLabels(new MGConfItem(DCONF_KEY("leftGridLabels"), this)),
-    m_rightGridLabels(new MGConfItem(DCONF_KEY("rightGridLabels"), this))
+class ColorModel : public QAbstractListModel
 {
-    connect(m_horizontalGridLinesStyle, SIGNAL(valueChanged()), SIGNAL(horizontalGridLinesStyleChanged()));
-    connect(m_leftGridLabels, SIGNAL(valueChanged()), SIGNAL(leftGridLabelsChanged()));
-    connect(m_rightGridLabels, SIGNAL(valueChanged()), SIGNAL(rightGridLabelsChanged()));
-}
+    Q_OBJECT
+    Q_PROPERTY(QStringList colors READ getColors WRITE setColors NOTIFY colorsChanged)
+    Q_PROPERTY(int dragPos READ getDragPos WRITE setDragPos NOTIFY dragPosChanged)
 
-/* Callback for qmlRegisterSingletonType<Settings> */
-QObject* Settings::createSingleton(QQmlEngine* engine, QJSEngine* js)
-{
-    return new Settings;
-}
+public:
+    ColorModel(QObject* parent = Q_NULLPTR);
+
+    QStringList getColors() const;
+    void setColors(QStringList colors);
+
+    int getDragPos() const;
+    void setDragPos(int pos);
+
+    // QAbstractListModel
+    QHash<int,QByteArray> roleNames() const Q_DECL_OVERRIDE;
+    int rowCount(const QModelIndex& parent) const Q_DECL_OVERRIDE;
+    QVariant data(const QModelIndex& index, int role) const Q_DECL_OVERRIDE;
+
+Q_SIGNALS:
+    void colorsChanged();
+    void dragPosChanged();
+
+private:
+    int m_dragPos;
+    int m_dragStartPos;
+    QList<QColor> m_colors;
+};
+
+#endif // COLORMODEL_H

@@ -20,7 +20,8 @@ CONFIG(debug, debug|release) {
     DEFINES += DEBUG LOG_DBG
 }
 
-SOURCES += src/dashline.cpp \
+SOURCES += src/colormodel.cpp \
+        src/dashline.cpp \
         src/database.cpp \
         src/datamodel.cpp \
         src/graph.cpp \
@@ -32,7 +33,8 @@ SOURCES += src/dashline.cpp \
         src/valuelogger.cpp \
         src/vdashline.cpp
 
-HEADERS += src/dashline.h \
+HEADERS += src/colormodel.h \
+        src/dashline.h \
         src/database.h \
         src/datamodel.h \
         src/debuglog.h \

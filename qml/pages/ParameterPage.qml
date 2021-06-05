@@ -1,5 +1,7 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
+import org.nemomobile.configuration 1.0
+import harbour.valuelogger 1.0
 
 import "../js/debug.js" as Debug
 import "../components"
@@ -21,6 +23,18 @@ Dialog {
             parameterDescription = parDescField.text
             Debug.log("color set to", plotColor)
         }
+    }
+
+    ConfigurationValue {
+        id: colorsConfig
+
+        key: Settings.configRoot + "colors"
+        defaultValue: [
+            "#ffffff", "#ff00ff", "#ff0080",
+            "#808080", "#ff8000", "#ffff00",
+            "#00ff80", "#00ff00", "#00ffff",
+            "#008080", "#8000ff", "#0000ff"
+        ]
     }
 
     DialogHeader {
@@ -102,7 +116,15 @@ Dialog {
                 }
 
                 onClicked: {
-                    var dialog = pageStack.push("Sailfish.Silica.ColorPickerDialog", { "colors": plotColors })
+                    var dialog = pageStack.push(Qt.resolvedUrl("ColorPicker.qml"), {
+                        "allowedOrientations": allowedOrientations,
+                        "colors": colorsConfig.value,
+                        "color": plotColor,
+                    })
+                    dialog.colorsChanged.connect(function() {
+                        Debug.log(dialog.colors)
+                        colorsConfig.value = dialog.colors
+                    })
                     dialog.accepted.connect(function() {
                         Debug.log("Changed color to", dialog.color)
                         plotColorLegend.color = dialog.color

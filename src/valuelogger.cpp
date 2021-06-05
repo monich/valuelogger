@@ -22,6 +22,7 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
+#include "colormodel.h"
 #include "graph.h"
 #include "gridmodel.h"
 #include "hdashline.h"
@@ -67,6 +68,7 @@ int main(int argc, char *argv[])
     qsrand(QDateTime::currentDateTime().toTime_t());
 
     const char *uri = "harbour.valuelogger";
+    qmlRegisterType<ColorModel>(uri, 1, 0, "ColorModel");
     qmlRegisterType<Graph>(uri, 1, 0, "Graph");
     qmlRegisterType<GridModel>(uri, 1, 0, "GridModel");
     qmlRegisterType<DataModel>(uri, 1, 0, "DataModel");

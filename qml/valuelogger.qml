@@ -9,13 +9,6 @@ import "cover"
 ApplicationWindow {
     id: valuelogger
 
-    property var plotColors: [
-        "#ffffff", "#ff00ff", "#ff0080",
-        "#808080", "#ff8000", "#ffff00",
-        "#00ff80", "#00ff00", "#00ffff",
-        "#008080", "#8000ff", "#0000ff"
-    ]
-
     initialPage: Component {
         MainPage {
             allowedOrientations: valuelogger.allowedOrientations
