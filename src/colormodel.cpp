@@ -25,7 +25,8 @@ DEALINGS IN THE SOFTWARE.
 #include "debuglog.h"
 
 enum ColorModelRole {
-    ColorRole = Qt::UserRole
+    ColorRole = Qt::UserRole,
+    ItemTypeRole
 };
 
 ColorModel::ColorModel(QObject* parent) :
@@ -39,12 +40,13 @@ QHash<int,QByteArray> ColorModel::roleNames() const
 {
     QHash<int,QByteArray> roles;
     roles.insert(ColorRole, "color");
+    roles.insert(ItemTypeRole, "itemType");
     return roles;
 }
 
 int ColorModel::rowCount(const QModelIndex& parent) const
 {
-    return m_colors.count();
+    return m_colors.count() + 1;
 }
 
 QVariant ColorModel::data(const QModelIndex& index, int role) const
@@ -65,10 +67,13 @@ QVariant ColorModel::data(const QModelIndex& index, int role) const
                     }
                 }
                 return m_colors.at(row);
+            case ItemTypeRole:
+                return ColorItem;
             }
         } else if (row == n) {
             switch ((ColorModelRole)role) {
             case ColorRole: return QColor(0,0,0,0);
+            case ItemTypeRole: return AddItem;
             }
         }
     }
@@ -107,8 +112,19 @@ void ColorModel::setColors(QStringList colors)
             m_dragStartPos = -1;
             Q_EMIT dragPosChanged();
         }
-        Q_EMIT colorsChanged();
         endResetModel();
+        Q_EMIT colorsChanged();
+    }
+}
+
+void ColorModel::addColor(QColor color)
+{
+    if (color.isValid()) {
+        const int n = m_colors.count();
+        beginInsertRows(QModelIndex(), n, n);
+        m_colors.append(color);
+        endInsertRows();
+        Q_EMIT colorsChanged();
     }
 }
 
@@ -133,18 +149,23 @@ void ColorModel::setDragPos(int pos)
             }
             Q_EMIT dragPosChanged();
         }
-    } else if (pos != m_dragPos && pos < m_colors.count()) {
-        if (m_dragPos >= 0) {
-            DBG(pos);
-            const int dest = (pos > m_dragPos) ? (pos + 1) : pos;
-            beginMoveRows(QModelIndex(), m_dragPos, m_dragPos, QModelIndex(), dest);
-            m_dragPos = pos;
-            endMoveRows();
-        } else {
-            // Drag is starting
-            DBG("dragging" << pos);
-            m_dragPos = m_dragStartPos = pos;
+    } else {
+        if (pos >= m_colors.count()) {
+            pos = m_colors.count() - 1;
         }
-        Q_EMIT dragPosChanged();
+        if (pos != m_dragPos) {
+            if (m_dragPos >= 0) {
+                DBG(pos);
+                const int dest = (pos > m_dragPos) ? (pos + 1) : pos;
+                beginMoveRows(QModelIndex(), m_dragPos, m_dragPos, QModelIndex(), dest);
+                m_dragPos = pos;
+                endMoveRows();
+            } else {
+                // Drag is starting
+                DBG("dragging" << pos);
+                m_dragPos = m_dragStartPos = pos;
+            }
+            Q_EMIT dragPosChanged();
+        }
     }
 }

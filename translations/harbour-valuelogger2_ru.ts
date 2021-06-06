@@ -51,10 +51,33 @@
     </message>
 </context>
 <context>
+    <name>ColorEditor</name>
+    <message>
+        <source>Add color</source>
+        <translation>Добавить цвет</translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation>Цвет</translation>
+    </message>
+    <message>
+        <source>Brightness</source>
+        <translation>Яркость</translation>
+    </message>
+    <message>
+        <source>Hex notation</source>
+        <translation>Текстовый формат</translation>
+    </message>
+</context>
+<context>
     <name>ColorPicker</name>
     <message>
         <source>Select color</source>
         <translation>Выбрать цвет</translation>
+    </message>
+    <message>
+        <source>Reset colors</source>
+        <translation>Сбросить цвета</translation>
     </message>
 </context>
 <context>

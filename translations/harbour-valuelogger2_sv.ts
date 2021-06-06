@@ -51,10 +51,33 @@
     </message>
 </context>
 <context>
+    <name>ColorEditor</name>
+    <message>
+        <source>Add color</source>
+        <translation type="unfinished">Lägg till färg</translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished">Färg</translation>
+    </message>
+    <message>
+        <source>Brightness</source>
+        <translation type="unfinished">Ljusstyrka</translation>
+    </message>
+    <message>
+        <source>Hex notation</source>
+        <translation type="unfinished">Hex-format</translation>
+    </message>
+</context>
+<context>
     <name>ColorPicker</name>
     <message>
         <source>Select color</source>
         <translation>Välj färg</translation>
+    </message>
+    <message>
+        <source>Reset colors</source>
+        <translation type="unfinished">Återställ färger</translation>
     </message>
 </context>
 <context>

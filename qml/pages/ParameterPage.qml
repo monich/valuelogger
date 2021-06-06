@@ -121,6 +121,10 @@ Dialog {
                         "colors": colorsConfig.value,
                         "color": plotColor,
                     })
+                    dialog.resetColors.connect(function() {
+                        Debug.log("Resetting colors")
+                        dialog.colors = colorsConfig.value = colorsConfig.defaultValue
+                    })
                     dialog.colorsChanged.connect(function() {
                         Debug.log(dialog.colors)
                         colorsConfig.value = dialog.colors

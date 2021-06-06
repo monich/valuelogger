@@ -51,10 +51,33 @@
     </message>
 </context>
 <context>
+    <name>ColorEditor</name>
+    <message>
+        <source>Add color</source>
+        <translation type="unfinished">Lisää väri</translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished">Väri</translation>
+    </message>
+    <message>
+        <source>Brightness</source>
+        <translation type="unfinished">Kirkkaus</translation>
+    </message>
+    <message>
+        <source>Hex notation</source>
+        <translation type="unfinished">Hex värikoodi</translation>
+    </message>
+</context>
+<context>
     <name>ColorPicker</name>
     <message>
         <source>Select color</source>
         <translation>Valitse väri</translation>
+    </message>
+    <message>
+        <source>Reset colors</source>
+        <translation type="unfinished">Palauta värit</translation>
     </message>
 </context>
 <context>

@@ -51,10 +51,33 @@
     </message>
 </context>
 <context>
+    <name>ColorEditor</name>
+    <message>
+        <source>Add color</source>
+        <translation type="unfinished">Dodaj kolor</translation>
+    </message>
+    <message>
+        <source>Color</source>
+        <translation type="unfinished">Kolor</translation>
+    </message>
+    <message>
+        <source>Brightness</source>
+        <translation type="unfinished">Jasność</translation>
+    </message>
+    <message>
+        <source>Hex notation</source>
+        <translation type="unfinished">Format szesnastkowy</translation>
+    </message>
+</context>
+<context>
     <name>ColorPicker</name>
     <message>
         <source>Select color</source>
         <translation>Wybierz kolor</translation>
+    </message>
+    <message>
+        <source>Reset colors</source>
+        <translation type="unfinished">Zresetuj kolory</translation>
     </message>
 </context>
 <context>

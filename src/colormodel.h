@@ -33,8 +33,14 @@ class ColorModel : public QAbstractListModel
     Q_OBJECT
     Q_PROPERTY(QStringList colors READ getColors WRITE setColors NOTIFY colorsChanged)
     Q_PROPERTY(int dragPos READ getDragPos WRITE setDragPos NOTIFY dragPosChanged)
+    Q_ENUMS(ItemType)
 
 public:
+    enum ItemType {
+        ColorItem,
+        AddItem
+    };
+
     ColorModel(QObject* parent = Q_NULLPTR);
 
     QStringList getColors() const;
@@ -42,6 +48,8 @@ public:
 
     int getDragPos() const;
     void setDragPos(int pos);
+
+    Q_INVOKABLE void addColor(QColor color);
 
     // QAbstractListModel
     QHash<int,QByteArray> roleNames() const Q_DECL_OVERRIDE;

@@ -13,6 +13,8 @@ Dialog {
 
     canAccept: false
 
+    signal resetColors()
+
     SilicaGridView {
         id: grid
 
@@ -23,6 +25,13 @@ Dialog {
         model: ColorModel { id: colorModel }
 
         VerticalScrollDecorator {}
+
+        PullDownMenu {
+            MenuItem {
+                text: qsTr("Reset colors")
+                onClicked: thisDialog.resetColors()
+            }
+        }
 
         property Item dragItem
         property int pageHeaderHeight
@@ -168,13 +177,41 @@ Dialog {
                 }
             }
 
-            onClicked: {
-                thisDialog.color = model.color
-                thisDialog.canAccept = true
-                thisDialog.accept()
+            Rectangle {
+                anchors.fill: parent
+                visible: model.itemType === ColorModel.AddItem
+                color: colorDelegate.highlighted ? highlightColor : "transparent"
+                property color highlightColor: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity)
+
+                Image {
+                    anchors.centerIn: parent
+                    source: "image://theme/icon-m-add?" + (colorDelegate.highlighted ? Theme.highlightColor : Theme.primaryColor)
+                    sourceSize: Qt.size(Theme.iconSizeExtraLarge, Theme.iconSizeExtraLarge)
+                }
             }
 
-            onPressAndHold: grid.dragItem = colorDelegate
+            onClicked: {
+                if (model.itemType === ColorModel.ColorItem) {
+                    thisDialog.color = model.color
+                    thisDialog.canAccept = true
+                    thisDialog.accept()
+                } else {
+                    var editor = pageStack.push(Qt.resolvedUrl("ColorEditor.qml"), {
+                        "allowedOrientations": allowedOrientations,
+                        "initialColor": thisDialog.color
+                    })
+                    editor.accepted.connect(function() {
+                        Debug.log("Adding", editor.selectedColor)
+                        colorModel.addColor(editor.selectedColor)
+                    })
+                }
+            }
+
+            onPressAndHold: {
+                if (model.itemType === ColorModel.ColorItem) {
+                    grid.dragItem = colorDelegate
+                }
+            }
             onReleased: stopDrag()
             onCanceled: stopDrag()
 
