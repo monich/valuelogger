@@ -64,18 +64,36 @@ Dialog {
                 width: grid.cellWidth
                 height: grid.cellHeight
                 color: model.color
-                scale: colorDelegate.dragging ? 1.1 : 1
-                layer.enabled: colorDelegate.highlighted || scale > 1
+                scale: !colorDelegate.dragging ? 1 : isTrashed ? 0.8 : 1.1
+                opacity: isTrashed ? 0.8 : 1
+                layer.enabled: colorDelegate.highlighted || colorDelegate.dragging || scale > 1
                 layer.effect: PressEffect { source: colorItem }
 
+                readonly property bool isTrashed: model.itemType === ColorModel.TrashedItem
                 property real returnX
                 property real returnY
                 property bool snappingBack
 
+                Behavior on opacity { FadeAnimation { } }
                 Behavior on scale {
                     NumberAnimation {
                         easing.type: Easing.InQuad
                         duration: 150
+                    }
+                }
+
+                Image {
+                    anchors.centerIn: parent
+                    source: opacity ? ("image://theme/graphic-close-app?" + deriveColor(model.color)) : ""
+                    sourceSize: Qt.size(Theme.iconSizeLarge, Theme.iconSizeLarge)
+                    opacity: (model.itemType === ColorModel.TrashedItem) ? 0.8 : 0
+                    visible: opacity > 0
+                    Behavior on opacity { FadeAnimation { } }
+
+                    function deriveColor(color) {
+                        var gray = 0.299 * color.r + 0.587 * color.g + 0.114 *color.b
+                        var v = (gray > 0.5) ? 0 : 1
+                        return Qt.rgba(v, v, v, color.a)
                     }
                 }
 
@@ -185,7 +203,7 @@ Dialog {
 
                 Image {
                     anchors.centerIn: parent
-                    source: "image://theme/icon-m-add?" + (colorDelegate.highlighted ? Theme.highlightColor : Theme.primaryColor)
+                    source: parent.visible ? ("image://theme/icon-m-add?" + (colorDelegate.highlighted ? Theme.highlightColor : Theme.primaryColor)) : ""
                     sourceSize: Qt.size(Theme.iconSizeExtraLarge, Theme.iconSizeExtraLarge)
                 }
             }
@@ -226,7 +244,7 @@ Dialog {
                     var returnPoint = mapToItem(grid, 0, 0)
                     colorItem.returnX = returnPoint.x
                     colorItem.returnY = returnPoint.y
-                    colorItem.snappingBack = true
+                    colorItem.snappingBack = (colorItem.returnX !== colorItem.x || colorItem.returnY !== colorItem.y)
                     grid.dragItem = null
                 }
             }

@@ -38,6 +38,7 @@ class ColorModel : public QAbstractListModel
 public:
     enum ItemType {
         ColorItem,
+        TrashedItem,
         AddItem
     };
 
@@ -64,6 +65,7 @@ private:
     int m_dragPos;
     int m_dragStartPos;
     QList<QColor> m_colors;
+    const QColor m_addColor;
 };
 
 #endif // COLORMODEL_H

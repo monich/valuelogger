@@ -32,7 +32,8 @@ enum ColorModelRole {
 ColorModel::ColorModel(QObject* parent) :
     QAbstractListModel(parent),
     m_dragPos(-1),
-    m_dragStartPos(-1)
+    m_dragStartPos(-1),
+    m_addColor(0, 0, 0, 0)
 {
 }
 
@@ -44,7 +45,7 @@ QHash<int,QByteArray> ColorModel::roleNames() const
     return roles;
 }
 
-int ColorModel::rowCount(const QModelIndex& parent) const
+int ColorModel::rowCount(const QModelIndex&) const
 {
     return m_colors.count() + 1;
 }
@@ -54,26 +55,34 @@ QVariant ColorModel::data(const QModelIndex& index, int role) const
     const int row = index.row();
     if (row >= 0) {
         const int n = m_colors.count();
-        if (row < n) {
+        if (row <= n) {
             switch ((ColorModelRole)role) {
             case ColorRole:
                 if (m_dragPos >= 0) {
                     if (row == m_dragPos) {
+                        // This includes the item dragged outside
                         return m_colors.at(m_dragStartPos);
-                    } else if (row >= m_dragStartPos && row < m_dragPos) {
-                        return m_colors.at(row + 1);
-                    } else if (row > m_dragPos && row <= m_dragStartPos) {
-                        return m_colors.at(row - 1);
+                    } else {
+                        if (m_dragPos == n && row == (n - 1)) {
+                            // When item is dragged outside, it becomes
+                            // the last one and shifts the "add" item.
+                            return m_addColor;
+                        } else if (row >= m_dragStartPos && row < m_dragPos) {
+                            return m_colors.at(row + 1);
+                        } else if (row > m_dragPos && row <= m_dragStartPos) {
+                            return m_colors.at(row - 1);
+                        }
                     }
                 }
-                return m_colors.at(row);
+                return (row == n) ? m_addColor : m_colors.at(row);
             case ItemTypeRole:
-                return ColorItem;
-            }
-        } else if (row == n) {
-            switch ((ColorModelRole)role) {
-            case ColorRole: return QColor(0,0,0,0);
-            case ItemTypeRole: return AddItem;
+                if (m_dragPos == n) {
+                    // Item is dragged outside
+                    return (row == n) ? TrashedItem :
+                        (row == (n - 1)) ? AddItem : ColorItem;
+                } else {
+                    return (row == n) ? AddItem : ColorItem;
+                }
             }
         }
     }
@@ -139,9 +148,17 @@ void ColorModel::setDragPos(int pos)
         if (m_dragPos >= 0) {
             // The drag is finished
             if (m_dragPos != m_dragStartPos) {
-                DBG("dragged" << m_dragStartPos << "=>" << m_dragPos);
-                m_colors.move(m_dragStartPos, m_dragPos);
-                m_dragPos = m_dragStartPos = -1;
+                if (m_dragPos == m_colors.count()) {
+                    DBG("trashed" << m_dragStartPos);
+                    beginRemoveRows(QModelIndex(), m_dragPos, m_dragPos);
+                    m_colors.removeAt(m_dragStartPos);
+                    m_dragPos = m_dragStartPos = -1;
+                    endRemoveRows();
+                } else {
+                    DBG("dragged" << m_dragStartPos << "=>" << m_dragPos);
+                    m_colors.move(m_dragStartPos, m_dragPos);
+                    m_dragPos = m_dragStartPos = -1;
+                }
                 Q_EMIT colorsChanged();
             } else {
                 DBG("drag cancelled");
@@ -150,22 +167,30 @@ void ColorModel::setDragPos(int pos)
             Q_EMIT dragPosChanged();
         }
     } else {
-        if (pos >= m_colors.count()) {
-            pos = m_colors.count() - 1;
-        }
+        const int n = m_colors.count();
+        if (pos >= n) pos = n;
         if (pos != m_dragPos) {
             if (m_dragPos >= 0) {
-                DBG(pos);
+                const QModelIndex parent;
+                const bool wasTrashed = (m_dragPos == n);
+                const bool isTrashed = (pos == n);
+                DBG(pos << (isTrashed ? "(outside)" : ""));
                 const int dest = (pos > m_dragPos) ? (pos + 1) : pos;
                 beginMoveRows(QModelIndex(), m_dragPos, m_dragPos, QModelIndex(), dest);
                 m_dragPos = pos;
                 endMoveRows();
-            } else {
+                if (wasTrashed || isTrashed) {
+                    const QVector<int> roles(1, ItemTypeRole);
+                    const QModelIndex modelIndex(index(m_dragPos));
+                    Q_EMIT dataChanged(modelIndex, modelIndex, roles);
+                }
+                Q_EMIT dragPosChanged();
+            } else if (pos < n /* Must be within bounds */) {
                 // Drag is starting
                 DBG("dragging" << pos);
                 m_dragPos = m_dragStartPos = pos;
+                Q_EMIT dragPosChanged();
             }
-            Q_EMIT dragPosChanged();
         }
     }
 }
