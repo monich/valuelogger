@@ -21,7 +21,8 @@ SilicaFlickable  {
         }
 
         Label {
-            width: parent.width - 2 * Theme.horizontalPageMargin
+            x: Theme.horizontalPageMargin
+            width: parent.width - 2 * x
             text: qsTr("Version: %1").arg(Logger.version)
             minimumPixelSize: Theme.fontSizeTiny
             fontSizeMode: Text.Fit
@@ -29,7 +30,8 @@ SilicaFlickable  {
         }
 
         Label {
-            width: parent.width - 2 * Theme.horizontalPageMargin
+            x: Theme.horizontalPageMargin
+            width: parent.width - 2 * x
             text: "© 2014-2015 kimmoli\n© 2021 Slava Monich"
             color: Theme.highlightColor
             font.pixelSize: Theme.fontSizeSmall
