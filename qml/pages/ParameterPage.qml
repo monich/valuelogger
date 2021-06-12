@@ -13,8 +13,10 @@ Dialog {
 
     property string parameterName
     property string parameterDescription
-    property string plotColor: plotColors[0]
+    property string plotColor
     property alias pageTitle: dialogHeader.acceptText
+
+    Component.onCompleted: if (!plotColor) plotColor = colorsConfig.value[0]
 
     onDone: {
         Debug.log("closing:", result)
