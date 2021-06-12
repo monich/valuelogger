@@ -111,7 +111,6 @@ Dialog {
                         TextField {
                             id: hexText
 
-                            readonly property var regExp: new RegExp(/^[0-9a-fA-F]+$/)
                             property int ignoreTextUpdates // to avoid binding loops
                             property color tmpColor
 
@@ -121,13 +120,13 @@ Dialog {
                             textRightMargin: 0
                             label: qsTr("Hex notation")
                             text: initialColor.toString().substr(1)
-                            acceptableInput: textValid(text)
+                            validator: RegExpValidator { regExp: /^[0-9a-fA-F]{6}$/ }
                             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
                             EnterKey.iconSource: "image://theme/icon-m-enter-close"
                             EnterKey.onClicked: hexText.focus = false
 
                             onTextChanged: {
-                                if (!ignoreTextUpdates && textValid(text)) {
+                                if (!ignoreTextUpdates && acceptableInput) {
                                     tmpColor = "#" + text
                                     Debug.log(tmpColor)
                                     ignoreTextUpdates++
@@ -138,7 +137,7 @@ Dialog {
                             }
 
                             onActiveFocusChanged: {
-                                if (!activeFocus && !textValid(text)) {
+                                if (!activeFocus && !acceptableInput) {
                                     updateText()
                                 }
                             }
@@ -150,10 +149,6 @@ Dialog {
                                     text = (s.length > 0 && s.charAt(0) === '#') ? s.substr(1) : s
                                     ignoreTextUpdates--
                                 }
-                            }
-
-                            function textValid(t) {
-                                return t.length === 6 && regExp.test(t)
                             }
                         }
                     }
