@@ -11,7 +11,7 @@ QT += sql
 QMAKE_CXXFLAGS += -Wno-unused-parameter -Wno-psabi
 
 isEmpty(SPECVERSION) {
-    SPECVERSION=1.0.7
+    SPECVERSION=1.0.8
 }
 
 DEFINES += "APPVERSION=\\\"$${SPECVERSION}\\\""
