@@ -58,7 +58,7 @@ OTHER_FILES += qml/valuelogger.qml \
     README.md
 
 # Icons
-ICON_SIZES = 86 108 128 256
+ICON_SIZES = 86 108 128 172 256
 for(s, ICON_SIZES) {
     icon_target = icon$${s}
     icon_dir = icons/$${s}x$${s}
