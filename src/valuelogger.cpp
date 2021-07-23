@@ -39,7 +39,6 @@ DEALINGS IN THE SOFTWARE.
 #include <QQuickView>
 #include <QQmlEngine>
 #include <QGuiApplication>
-#include <QSurfaceFormat>
 #include <QTranslator>
 #include <QLocale>
 
@@ -91,10 +90,6 @@ int main(int argc, char *argv[])
     }
 
     QScopedPointer<QQuickView> view(SailfishApp::createView());
-    // Enable multisampling
-    QSurfaceFormat format = view->format();
-    format.setSamples(16);
-    view->setFormat(format);
     view->setSource(SailfishApp::pathTo("qml/valuelogger.qml"));
     view->show();
 

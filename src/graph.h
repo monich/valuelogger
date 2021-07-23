@@ -26,12 +26,10 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QColor>
 #include <QDateTime>
-#include <QQuickItem>
+#include <QQuickPaintedItem>
 #include <QAbstractItemModel>
-#include <QSGGeometry>
-#include <QSGNode>
 
-class Graph : public QQuickItem
+class Graph : public QQuickPaintedItem
 {
     Q_OBJECT
     Q_PROPERTY(QColor color READ color WRITE setColor NOTIFY colorChanged)
@@ -45,7 +43,6 @@ class Graph : public QQuickItem
 
 public:
     explicit Graph(QQuickItem* parent = Q_NULLPTR);
-    ~Graph();
 
     const QColor& color() const { return m_color; }
     void setColor(const QColor& color);
@@ -71,17 +68,10 @@ public:
     int paintedCount() const { return m_paintedCount; }
 
 protected:
-    QSGNode* updatePaintNode(QSGNode* node, UpdatePaintNodeData* data) Q_DECL_OVERRIDE;
+    void paint(QPainter* aPainter) Q_DECL_OVERRIDE;
 
 private:
-    static void updateSquareGeometry(QSGGeometry::Point2D* v, float x, float y, float size);
-    static void updateLineGeometry(QSGGeometry::Point2D* v, float x1, float y1, float x2, float y2, float thick);
-    static void updateSquareNode(QSGGeometryNode* node, float x, float y, float size);
-    static void updateLineNode(QSGGeometryNode* node, float x1, float y1, float x2, float y2, float thick);
-    static QSGGeometry* newSquareGeometry(float x, float y, float size);
-    static QSGGeometry* newLineGeometry(float x1, float y1, float x2, float y2, float thick);
-    static bool lineVisible(float x1, float y1, float x2, float y2, float w, float h);
-    QSGGeometryNode* newNode(QSGGeometry* g);
+    static bool lineVisible(qreal x1, qreal y1, qreal x2, qreal y2, qreal w, qreal h);
 
 private slots:
     void onModelDestroyed();
@@ -105,7 +95,6 @@ private:
     QDateTime m_maxTime;
     int m_timestampRole;
     int m_valueRole;
-    QVector<QSGNode*> m_nodes;
     QAbstractItemModel* m_model;
     int m_paintedCount;
 };
