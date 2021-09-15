@@ -6,5 +6,8 @@ Icon=harbour-valuelogger2
 Exec=harbour-valuelogger2
 
 [X-HarbourBackup]
-BackupPathList = .local/share/harbour-valuelogger/
-BackupConfigList = /apps/harbour-valuelogger2/
+BackupPathList=.local/share/harbour-valuelogger/
+BackupConfigList=/apps/harbour-valuelogger2/
+
+[X-Sailjail]
+Sandboxing=Disabled
