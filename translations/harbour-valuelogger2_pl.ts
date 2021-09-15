@@ -16,7 +16,7 @@
     </message>
     <message>
         <source>Pair</source>
-        <translation type="unfinished">Paruj</translation>
+        <translation>Paruj</translation>
     </message>
 </context>
 <context>
@@ -54,19 +54,19 @@
     <name>ColorEditor</name>
     <message>
         <source>Add color</source>
-        <translation type="unfinished">Dodaj kolor</translation>
+        <translation>Dodaj kolor</translation>
     </message>
     <message>
         <source>Color</source>
-        <translation type="unfinished">Kolor</translation>
+        <translation>Kolor</translation>
     </message>
     <message>
         <source>Brightness</source>
-        <translation type="unfinished">Jasność</translation>
+        <translation>Jasność</translation>
     </message>
     <message>
         <source>Hex notation</source>
-        <translation type="unfinished">Format szesnastkowy</translation>
+        <translation>Format szesnastkowy</translation>
     </message>
 </context>
 <context>
@@ -77,7 +77,7 @@
     </message>
     <message>
         <source>Reset colors</source>
-        <translation type="unfinished">Zresetuj kolory</translation>
+        <translation>Resetuj kolory</translation>
     </message>
 </context>
 <context>
