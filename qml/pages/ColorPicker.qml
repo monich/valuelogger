@@ -11,7 +11,7 @@ Dialog {
     property color color
     property alias colors: colorModel.colors
 
-    canAccept: false
+    forwardNavigation: false
 
     signal resetColors()
 
@@ -56,7 +56,6 @@ Dialog {
 
             readonly property bool highlighted: (pressed && containsMouse)
             readonly property bool dragging: grid.dragItem === colorDelegate
-            readonly property int index: model.index
 
             Rectangle {
                 id: colorItem
@@ -70,6 +69,7 @@ Dialog {
                 layer.effect: PressEffect { source: colorItem }
 
                 readonly property bool isTrashed: model.itemType === ColorModel.TrashedItem
+                readonly property int index: model.index
                 property real returnX
                 property real returnY
                 property bool snappingBack
@@ -147,7 +147,7 @@ Dialog {
                     }
                 ]
 
-                onStateChanged: Debug.log(colorDelegate.index, colorDelegate.dragging, state)
+                onStateChanged: Debug.log(colorItem.index, colorDelegate.dragging, state)
 
                 Connections {
                     target: colorDelegate.dragging ? colorItem : null
@@ -193,13 +193,25 @@ Dialog {
                     var row = Math.floor((grid.contentY + y + height/2)/grid.cellHeight)
                     colorModel.dragPos = grid.cellsPerRow * row + Math.floor((grid.contentX + x + width/2)/grid.cellWidth)
                 }
+
+                Rectangle {
+                    border {
+                        width: Theme.paddingSmall
+                        color: Theme.highlightBackgroundColor
+                    }
+                    anchors.fill: parent
+                    color: "transparent"
+                    visible: colorModel.dragPos < 0 &&
+                        colorItem.color === thisDialog.color &&
+                        colorItem.index === colorModel.indexOf(thisDialog.color)
+                }
             }
 
             Rectangle {
                 anchors.fill: parent
                 visible: model.itemType === ColorModel.AddItem
                 color: colorDelegate.highlighted ? highlightColor : "transparent"
-                property color highlightColor: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity)
+                readonly property color highlightColor: Theme.rgba(Theme.highlightBackgroundColor, Theme.highlightBackgroundOpacity)
 
                 Image {
                     anchors.centerIn: parent
@@ -211,7 +223,7 @@ Dialog {
             onClicked: {
                 if (model.itemType === ColorModel.ColorItem) {
                     thisDialog.color = model.color
-                    thisDialog.canAccept = true
+                    thisDialog.forwardNavigation = true
                     thisDialog.accept()
                 } else {
                     var editor = pageStack.push(Qt.resolvedUrl("ColorEditor.qml"), {

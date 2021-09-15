@@ -51,6 +51,7 @@ public:
     void setDragPos(int pos);
 
     Q_INVOKABLE void addColor(QColor color);
+    Q_INVOKABLE int indexOf(QColor color) const;
 
     // QAbstractListModel
     QHash<int,QByteArray> roleNames() const Q_DECL_OVERRIDE;

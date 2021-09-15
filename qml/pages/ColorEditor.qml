@@ -5,12 +5,14 @@ import "../js/debug.js" as Debug
 import "../components"
 
 Dialog {
-    readonly property color selectedColor: sample.color
-    property color initialColor
+    id: thisDialog
+
+    readonly property color selectedColor: sampleItem.color
+    property color initialColor: Theme.highlightColor
 
     canAccept: hexText.acceptableInput
-    forwardNavigation: !colorPanel.pressed
-    backNavigation: !colorPanel.pressed
+    forwardNavigation: !hueItem.pressed
+    backNavigation: !hueItem.pressed
 
     DialogHeader {
         id: header
@@ -18,12 +20,14 @@ Dialog {
         acceptText: forwardNavigation ? qsTr("Add color") : ""
     }
 
+    Component.onCompleted: hexText.text = initialColor.toString().substr(1)
+
     // Otherwise width is changing with a delay, causing visible layout changes
     onIsLandscapeChanged: width = isLandscape ? Screen.height : Screen.width
 
     SilicaFlickable {
         clip: true
-        interactive: !colorPanel.pressed
+        interactive: !hueItem.pressed
         anchors {
             left: parent.left
             right: parent.right
@@ -32,7 +36,7 @@ Dialog {
         }
 
         ColorPanel {
-            id: colorPanel
+            id: hueItem
 
             x: Theme.horizontalPageMargin
             width: parent.width - 2 * x
@@ -119,7 +123,6 @@ Dialog {
                             textLeftMargin: 0
                             textRightMargin: 0
                             label: qsTr("Hex notation")
-                            text: initialColor.toString().substr(1)
                             validator: RegExpValidator { regExp: /^[0-9a-fA-F]{6}$/ }
                             inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
                             EnterKey.iconSource: "image://theme/icon-m-enter-close"
@@ -130,8 +133,8 @@ Dialog {
                                     tmpColor = "#" + text
                                     Debug.log(tmpColor)
                                     ignoreTextUpdates++
-                                    brightnessSlider.value = colorPanel.getV(tmpColor)
-                                    hueSlider.value = colorPanel.getH(tmpColor)
+                                    brightnessSlider.value = hueItem.getV(tmpColor)
+                                    hueSlider.value = hueItem.getH(tmpColor)
                                     ignoreTextUpdates--
                                 }
                             }
@@ -145,7 +148,7 @@ Dialog {
                             function updateText() {
                                 if (!ignoreTextUpdates) {
                                     ignoreTextUpdates++
-                                    var s = colorPanel.getColor(hueSlider.sliderValue).toString()
+                                    var s = hueItem.getColor(hueSlider.sliderValue).toString()
                                     text = (s.length > 0 && s.charAt(0) === '#') ? s.substr(1) : s
                                     ignoreTextUpdates--
                                 }
@@ -154,15 +157,25 @@ Dialog {
                     }
                 }
 
-                Rectangle {
+                MouseArea {
                     id: sample
 
                     y: Theme.paddingLarge
                     width: 2 * height
                     height: hexText.height - 2 * Theme.paddingLarge
                     anchors.right: parent.right
-                    color: "#" + hexText.text
-                    visible: hexText.acceptableInput
+
+                    onClicked: thisDialog.accept()
+
+                    Rectangle {
+                        id: sampleItem
+
+                        anchors.fill: parent
+                        color: "#" + hexText.text
+                        visible: hexText.acceptableInput
+                        layer.enabled: sample.pressed && sample.containsMouse
+                        layer.effect: PressEffect { source: sampleItem }
+                    }
                 }
             }
         }

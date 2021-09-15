@@ -194,3 +194,8 @@ void ColorModel::setDragPos(int pos)
         }
     }
 }
+
+int ColorModel::indexOf(QColor color) const
+{
+    return m_colors.indexOf(color);
+}
