@@ -35,14 +35,15 @@ void VDashLine::updateNodes(QSGNode* paintNode, QVector<QSGNode*>* nodes)
     float y;
     QSGNode* node = paintNode->firstChild();
     const float dashSize = (getDashSize() < 0) ? w : getDashSize();
-    const float dashSize2 = dashSize * dashSize;
-    for (y = 0; node && y < h; y += dashSize2) {
+    const float dashSpace = dashSize;
+    const float dashStep = dashSize + dashSpace;
+    for (y = 0; node && y < h; y += dashStep) {
         updateRectNode((QSGGeometryNode*)node, 0, y, w, qMin(dashSize, h - y));
         node = node->nextSibling();
     }
 
     // Create new ones
-    for (;y < h; y += dashSize2) {
+    for (;y < h; y += dashStep) {
         QSGNode* child = newNode(newRectGeometry(0, y, w, qMin(dashSize, h - y)));
         paintNode->appendChildNode(child);
         nodes->append(child);
