@@ -339,7 +339,7 @@ Item {
             Repeater {
                 model: grid.horizontalCount - 1
                 delegate: VDashLine {
-                    x: Math.round((index + 1) * (parent.width - width)/6)
+                    x: Math.round((index + 1) * (parent.width - width)/grid.horizontalCount)
                     width: thinLine
                     height: parent.height
                     color: Theme.primaryColor
@@ -364,7 +364,7 @@ Item {
                     maxValue: max
                     size: canvas.height
                     maxCount: fixedGrids ? 4 : 7
-                    fixedGrids: Settings.horizontalGridLinesStyle == Settings.GridLinesFixed
+                    fixedGrids: Settings.horizontalGridLinesStyle === Settings.GridLinesFixed
                 }
                 delegate: Column {
                     y: Math.round(grid.height - model.coordinate - thinLine)
