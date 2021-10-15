@@ -47,6 +47,7 @@ Graph::Graph(QQuickItem* parent) :
     m_timestampRole(-1),
     m_valueRole(-1),
     m_model(Q_NULLPTR),
+    m_nodeMarks(true),
     m_paintedCount(0)
 {
     setClip(true);
@@ -152,6 +153,16 @@ void Graph::setMaxTime(const QDateTime& t)
     }
 }
 
+void Graph::setNodeMarks(bool value)
+{
+    if (m_nodeMarks != value) {
+        m_nodeMarks = value;
+        DBG(value);
+        emit nodeMarksChanged();
+        update();
+    }
+}
+
 bool Graph::lineVisible(qreal x1, qreal y1, qreal x2, qreal y2, qreal w, qreal h)
 {
     if ((x1 < 0 && x2 < 0) || (x1 >= w && x2 >= w) ||
@@ -179,7 +190,7 @@ void Graph::paint(QPainter* aPainter)
 
         // Calculate points and figure out if we need squares
         int i;
-        bool drawSquares = true;
+        bool drawSquares = m_nodeMarks;
         const int n = m_model->rowCount();
         const qreal minDistSquared = 9 * m_lineWidth * m_lineWidth;
         QVector<QPointF> points;

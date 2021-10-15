@@ -43,6 +43,10 @@ class Logger : public QAbstractListModel
     Q_PROPERTY(int visualizeCount READ getVisualizeCount NOTIFY visualizeCountChanged)
     Q_PROPERTY(int defaultParameterIndex READ getDefaultParameterIndex NOTIFY defaultParameterIndexChanged)
     Q_PROPERTY(QString defaultParameterName READ getDefaultParameterName NOTIFY defaultParameterNameChanged)
+    Q_PROPERTY(QString defaultParameterTable READ getDefaultParameterTable NOTIFY defaultParameterTableChanged)
+    Q_PROPERTY(QColor defaultParameterColor READ getDefaultParameterColor NOTIFY defaultParameterColorChanged)
+
+    typedef void (Logger::*SignalEmitter)();
 
 public:
     explicit Logger(QObject* parent = Q_NULLPTR);
@@ -51,9 +55,11 @@ public:
     static int dataTableRole();
 
     static QString getVersion() { return APPVERSION; }
-    int getVisualizeCount() const { return visualizeCount; }
-    int getDefaultParameterIndex() const { return defaultParameterIndex; }
-    QString getDefaultParameterName() const { return defaultParameterName; }
+    int getVisualizeCount() const { return m_visualizeCount; }
+    int getDefaultParameterIndex() const { return m_defaultParameterIndex; }
+    QString getDefaultParameterName() const { return m_defaultParameterName; }
+    QString getDefaultParameterTable() const { return m_defaultParameterTable; }
+    QColor getDefaultParameterColor() const { return m_defaultParameterColor; }
 
     Q_INVOKABLE QString addParameter(QString name, QString description, bool visualize, QColor plotcolor);
     Q_INVOKABLE void editParameterAt(int row, QString name, QString description, bool visualize, QColor plotcolor, QString pairedtable);
@@ -78,19 +84,26 @@ signals:
     void visualizeCountChanged();
     void defaultParameterIndexChanged();
     void defaultParameterNameChanged();
+    void defaultParameterTableChanged();
+    void defaultParameterColorChanged();
 
 private:
+    void queueSignal(uint signal);
+    void emitQueuedSignals();
     int currentVisualizeCount();
     int currentDefaultParameterIndex();
     void updateVisualizeCount();
     void updateDefaultParameter();
 
 private:
-    Database db;
-    QVariantList parameters;
-    int visualizeCount;
-    int defaultParameterIndex;
-    QString defaultParameterName;
+    Database m_db;
+    QVariantList m_parameters;
+    int m_visualizeCount;
+    int m_defaultParameterIndex;
+    QString m_defaultParameterName;
+    QString m_defaultParameterTable;
+    QColor m_defaultParameterColor;
+    uint queuedSignals;
 };
 
 #endif // LOGGER_H

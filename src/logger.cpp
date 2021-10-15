@@ -39,6 +39,17 @@ enum LoggerRole {
     VisualizeRole
 };
 
+// LoggerSignal must match Logger::emitQueuedSignals()
+enum LoggerSignal {
+    LoggerSignalRowCountChanged,
+    LoggerSignalVisualizeCountChanged,
+    LoggerSignalDefaultParameterIndexChanged,
+    LoggerSignalDefaultParameterNameChanged,
+    LoggerSignalDefaultParameterTableChanged,
+    LoggerSignalDefaultParameterColorChanged,
+    LoggerSignalCount
+};
+
 namespace {
     const QString PARAMETER(PARAMETER_COL);
     const QString NAME(NAME_ROLE);
@@ -54,19 +65,53 @@ namespace {
     const QString ANNOTATION(DATA_ANNOTATION_ROLE);
 }
 
-Logger::Logger(QObject *parent) :
-    QAbstractListModel(parent)
+Logger::Logger(QObject* parent) :
+    QAbstractListModel(parent),
+    queuedSignals(0)
 {
-    parameters = readParameters();
-    visualizeCount = currentVisualizeCount();
-    defaultParameterIndex = currentDefaultParameterIndex();
-    if (defaultParameterIndex >= 0) {
-        defaultParameterName = parameters.at(defaultParameterIndex).toMap().value(NAME).toString();
+    m_parameters = readParameters();
+    m_visualizeCount = currentVisualizeCount();
+    m_defaultParameterIndex = currentDefaultParameterIndex();
+    if (m_defaultParameterIndex >= 0) {
+        const QVariantMap par(m_parameters.at(m_defaultParameterIndex).toMap());
+        m_defaultParameterName = par.value(NAME).toString();
+        m_defaultParameterTable = par.value(DATATABLE).toString();
+        m_defaultParameterColor = QColor(par.value(PLOTCOLOR).toString());
     }
 
     connect(this, SIGNAL(rowsInserted(QModelIndex,int,int)), SIGNAL(rowCountChanged()));
     connect(this, SIGNAL(rowsRemoved(QModelIndex,int,int)), SIGNAL(rowCountChanged()));
     connect(this, SIGNAL(modelReset()), SIGNAL(rowCountChanged()));
+}
+
+Logger::~Logger()
+{
+}
+
+void Logger::queueSignal(uint signal)
+{
+    queuedSignals |= 1u << signal;
+}
+
+void Logger::emitQueuedSignals()
+{
+    // The order must match the LoggerSignal enum:
+    static const SignalEmitter emitSignal [] = {
+        &Logger::rowCountChanged,               // LoggerSignalRowCountChanged
+        &Logger::visualizeCountChanged,         // LoggerSignalVisualizeCountChanged
+        &Logger::defaultParameterIndexChanged,  // LoggerSignalDefaultParameterIndexChanged
+        &Logger::defaultParameterNameChanged,   // LoggerSignalDefaultParameterNameChanged
+        &Logger::defaultParameterTableChanged,  // LoggerSignalDefaultParameterTableChanged
+        &Logger::defaultParameterColorChanged   // LoggerSignalDefaultParameterColorChanged
+    };
+
+    for (uint i = 0; i < LoggerSignalCount && queuedSignals; i++) {
+        const uint signalBit = 1u << i;
+        if (queuedSignals & signalBit) {
+            queuedSignals &= ~signalBit;
+            Q_EMIT (this->*(emitSignal[i]))();
+        }
+    }
 }
 
 int Logger::dataTableRole()
@@ -82,10 +127,10 @@ QObject* Logger::createSingleton(QQmlEngine* engine, QJSEngine* js)
 
 int Logger::currentVisualizeCount()
 {
-    const int count = parameters.count();
+    const int count = m_parameters.count();
     int n = 0;
     for (int i = 0; i < count; i++) {
-        if (parameters.at(i).toMap().value(VISUALIZE).toBool()) {
+        if (m_parameters.at(i).toMap().value(VISUALIZE).toBool()) {
             n++;
         }
     }
@@ -96,19 +141,19 @@ int Logger::currentVisualizeCount()
 void Logger::updateVisualizeCount()
 {
     const int n = currentVisualizeCount();
-    if (visualizeCount != n) {
-        DBG("changed" << visualizeCount << "=>" << n);
-        visualizeCount = n;
-        emit visualizeCountChanged();
+    if (m_visualizeCount != n) {
+        DBG("changed" << m_visualizeCount << "=>" << n);
+        m_visualizeCount = n;
+        queueSignal(LoggerSignalVisualizeCountChanged);
     }
 }
 
 int Logger::currentDefaultParameterIndex()
 {
     int index = -1;
-    const int count = parameters.count();
+    const int count = m_parameters.count();
     for (int i = 0; i < count; i++) {
-        const QVariantMap par(parameters.at(i).toMap());
+        const QVariantMap par(m_parameters.at(i).toMap());
         if (par.value(VISUALIZE).toBool()) {
             const QString parName(par.value(NAME).toString());
             if (index < 0) {
@@ -125,25 +170,34 @@ int Logger::currentDefaultParameterIndex()
 
 void Logger::updateDefaultParameter()
 {
-    QString name;
+    QColor color;
+    QString name, table;
     const int index = currentDefaultParameterIndex();
     if (index >= 0) {
-        name = parameters.at(index).toMap().value(NAME).toString();
+        const QVariantMap par(m_parameters.at(index).toMap());
+        name = par.value(NAME).toString();
+        table = par.value(DATATABLE).toString();
+        color = QColor(par.value(PLOTCOLOR).toString());
     }
-    /* First update the state and then emit signals */
-    if (defaultParameterIndex != index) {
-        DBG("index changed" << defaultParameterIndex << "=>" << index);
-        defaultParameterIndex = index;
-        if (defaultParameterName != name) {
-            DBG("name changed" << defaultParameterName << "=>" << name);
-            defaultParameterName = name;
-            emit defaultParameterNameChanged();
-        }
-        emit defaultParameterIndexChanged();
-    } else if (defaultParameterName != name) {
-        DBG("name changed" << defaultParameterName << "=>" << name);
-        defaultParameterName = name;
-        emit defaultParameterNameChanged();
+    if (m_defaultParameterIndex != index) {
+        DBG("index changed" << m_defaultParameterIndex << "=>" << index);
+        m_defaultParameterIndex = index;
+        queueSignal(LoggerSignalDefaultParameterIndexChanged);
+    }
+    if (m_defaultParameterName != name) {
+        DBG("name changed" << m_defaultParameterName << "=>" << name);
+        m_defaultParameterName = name;
+        queueSignal(LoggerSignalDefaultParameterNameChanged);
+    }
+    if (m_defaultParameterTable != table) {
+        DBG("table changed" << m_defaultParameterTable << "=>" << table);
+        m_defaultParameterTable = table;
+        queueSignal(LoggerSignalDefaultParameterTableChanged);
+    }
+    if (m_defaultParameterColor != color) {
+        DBG("color changed" << m_defaultParameterColor << "=>" << color);
+        m_defaultParameterColor = color;
+        queueSignal(LoggerSignalDefaultParameterColorChanged);
     }
 }
 
@@ -153,7 +207,7 @@ void Logger::updateDefaultParameter()
 
 QString Logger::addData(QString table, QString value, QString annotation, QString timestamp)
 {
-    return db.addData(table, QString(), value, annotation, timestamp);
+    return m_db.addData(table, QString(), value, annotation, timestamp);
 }
 
 /*
@@ -162,8 +216,8 @@ QString Logger::addData(QString table, QString value, QString annotation, QStrin
 
 QVariantMap Logger::get(int row)
 {
-    return (row >= 0 && row < parameters.count()) ?
-        parameters.at(row).toMap() : QVariantMap();
+    return (row >= 0 && row < m_parameters.count()) ?
+        m_parameters.at(row).toMap() : QVariantMap();
 }
 
 /*
@@ -172,7 +226,7 @@ QVariantMap Logger::get(int row)
 
 QVariantList Logger::readParameters()
 {
-    return db.readParameters();
+    return m_db.readParameters();
 }
 
 QString Logger::addParameter(QString name, QString description, bool visualize, QColor plotcolor)
@@ -180,7 +234,7 @@ QString Logger::addParameter(QString name, QString description, bool visualize, 
     DBG("Adding entry:" << name << "-" << description << "color" << plotcolor);
 
     const QString colorName(plotcolor.name());
-    const QString datatable(db.addParameter(name, description, visualize, colorName));
+    const QString datatable(m_db.addParameter(name, description, visualize, colorName));
     if (!datatable.isEmpty()) {
         DBG("parameter added:" << name);
 
@@ -195,18 +249,19 @@ QString Logger::addParameter(QString name, QString description, bool visualize, 
         const int n = rowCount();
         int row;
         for (row = 0; row < n; row++) {
-            const QVariantMap par(parameters.at(row).toMap());
+            const QVariantMap par(m_parameters.at(row).toMap());
             if (par.value(NAME).toString() > name) {
                 break;
             }
         }
 
         beginInsertRows(QModelIndex(), row, row);
-        parameters.insert(row, newpar);
+        m_parameters.insert(row, newpar);
         endInsertRows();
 
         updateVisualizeCount();
         updateDefaultParameter();
+        emitQueuedSignals();
     }
     return datatable;
 }
@@ -214,8 +269,8 @@ QString Logger::addParameter(QString name, QString description, bool visualize, 
 void Logger::editParameterAt(int row, QString name, QString description, bool visualize, QColor plotcolor, QString pairedtable)
 {
     DBG("Editing entry at" << row << ":" << name << "-" << description << "color" << plotcolor);
-    if (row >= 0 && row < parameters.count()) {
-        QVariantMap par(parameters.at(row).toMap());
+    if (row >= 0 && row < m_parameters.count()) {
+        QVariantMap par(m_parameters.at(row).toMap());
         QVector<int> roles;
 
         if (par.value(NAME).toString() != name) {
@@ -250,57 +305,56 @@ void Logger::editParameterAt(int row, QString name, QString description, bool vi
         }
 
         if (!roles.isEmpty()) {
-            if (db.insertOrReplace(par.value(DATATABLE).toString(), name, description, visualize, colorName, pairedtable)) {
-                parameters.replace(row, par);
+            if (m_db.insertOrReplace(par.value(DATATABLE).toString(), name, description, visualize, colorName, pairedtable)) {
+                m_parameters.replace(row, par);
                 const QModelIndex idx(index(row));
                 emit dataChanged(idx, idx, roles);
 
                 /* Check the position */
-                if (row > 0 && parameters.at(row - 1).toMap().value(NAME).toString() > name) {
+                if (row > 0 && m_parameters.at(row - 1).toMap().value(NAME).toString() > name) {
                     /* Move the row down */
                     int to = row - 1;
-                    while (to > 0 && parameters.at(to - 1).toMap().value(NAME).toString() > name) to--;
+                    while (to > 0 && m_parameters.at(to - 1).toMap().value(NAME).toString() > name) to--;
                     DBG("Moving" << name << row << "=>" << to);
                     beginMoveRows(QModelIndex(), row, row, QModelIndex(), to);
-                    parameters.move(row, to);
+                    m_parameters.move(row, to);
                     endMoveRows();
-                } else if ((row + 1) < rowCount() && parameters.at(row + 1).toMap().value(NAME).toString() < name) {
+                } else if ((row + 1) < rowCount() && m_parameters.at(row + 1).toMap().value(NAME).toString() < name) {
                     /* Move the row up */
                     int to = row + 1;
-                    while ((to + 1) < rowCount() && parameters.at(to + 1).toMap().value(NAME).toString() < name) to++;
+                    while ((to + 1) < rowCount() && m_parameters.at(to + 1).toMap().value(NAME).toString() < name) to++;
                     DBG("Moving" << name << row << "=>" << to);
                     beginMoveRows(QModelIndex(), row, row, QModelIndex(), to + 1);
-                    parameters.move(row, to);
+                    m_parameters.move(row, to);
                     endMoveRows();
                 }
             }
             if (roles.contains(VisualizeRole)) {
                 updateVisualizeCount();
-                updateDefaultParameter();
-            } else if (roles.contains(NameRole)) {
-                updateDefaultParameter();
             }
+            updateDefaultParameter();
+            emitQueuedSignals();
         }
     }
 }
 
 void Logger::deleteParameterAt(int row)
 {
-    if (row >= 0 && row < parameters.count()) {
-        const QVariantMap deleted(parameters.at(row).toMap());
+    if (row >= 0 && row < m_parameters.count()) {
+        const QVariantMap deleted(m_parameters.at(row).toMap());
         const QString dataTable(deleted.value(DATATABLE).toString());
 
         DBG("Deleting entry at" << row << ":" << deleted.value(NAME).toString());
-        db.deleteParameter(dataTable);
+        m_db.deleteParameter(dataTable);
 
         beginRemoveRows(QModelIndex(), row, row);
-        parameters.removeAt(row);
+        m_parameters.removeAt(row);
         endRemoveRows();
 
-        for (int i = parameters.count() - 1; i >= 0; i--) {
-            const QVariantMap par(parameters.at(i).toMap());
+        for (int i = m_parameters.count() - 1; i >= 0; i--) {
+            const QVariantMap par(m_parameters.at(i).toMap());
             if (par.value(PAIREDTABLE).toString() == dataTable) {
-                if (db.setPairedTable(par.value(DATATABLE).toString(), QString())) {
+                if (m_db.setPairedTable(par.value(DATATABLE).toString(), QString())) {
                     QVector<int> roles;
                     roles.append(PairedTableRole);
                     const QModelIndex idx(index(i));
@@ -311,6 +365,7 @@ void Logger::deleteParameterAt(int row)
 
         updateVisualizeCount();
         updateDefaultParameter();
+        emitQueuedSignals();
     }
 }
 
@@ -343,7 +398,7 @@ QString Logger::exportToCSV()
 
         out << par.value(NAME).toString() << separator << par.value(DESCRIPTION).toString() << "\n";
 
-        const QVariantList dataList(db.readData(par.value(DATATABLE).toString()));
+        const QVariantList dataList(m_db.readData(par.value(DATATABLE).toString()));
         QListIterator<QVariant> n(dataList);
 
         while (n.hasNext()) {
@@ -358,10 +413,6 @@ QString Logger::exportToCSV()
     file.close();
 
     return filename;
-}
-
-Logger::~Logger()
-{
 }
 
 /* QAbstractItemModel */
@@ -386,14 +437,14 @@ QHash<int,QByteArray> Logger::roleNames() const
 
 int Logger::rowCount(const QModelIndex& parent) const
 {
-    return parameters.count();
+    return m_parameters.count();
 }
 
 QVariant Logger::data(const QModelIndex& idx, int role) const
 {
     const int i = idx.row();
-    if (i >= 0 && i < parameters.count()) {
-        const QVariantMap par(parameters.at(i).toMap());
+    if (i >= 0 && i < m_parameters.count()) {
+        const QVariantMap par(m_parameters.at(i).toMap());
         switch (role) {
         case NameRole: return par.value(NAME).toString();
         case DescriptionRole: return par.value(DESCRIPTION).toString();
@@ -409,9 +460,9 @@ QVariant Logger::data(const QModelIndex& idx, int role) const
 bool Logger::setData(const QModelIndex& idx, const QVariant& value, int role)
 {
     const int row = idx.row();
-    if (row >= 0 && row < parameters.count()) {
+    if (row >= 0 && row < m_parameters.count()) {
         DBG(row << role << value);
-        QVariantMap par(parameters.at(row).toMap());
+        QVariantMap par(m_parameters.at(row).toMap());
         QString sval;
         bool bval;
 
@@ -423,15 +474,16 @@ bool Logger::setData(const QModelIndex& idx, const QVariant& value, int role)
                 par.insert(VISUALIZE, bval);
                 QVector<int> roles;
                 roles.append(role);
-                if (db.insertOrReplace(par.value(DATATABLE).toString(),
+                if (m_db.insertOrReplace(par.value(DATATABLE).toString(),
                     par.value(NAME).toString(), par.value(DESCRIPTION).toString(),
                     bval, par.value(PLOTCOLOR).toString(),
                     par.value(PAIREDTABLE).toString())) {
-                    parameters.replace(row, par);
+                    m_parameters.replace(row, par);
 
                     emit dataChanged(idx, idx, roles);
                     updateVisualizeCount();
                     updateDefaultParameter();
+                    emitQueuedSignals();
                 }
             }
             return true;
@@ -442,9 +494,9 @@ bool Logger::setData(const QModelIndex& idx, const QVariant& value, int role)
                 DBG("Paired table at" << row << "=>" << sval);
                 QVector<int> roles;
                 roles.append(role);
-                if (db.setPairedTable(par.value(DATATABLE).toString(), sval)) {
+                if (m_db.setPairedTable(par.value(DATATABLE).toString(), sval)) {
                     par.insert(PAIREDTABLE, sval);
-                    parameters.replace(row, par);
+                    m_parameters.replace(row, par);
                     emit dataChanged(idx, idx, roles);
                 }
             }
