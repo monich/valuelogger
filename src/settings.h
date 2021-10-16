@@ -39,6 +39,7 @@ class Settings : public QObject
     Q_PROPERTY(GridLinesStyle horizontalGridLinesStyle READ getHorizontalGridLinesStyle WRITE setHorizontalGridLinesStyle NOTIFY horizontalGridLinesStyleChanged)
     Q_PROPERTY(bool leftGridLabels READ getLeftGridLabels WRITE setLeftGridLabels NOTIFY leftGridLabelsChanged)
     Q_PROPERTY(bool rightGridLabels READ getRightGridLabels WRITE setRightGridLabels NOTIFY rightGridLabelsChanged)
+    Q_PROPERTY(bool showGraphOnCover READ getShowGraphOnCover WRITE setShowGraphOnCover NOTIFY showGraphOnCoverChanged)
 
 public:
     enum GridLinesStyle {
@@ -57,6 +58,9 @@ public:
     bool getRightGridLabels() const { return m_rightGridLabels->value(true).toBool(); }
     void setRightGridLabels(bool value) { m_rightGridLabels->set(value); }
 
+    bool getShowGraphOnCover() const { return m_showGraphOnCover->value(true).toBool(); }
+    void setShowGraphOnCover(bool value) { m_showGraphOnCover->set(value); }
+
     static const QString ConfigRoot;
     static const QString getConfigRoot() { return ConfigRoot; }
 
@@ -67,11 +71,13 @@ signals:
     void horizontalGridLinesStyleChanged();
     void leftGridLabelsChanged();
     void rightGridLabelsChanged();
+    void showGraphOnCoverChanged();
 
 private:
     MGConfItem* m_horizontalGridLinesStyle;
     MGConfItem* m_leftGridLabels;
     MGConfItem* m_rightGridLabels;
+    MGConfItem* m_showGraphOnCover;
 };
 
 #endif // SETTINGS_H
