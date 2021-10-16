@@ -5,218 +5,226 @@
     <name>AboutView</name>
     <message>
         <source>Version: %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Version: %1</translation>
     </message>
 </context>
 <context>
     <name>AddPair</name>
     <message>
         <source>Clear pair</source>
-        <translation type="unfinished"></translation>
+        <translation>Clear pair</translation>
     </message>
     <message>
         <source>Pair</source>
-        <translation type="unfinished"></translation>
+        <translation>Pair</translation>
     </message>
 </context>
 <context>
     <name>AddValue</name>
     <message>
         <source>Timestamp</source>
-        <translation type="unfinished"></translation>
+        <translation>Timestamp</translation>
     </message>
     <message>
         <source>Value</source>
-        <translation type="unfinished"></translation>
+        <translation>Value</translation>
     </message>
     <message>
         <source>Enter new value here</source>
-        <translation type="unfinished"></translation>
+        <translation>Enter new value here</translation>
     </message>
     <message>
         <source>Annotation</source>
-        <translation type="unfinished"></translation>
+        <translation>Annotation</translation>
     </message>
     <message>
         <source>Enter annotation here</source>
-        <translation type="unfinished"></translation>
+        <translation>Enter annotation here</translation>
     </message>
     <message>
         <source>Add value</source>
-        <translation type="unfinished"></translation>
+        <translation>Add value</translation>
     </message>
     <message>
         <source>Edit value</source>
-        <translation type="unfinished"></translation>
+        <translation>Edit value</translation>
     </message>
 </context>
 <context>
     <name>ColorEditor</name>
     <message>
         <source>Add color</source>
-        <translation type="unfinished"></translation>
+        <translation>Add color</translation>
     </message>
     <message>
         <source>Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Color</translation>
     </message>
     <message>
         <source>Brightness</source>
-        <translation type="unfinished"></translation>
+        <translation>Brightness</translation>
     </message>
     <message>
         <source>Hex notation</source>
-        <translation type="unfinished"></translation>
+        <translation>Hex notation</translation>
     </message>
 </context>
 <context>
     <name>ColorPicker</name>
     <message>
         <source>Select color</source>
-        <translation type="unfinished"></translation>
+        <translation>Select color</translation>
     </message>
     <message>
         <source>Reset colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Reset colors</translation>
     </message>
 </context>
 <context>
     <name>DrawData</name>
     <message>
         <source>Plot</source>
-        <translation type="unfinished"></translation>
+        <translation>Plot</translation>
     </message>
 </context>
 <context>
     <name>MainPage</name>
     <message>
         <source>Export to CSV</source>
-        <translation type="unfinished"></translation>
+        <translation>Export to CSV</translation>
     </message>
     <message>
         <source>Exported to %1</source>
-        <translation type="unfinished"></translation>
+        <translation>Exported to %1</translation>
     </message>
     <message>
         <source>Add new parameter</source>
-        <translation type="unfinished"></translation>
+        <translation>Add new parameter</translation>
     </message>
     <message>
         <source>Show raw data</source>
-        <translation type="unfinished"></translation>
+        <translation>Show raw data</translation>
     </message>
     <message>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Edit</translation>
     </message>
     <message>
         <source>Pair</source>
-        <translation type="unfinished"></translation>
+        <translation>Pair</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove</translation>
     </message>
     <message>
         <source>Deleting</source>
-        <translation type="unfinished"></translation>
+        <translation>Deleting</translation>
     </message>
     <message>
         <source>Plot selected</source>
-        <translation type="unfinished"></translation>
+        <translation>Plot selected</translation>
     </message>
     <message>
         <source>No parameters.</source>
-        <translation type="unfinished"></translation>
+        <translation>No parameters.</translation>
     </message>
     <message>
         <source>Open the pulley menu to add one.</source>
-        <translation type="unfinished"></translation>
+        <translation>Open the pulley menu to add one.</translation>
     </message>
     <message>
         <source>Edit parameter</source>
-        <translation type="unfinished"></translation>
+        <translation>Edit parameter</translation>
     </message>
     <message>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Settings</translation>
     </message>
 </context>
 <context>
     <name>ParameterPage</name>
     <message>
         <source>Parameter name</source>
-        <translation type="unfinished"></translation>
+        <translation>Parameter name</translation>
     </message>
     <message>
         <source>Enter parameter name here</source>
-        <translation type="unfinished"></translation>
+        <translation>Enter parameter name here</translation>
     </message>
     <message>
         <source>Description</source>
-        <translation type="unfinished"></translation>
+        <translation>Description</translation>
     </message>
     <message>
         <source>Enter short description here</source>
-        <translation type="unfinished"></translation>
+        <translation>Enter short description here</translation>
     </message>
     <message>
         <source>Plot color</source>
-        <translation type="unfinished"></translation>
+        <translation>Plot color</translation>
     </message>
     <message>
         <source>Add parameter</source>
-        <translation type="unfinished"></translation>
+        <translation>Add parameter</translation>
     </message>
 </context>
 <context>
     <name>SettingsView</name>
     <message>
         <source>Settings</source>
-        <translation type="unfinished"></translation>
+        <translation>Settings</translation>
     </message>
     <message>
         <source>Horizontal grid lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Horizontal grid lines</translation>
     </message>
     <message>
         <source>Position</source>
-        <translation type="unfinished"></translation>
+        <translation>Position</translation>
     </message>
     <message>
         <source>Dynamic</source>
-        <translation type="unfinished"></translation>
+        <translation>Dynamic</translation>
     </message>
     <message>
         <source>Fixed</source>
-        <translation type="unfinished"></translation>
+        <translation>Fixed</translation>
     </message>
     <message>
         <source>Left labels</source>
-        <translation type="unfinished"></translation>
+        <translation>Left labels</translation>
     </message>
     <message>
         <source>Right labels</source>
-        <translation type="unfinished"></translation>
+        <translation>Right labels</translation>
+    </message>
+    <message>
+        <source>Cover</source>
+        <translation>Cover</translation>
+    </message>
+    <message>
+        <source>Show graph</source>
+        <translation>Show graph</translation>
     </message>
 </context>
 <context>
     <name>ShowData</name>
     <message>
         <source>Edit</source>
-        <translation type="unfinished"></translation>
+        <translation>Edit</translation>
     </message>
     <message>
         <source>Remove</source>
-        <translation type="unfinished"></translation>
+        <translation>Remove</translation>
     </message>
     <message>
         <source>Deleting</source>
-        <translation type="unfinished"></translation>
+        <translation>Deleting</translation>
     </message>
     <message>
         <source>No data.</source>
-        <translation type="unfinished"></translation>
+        <translation>No data.</translation>
     </message>
 </context>
 </TS>

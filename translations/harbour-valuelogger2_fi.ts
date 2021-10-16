@@ -199,6 +199,14 @@
         <source>Right labels</source>
         <translation type="unfinished">Oikeat etiketit</translation>
     </message>
+    <message>
+        <source>Cover</source>
+        <translation type="unfinished">Kansilehti</translation>
+    </message>
+    <message>
+        <source>Show graph</source>
+        <translation type="unfinished">Näytä käppyrä</translation>
+    </message>
 </context>
 <context>
     <name>ShowData</name>

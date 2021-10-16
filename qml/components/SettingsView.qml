@@ -59,5 +59,15 @@ SilicaFlickable  {
                 onClicked: Settings.rightGridLabels = !Settings.rightGridLabels
             }
         }
+
+        SectionHeader { text: qsTr("Cover") }
+
+        TextSwitch {
+            width: parent.width
+            text: qsTr("Show graph")
+            automaticCheck: false
+            checked: Settings.showGraphOnCover
+            onClicked: Settings.showGraphOnCover = !Settings.showGraphOnCover
+        }
     }
 }

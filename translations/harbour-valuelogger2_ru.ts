@@ -199,6 +199,14 @@
         <source>Right labels</source>
         <translation>Значения справа</translation>
     </message>
+    <message>
+        <source>Cover</source>
+        <translation>Обложка</translation>
+    </message>
+    <message>
+        <source>Show graph</source>
+        <translation>Показывать график</translation>
+    </message>
 </context>
 <context>
     <name>ShowData</name>

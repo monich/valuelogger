@@ -199,6 +199,14 @@
         <source>Right labels</source>
         <translation>Prawe etykiety</translation>
     </message>
+    <message>
+        <source>Cover</source>
+        <translation type="unfinished">Okładka</translation>
+    </message>
+    <message>
+        <source>Show graph</source>
+        <translation type="unfinished">Pokaż wykres</translation>
+    </message>
 </context>
 <context>
     <name>ShowData</name>

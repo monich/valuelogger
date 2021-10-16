@@ -199,6 +199,14 @@
         <source>Right labels</source>
         <translation type="unfinished">Etiketter till höger</translation>
     </message>
+    <message>
+        <source>Cover</source>
+        <translation type="unfinished">Omslagsbild</translation>
+    </message>
+    <message>
+        <source>Show graph</source>
+        <translation type="unfinished">Visa diagram</translation>
+    </message>
 </context>
 <context>
     <name>ShowData</name>
