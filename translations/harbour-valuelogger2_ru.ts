@@ -107,7 +107,7 @@
     </message>
     <message>
         <source>Edit</source>
-        <translation>Изменить</translation>
+        <translation>Изменить параметр</translation>
     </message>
     <message>
         <source>Pair</source>
