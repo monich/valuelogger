@@ -207,7 +207,11 @@ void Logger::updateDefaultParameter()
 
 QString Logger::addData(QString table, QString value, QString annotation, QString timestamp)
 {
-    return m_db.addData(table, QString(), value, annotation, timestamp);
+    const QString key(m_db.addData(table, QString(), value, annotation, timestamp));
+    if (!key.isEmpty()) {
+        tableUpdated(table);
+    }
+    return key;
 }
 
 /*

@@ -52,6 +52,7 @@ public:
     qreal getMinValue() const { return m_minValue; }
     qreal getMaxValue() const { return m_maxValue; }
 
+    Q_INVOKABLE void reset();
     Q_INVOKABLE void deleteRow(int row);
     Q_INVOKABLE void updateRow(int row, QString value, QString annotation, QString timestamp);
 

@@ -86,6 +86,7 @@ signals:
     void defaultParameterNameChanged();
     void defaultParameterTableChanged();
     void defaultParameterColorChanged();
+    void tableUpdated(QString table);
 
 private:
     void queueSignal(uint signal);

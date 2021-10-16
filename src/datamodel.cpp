@@ -52,7 +52,6 @@ public:
         annotation(data.value(ANNOTATION).toString()),
         timestamp(data.value(TIMESTAMP).toDateTime()),
         timestampUtc(timestamp.toUTC()) {}
-
 public:
     const QString key;
     QString value;
@@ -79,81 +78,86 @@ DataModel::~DataModel()
 void DataModel::setDataTable(QString table)
 {
     if (m_dataTable != table) {
-        const QDateTime prevMinTime(m_minTime);
-        const QDateTime prevMaxTime(m_maxTime);
-        const qreal prevMinValue(m_minValue);
-        const qreal prevMaxValue(m_maxValue);
-
-        beginResetModel();
         m_dataTable = table;
-        QVariantList rawData;
-        if (!m_dataTable.isEmpty()) {
-            rawData = m_db.readData(m_dataTable);
-        }
+        reset();
+        emit dataTableChanged();
+    }
+}
 
-        qDeleteAll(m_data);
-        m_data.resize(0);
-        m_minTime = m_maxTime = QDateTime();
-        m_minValue = m_maxValue = 0.0;
-        const int n = rawData.count();
-        if (n > 0) {
+void DataModel::reset()
+{
+    const QDateTime prevMinTime(m_minTime);
+    const QDateTime prevMaxTime(m_maxTime);
+    const qreal prevMinValue(m_minValue);
+    const qreal prevMaxValue(m_maxValue);
+
+    beginResetModel();
+    QVariantList rawData;
+    if (!m_dataTable.isEmpty()) {
+        rawData = m_db.readData(m_dataTable);
+    }
+
+    qDeleteAll(m_data);
+    m_data.resize(0);
+    m_minTime = m_maxTime = QDateTime();
+    m_minValue = m_maxValue = 0.0;
+    const int n = rawData.count();
+    if (n > 0) {
 
 #define FIRST_TIME 0x01
 #define FIRST_VALUE 0x02
 
-            int first = (FIRST_TIME | FIRST_VALUE);
-            for (int i = 0; i < n; i++) {
-                Data* data = new Data(rawData.at(i).toMap());
-                m_data.append(data);
+        int first = (FIRST_TIME | FIRST_VALUE);
+        for (int i = 0; i < n; i++) {
+            Data* data = new Data(rawData.at(i).toMap());
+            m_data.append(data);
 
-                if (data->timestampUtc.isValid()) {
-                    if (first & FIRST_TIME) {
-                        first &= ~FIRST_TIME;
-                        m_minTime = m_maxTime = data->timestampUtc;
-                    } else if (m_minTime > data->timestampUtc) {
-                        m_minTime = data->timestampUtc;
-                    } else if (m_maxTime < data->timestampUtc) {
-                        m_maxTime = data->timestampUtc;
-                    }
-                }
-
-                bool ok;
-                const qreal value = data->value.toFloat(&ok);
-                if (ok) {
-                    if (first & FIRST_VALUE) {
-                        first &= ~FIRST_VALUE;
-                        m_minValue = m_maxValue = value;
-                    } else if (m_minValue > value) {
-                        m_minValue = value;
-                    } else if (m_maxValue < value) {
-                        m_maxValue = value;
-                    }
+            if (data->timestampUtc.isValid()) {
+                if (first & FIRST_TIME) {
+                    first &= ~FIRST_TIME;
+                    m_minTime = m_maxTime = data->timestampUtc;
+                } else if (m_minTime > data->timestampUtc) {
+                    m_minTime = data->timestampUtc;
+                } else if (m_maxTime < data->timestampUtc) {
+                    m_maxTime = data->timestampUtc;
                 }
             }
-            // Convert back to local
-            m_minTime = m_minTime.toLocalTime();
-            m_maxTime = m_maxTime.toLocalTime();
-        }
-        endResetModel();
 
-        DBG("Start:" << m_minTime);
-        DBG("End:" << m_maxTime);
-        DBG("Min:" << m_minValue);
-        DBG("Max:" << m_maxValue);
+            bool ok;
+            const qreal value = data->value.toFloat(&ok);
+            if (ok) {
+                if (first & FIRST_VALUE) {
+                    first &= ~FIRST_VALUE;
+                    m_minValue = m_maxValue = value;
+                } else if (m_minValue > value) {
+                    m_minValue = value;
+                } else if (m_maxValue < value) {
+                    m_maxValue = value;
+                }
+            }
+        }
+        // Convert back to local
+        m_minTime = m_minTime.toLocalTime();
+        m_maxTime = m_maxTime.toLocalTime();
+    }
+    endResetModel();
 
-        emit dataTableChanged();
-        if (m_minTime != prevMinTime) {
-            emit minTimeChanged();
-        }
-        if (m_maxTime != prevMaxTime) {
-            emit maxTimeChanged();
-        }
-        if (m_minValue != prevMinValue) {
-            emit minValueChanged();
-        }
-        if (m_maxValue != prevMaxValue) {
-            emit maxValueChanged();
-        }
+    DBG("Start:" << m_minTime);
+    DBG("End:" << m_maxTime);
+    DBG("Min:" << m_minValue);
+    DBG("Max:" << m_maxValue);
+
+    if (m_minTime != prevMinTime) {
+        emit minTimeChanged();
+    }
+    if (m_maxTime != prevMaxTime) {
+        emit maxTimeChanged();
+    }
+    if (m_minValue != prevMinValue) {
+        emit minValueChanged();
+    }
+    if (m_maxValue != prevMaxValue) {
+        emit maxValueChanged();
     }
 }
 
@@ -168,7 +172,7 @@ void DataModel::deleteRow(int row)
         delete entry;
         endRemoveRows();
         updateRanges();
-        Q_EMIT countChanged();
+        emit countChanged();
     }
 }
 

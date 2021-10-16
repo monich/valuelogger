@@ -69,6 +69,7 @@ Page {
             function removalConfirmed() {
                 Debug.log("deleting", model.key, "at", model.index)
                 dataModel.deleteRow(model.index)
+                Logger.tableUpdated(dataTable)
             }
 
             function editData() {
@@ -91,6 +92,7 @@ Page {
                     Debug.log(" time", timestamp)
 
                     dataModel.updateRow(model.index, editDialog.value, editDialog.annotation, timestamp)
+                    Logger.tableUpdated(dataTable)
                 })
             }
 

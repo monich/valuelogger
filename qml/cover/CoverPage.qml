@@ -58,11 +58,23 @@ CoverBackground {
                 anchors.fill: parent
                 visible: showGraph
 
+                Connections {
+                    target: Logger
+                    onTableUpdated: {
+                        if (table == defaultParameterData.dataTable) {
+                            defaultParameterData.reset()
+                        }
+                    }
+                }
+
                 DataModel {
                     id: defaultParameterData
 
                     readonly property real valueSpan: maxValue - minValue
+
                     dataTable: Logger.defaultParameterTable
+
+                    onModelReset: graph.update()
                 }
 
                 Graph {
