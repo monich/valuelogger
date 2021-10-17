@@ -12,11 +12,11 @@
     <name>AddPair</name>
     <message>
         <source>Clear pair</source>
-        <translation>Rensa par</translation>
+        <translation>Ta bort par</translation>
     </message>
     <message>
         <source>Pair</source>
-        <translation type="unfinished">Par</translation>
+        <translation>Para ihop</translation>
     </message>
 </context>
 <context>
@@ -54,19 +54,19 @@
     <name>ColorEditor</name>
     <message>
         <source>Add color</source>
-        <translation type="unfinished">Lägg till färg</translation>
+        <translation>Lägg till färg</translation>
     </message>
     <message>
         <source>Color</source>
-        <translation type="unfinished">Färg</translation>
+        <translation>Färg</translation>
     </message>
     <message>
         <source>Brightness</source>
-        <translation type="unfinished">Ljusstyrka</translation>
+        <translation>Ljusstyrka</translation>
     </message>
     <message>
         <source>Hex notation</source>
-        <translation type="unfinished">Hex-format</translation>
+        <translation>Hex-format</translation>
     </message>
 </context>
 <context>
@@ -77,7 +77,7 @@
     </message>
     <message>
         <source>Reset colors</source>
-        <translation type="unfinished">Återställ färger</translation>
+        <translation>Återställ färger</translation>
     </message>
 </context>
 <context>
@@ -127,11 +127,11 @@
     </message>
     <message>
         <source>No parameters.</source>
-        <translation type="unfinished">Inga parametrar.</translation>
+        <translation>Inga parametrar.</translation>
     </message>
     <message>
         <source>Open the pulley menu to add one.</source>
-        <translation type="unfinished">Öppna rullgardinsmenyn för att lägga till en.</translation>
+        <translation>Öppna toppmenyn för att lägga till en.</translation>
     </message>
     <message>
         <source>Edit parameter</source>
@@ -177,35 +177,35 @@
     </message>
     <message>
         <source>Horizontal grid lines</source>
-        <translation type="unfinished">Horisontella rutnät</translation>
+        <translation>Horisontella linjer</translation>
     </message>
     <message>
         <source>Position</source>
-        <translation type="unfinished">Placera</translation>
+        <translation>Position</translation>
     </message>
     <message>
         <source>Dynamic</source>
-        <translation type="unfinished">Dynamisk</translation>
+        <translation>Dynamiskt</translation>
     </message>
     <message>
         <source>Fixed</source>
-        <translation type="unfinished">Fast</translation>
+        <translation>Fast</translation>
     </message>
     <message>
         <source>Left labels</source>
-        <translation type="unfinished">Etiketter till vänster</translation>
+        <translation>Etiketter till vänster</translation>
     </message>
     <message>
         <source>Right labels</source>
-        <translation type="unfinished">Etiketter till höger</translation>
+        <translation>Etiketter till höger</translation>
     </message>
     <message>
         <source>Cover</source>
-        <translation type="unfinished">Omslagsbild</translation>
+        <translation>Miniatyr</translation>
     </message>
     <message>
         <source>Show graph</source>
-        <translation type="unfinished">Visa diagram</translation>
+        <translation>Visa diagram</translation>
     </message>
 </context>
 <context>
@@ -224,7 +224,7 @@
     </message>
     <message>
         <source>No data.</source>
-        <translation type="unfinished">Inga data.</translation>
+        <translation>Ingen data.</translation>
     </message>
 </context>
 </TS>
