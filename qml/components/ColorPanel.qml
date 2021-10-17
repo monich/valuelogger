@@ -5,6 +5,7 @@ Rectangle {
     id: thisItem
 
     color: "black"
+
     property alias brightness: mouseArea.opacity
     property alias pressed: mouseArea.pressed
 
@@ -110,6 +111,7 @@ Rectangle {
             sourceItem: Rectangle {
                 width: mouseArea.width
                 height: mouseArea.height
+                radius: Theme.paddingSmall
                 gradient: Gradient {
                     GradientStop { position: 0.0;    color: color0 }
                     GradientStop { position: colorStop1; color: color1 }
