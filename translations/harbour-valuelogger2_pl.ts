@@ -201,11 +201,11 @@
     </message>
     <message>
         <source>Cover</source>
-        <translation type="unfinished">Okładka</translation>
+        <translation>Okładka</translation>
     </message>
     <message>
         <source>Show graph</source>
-        <translation type="unfinished">Pokaż wykres</translation>
+        <translation>Pokaż wykres</translation>
     </message>
 </context>
 <context>
