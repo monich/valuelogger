@@ -15,56 +15,107 @@ SilicaFlickable  {
 
         PageHeader { title: qsTr("Settings") }
 
-        SectionHeader { text: qsTr("Horizontal grid lines") }
+        SectionHeader { text: qsTr("Grid") }
 
-        ComboBox {
-            width: parent.width
-            label: qsTr("Position")
-            currentItem: (Settings.horizontalGridLinesStyle === Settings.GridLinesDynamic) ? horizontalGridLinesDynamic :
-                (Settings.horizontalGridLinesStyle = Settings.GridLinesFixed) ? horizontalGridLinesFixed : null
-            menu: ContextMenu {
-                MenuItem {
-                    id: horizontalGridLinesDynamic
-
-                    text: qsTr("Dynamic")
-                    onClicked: Settings.horizontalGridLinesStyle = Settings.GridLinesDynamic
-                }
-                MenuItem {
-                    id: horizontalGridLinesFixed
-
-                    text: qsTr("Fixed")
-                    onClicked: Settings.horizontalGridLinesStyle = Settings.GridLinesFixed
-                }
-           }
-        }
         Grid {
             width: parent.width
             columns: landscapeLayout ? 2 : 1
 
             readonly property real columnWidth: width/columns
 
-            TextSwitch {
+            ComboBox {
+                id: timeAxisComboBox
+
                 width: parent.columnWidth
-                text: qsTr("Left labels")
-                automaticCheck: false
-                checked: Settings.leftGridLabels
-                onClicked: Settings.leftGridLabels = !Settings.leftGridLabels
+                label: qsTr("Time axis")
+                currentItem: (Settings.verticalGridLinesStyle === Settings.GridLinesDynamic) ? verticalGridLinesDynamic :
+                    (Settings.verticalGridLinesStyle = Settings.GridLinesFixed) ? verticalGridLinesFixed : null
+                menu: ContextMenu {
+                    x: 0
+                    width: timeAxisComboBox.width
+
+                    MenuItem {
+                        id: verticalGridLinesDynamic
+
+                        text: qsTr("Dynamic")
+                        onClicked: Settings.verticalGridLinesStyle = Settings.GridLinesDynamic
+                    }
+                    MenuItem {
+                        id: verticalGridLinesFixed
+
+                        text: qsTr("Fixed")
+                        onClicked: Settings.verticalGridLinesStyle = Settings.GridLinesFixed
+                    }
+                }
             }
 
             TextSwitch {
                 width: parent.columnWidth
-                text: qsTr("Right labels")
+                text: qsTr("Time labels")
                 automaticCheck: false
-                checked: Settings.rightGridLabels
-                onClicked: Settings.rightGridLabels = !Settings.rightGridLabels
+                checked: Settings.topGridLabels
+                onClicked: Settings.topGridLabels = !Settings.topGridLabels
             }
         }
 
-        SectionHeader { text: qsTr("Cover") }
+        Grid {
+            width: parent.width
+            columns: landscapeLayout ? 2 : 1
+
+            readonly property real columnWidth: width/columns
+
+            ComboBox {
+                id: valueAxisComboBox
+
+                width: parent.columnWidth
+                label: qsTr("Value axis")
+                currentItem: (Settings.horizontalGridLinesStyle === Settings.GridLinesDynamic) ? horizontalGridLinesDynamic :
+                    (Settings.horizontalGridLinesStyle = Settings.GridLinesFixed) ? horizontalGridLinesFixed : null
+                menu: ContextMenu {
+                    x: 0
+                    width: valueAxisComboBox.width
+
+                    MenuItem {
+                        id: horizontalGridLinesDynamic
+
+                        text: qsTr("Dynamic")
+                        onClicked: Settings.horizontalGridLinesStyle = Settings.GridLinesDynamic
+                    }
+                    MenuItem {
+                        id: horizontalGridLinesFixed
+
+                        text: qsTr("Fixed")
+                        onClicked: Settings.horizontalGridLinesStyle = Settings.GridLinesFixed
+                    }
+                }
+            }
+
+            Column {
+                width: parent.columnWidth
+
+                TextSwitch {
+                    width: parent.width
+                    text: qsTr("Left labels")
+                    automaticCheck: false
+                    checked: Settings.leftGridLabels
+                    onClicked: Settings.leftGridLabels = !Settings.leftGridLabels
+                }
+
+                TextSwitch {
+                    width: parent.width
+                    text: qsTr("Right labels")
+                    automaticCheck: false
+                    checked: Settings.rightGridLabels
+                    onClicked: Settings.rightGridLabels = !Settings.rightGridLabels
+                }
+            }
+        }
+
+        SectionHeader { text: qsTr("Miscellaneous") }
 
         TextSwitch {
             width: parent.width
-            text: qsTr("Show graph")
+            text: qsTr("Show graph on the cover")
             automaticCheck: false
             checked: Settings.showGraphOnCover
             onClicked: Settings.showGraphOnCover = !Settings.showGraphOnCover

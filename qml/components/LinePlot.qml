@@ -37,6 +37,7 @@ Item {
     readonly property int thinLine: Math.max(2, Math.floor(Theme.paddingSmall/3))
     readonly property int fontSize: Theme.fontSizeTiny
     readonly property bool fontBold: true
+    readonly property string dateTimeFormat: "dd.MM.yyyy hh:mm"
 
     property real min: 0.0
     property real max: 1.0
@@ -153,8 +154,8 @@ Item {
         xstart = t1
         xend = t2
 
-        xStart.text = Qt.formatDateTime(xstart, "dd.MM.yyyy hh:mm")
-        xEnd.text = Qt.formatDateTime(xend, "dd.MM.yyyy hh:mm")
+        xStart.text = Qt.formatDateTime(xstart, dateTimeFormat)
+        xEnd.text = Qt.formatDateTime(xend, dateTimeFormat)
     }
 
     function updateScale() {
@@ -308,11 +309,56 @@ Item {
         }
     }
 
+    TimeGridModel {
+        id: timeGridModel
+
+        timeOrigin: minTime
+        timeStart: xstart
+        timeEnd: xend
+        size: canvas.width
+        maxCount: canvas.width ? Math.ceil(canvas.width/Theme.itemSizeHuge) + 1 : 0
+        fixedGrids: Settings.verticalGridLinesStyle === Settings.GridLinesFixed
+    }
+
+    Item {
+        id: topLabels
+
+        width: parent.width
+        height: valueMax.height
+        anchors.bottom: valueMax.bottom
+        visible: Settings.topGridLabels
+        readonly property real maxOpacity: grid.opacity
+        readonly property real leftMargin: valueMax.width
+        readonly property real opacityRamp: Theme.paddingLarge
+        Repeater {
+            //model: Settings.topGridLabels ? timeGridModel : 0
+            model: timeGridModel
+            delegate: Text {
+                x: model.coordinate - width/2
+                anchors.bottom: parent ? parent.bottom : undefined
+                color: Theme.primaryColor
+                text: model.text
+                horizontalAlignment: Text.AlignHCenter
+                font {
+                    pixelSize: fontSize
+                    bold: fontBold
+                }
+                /* Fade it when it gets too close to the edge */
+                visible: timeGridModel.fixedGrids ? (opacity === topLabels.maxOpacity) : (opacity > 0)
+                readonly property real rightX: x + width
+                opacity: (x < topLabels.leftMargin || rightX > topLabels.width) ? 0 :
+                    (x < topLabels.leftMargin + topLabels.opacityRamp) ? (topLabels.maxOpacity * (x - topLabels.leftMargin) / topLabels.opacityRamp) :
+                    (rightX > topLabels.width - topLabels.opacityRamp) ? (topLabels.maxOpacity * (topLabels.width - rightX) / topLabels.opacityRamp) :
+                    topLabels.maxOpacity
+            }
+        }
+    }
+
     ShaderEffectSource {
         id: grid
 
         readonly property int horizontalCount: 6
-        readonly property int verticalCount: 5
+        readonly property int horizontalOpacityRamp:  Math.max(valueMax.width, Theme.paddingLarge)
 
         width: parent.width
         anchors {
@@ -337,12 +383,17 @@ Item {
                 color: Theme.primaryColor
             }
             Repeater {
-                model: grid.horizontalCount - 1
+                model: timeGridModel
                 delegate: VDashLine {
-                    x: Math.round((index + 1) * (parent.width - width)/grid.horizontalCount)
+                    x: Math.round(model.coordinate)
                     width: thinLine
-                    height: parent.height
+                    height: grid.height
                     color: Theme.primaryColor
+                    /* Fade it when it gets too close to the edge */
+                    visible: opacity > 0
+                    opacity: (x < Theme.paddingLarge || x > grid.width - Theme.paddingLarge) ? 0 :
+                        (x < grid.horizontalOpacityRamp + Theme.paddingLarge) ? ((x - Theme.paddingLarge) / grid.horizontalOpacityRamp) :
+                        (x > grid.width - grid.horizontalOpacityRamp - Theme.paddingLarge) ? ((grid.width - Theme.paddingLarge - x) / grid.horizontalOpacityRamp) : 1
                 }
             }
             /* Horizontal grid lines */
@@ -359,7 +410,7 @@ Item {
                 color: Theme.primaryColor
             }
             Repeater {
-                model: GridModel {
+                model: ValueGridModel {
                     minValue: min
                     maxValue: max
                     size: canvas.height
@@ -369,7 +420,7 @@ Item {
                 delegate: Column {
                     y: Math.round(grid.height - model.coordinate - thinLine)
                     width: grid.width
-                    /* Hide is when it gets too close to the edge */
+                    /* Fade it when it gets too close to the edge */
                     visible: opacity > 0
                     opacity: y < Theme.paddingLarge ? (y / Theme.paddingLarge) :
                         ((grid.height - y) < 2*height) ? ((grid.height - y) / (2*height)) : 1
@@ -409,7 +460,6 @@ Item {
                             }
                             /* This one can be hidden if it's not needed */
                             visible: Settings.rightGridLabels
-                            onXChanged: Debug.log(x)
                         }
                     }
                 }

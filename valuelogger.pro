@@ -25,11 +25,12 @@ SOURCES += src/colormodel.cpp \
         src/database.cpp \
         src/datamodel.cpp \
         src/graph.cpp \
-        src/gridmodel.cpp \
         src/hdashline.cpp \
         src/logger.cpp \
         src/pairmodel.cpp \
         src/settings.cpp \
+        src/timegridmodel.cpp \
+        src/valuegridmodel.cpp \
         src/valuelogger.cpp \
         src/vdashline.cpp
 
@@ -39,11 +40,12 @@ HEADERS += src/colormodel.h \
         src/datamodel.h \
         src/debuglog.h \
         src/graph.h \
-        src/gridmodel.h \
         src/hdashline.h \
         src/logger.h \
         src/pairmodel.h \
         src/settings.h \
+        src/timegridmodel.h \
+        src/valuegridmodel.h \
         src/vdashline.h
 
 OTHER_FILES += qml/valuelogger.qml \

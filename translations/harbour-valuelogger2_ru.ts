@@ -176,20 +176,28 @@
         <translation>Настройки</translation>
     </message>
     <message>
-        <source>Horizontal grid lines</source>
-        <translation>Горизонтальная сетка</translation>
+        <source>Grid</source>
+        <translation>Сетка графика</translation>
     </message>
     <message>
-        <source>Position</source>
-        <translation>Расположение</translation>
+        <source>Time axis</source>
+        <translation>Разметка оси времени</translation>
+    </message>
+    <message>
+        <source>Time labels</source>
+        <translation>Значения времени</translation>
+    </message>
+    <message>
+        <source>Value axis</source>
+        <translation>Разметка оси значений</translation>
     </message>
     <message>
         <source>Dynamic</source>
-        <translation>Динамическое</translation>
+        <translation>Динамическая</translation>
     </message>
     <message>
         <source>Fixed</source>
-        <translation>Фиксированное</translation>
+        <translation>Фиксированая</translation>
     </message>
     <message>
         <source>Left labels</source>
@@ -200,12 +208,12 @@
         <translation>Значения справа</translation>
     </message>
     <message>
-        <source>Cover</source>
-        <translation>Обложка</translation>
+        <source>Miscellaneous</source>
+        <translation>Разное</translation>
     </message>
     <message>
-        <source>Show graph</source>
-        <translation>Показывать график</translation>
+        <source>Show graph on the cover</source>
+        <translation>Показывать график на обложке</translation>
     </message>
 </context>
 <context>

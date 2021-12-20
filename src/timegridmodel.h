@@ -21,36 +21,44 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef GRIDMODEL_H
-#define GRIDMODEL_H
+#ifndef TIMEGRIDMODEL_H
+#define TIMEGRIDMODEL_H
 
 #include <QAbstractListModel>
+#include <QDateTime>
 #include <QVector>
 
-class GridModel : public QAbstractListModel
+class TimeGridModel : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(qreal size READ getSize WRITE setSize NOTIFY sizeChanged)
-    Q_PROPERTY(qreal minValue READ getMinValue WRITE setMinValue NOTIFY minValueChanged)
-    Q_PROPERTY(qreal maxValue READ getMaxValue WRITE setMaxValue NOTIFY maxValueChanged)
+    Q_PROPERTY(int minCount READ getMinCount WRITE setMinCount NOTIFY minCountChanged)
     Q_PROPERTY(int maxCount READ getMaxCount WRITE setMaxCount NOTIFY maxCountChanged)
+    Q_PROPERTY(QDateTime timeOrigin READ getTimeOrigin WRITE setTimeOrigin NOTIFY timeOriginChanged)
+    Q_PROPERTY(QDateTime timeStart READ getTimeStart WRITE setTimeStart NOTIFY timeStartChanged)
+    Q_PROPERTY(QDateTime timeEnd READ getTimeEnd WRITE setTimeEnd NOTIFY timeEndChanged)
     Q_PROPERTY(bool fixedGrids READ getFixedGrids WRITE setFixedGrids NOTIFY fixedGridsChanged)
-    class Grid;
+    struct Step;
 
 public:
-    explicit GridModel(QObject* parent = Q_NULLPTR);
-    ~GridModel();
+    class Grid;
+    explicit TimeGridModel(QObject* parent = Q_NULLPTR);
+    ~TimeGridModel();
 
     qreal getSize() const { return m_size; }
-    qreal getMinValue() const { return m_minValue; }
-    qreal getMaxValue() const { return m_maxValue; }
+    int getMinCount() const { return m_minCount; }
     int getMaxCount() const { return m_maxCount; }
+    QDateTime getTimeOrigin() const { return m_timeOrigin; }
+    QDateTime getTimeStart() const { return m_timeStart; }
+    QDateTime getTimeEnd() const { return m_timeEnd; }
     bool getFixedGrids() const { return m_fixedGrids; }
 
     void setSize(qreal size);
-    void setMinValue(qreal value);
-    void setMaxValue(qreal value);
+    void setMinCount(int count);
     void setMaxCount(int count);
+    void setTimeOrigin(QDateTime t);
+    void setTimeStart(QDateTime t);
+    void setTimeEnd(QDateTime t);
     void setFixedGrids(bool fixed);
 
     /* QAbstractItemModel */
@@ -59,23 +67,29 @@ public:
     QVariant data(const QModelIndex& idx, int role) const Q_DECL_OVERRIDE;
 
 private:
-    bool makeGrids(QVector<Grid>* grids, qreal step);
+    bool makeGrids(QVector<Grid>* grids, const Step* step, int n) const;
+    bool makeGrids(QVector<Grid>* grids, const Step* step) const;
     void updateGrids();
 
 signals:
     void sizeChanged();
-    void minValueChanged();
-    void maxValueChanged();
+    void minCountChanged();
     void maxCountChanged();
+    void timeOriginChanged();
+    void timeStartChanged();
+    void timeEndChanged();
+    void dateTimeFormatChanged();
     void fixedGridsChanged();
 
 private:
     QVector<Grid> m_grids;
     qreal m_size;
-    qreal m_minValue;
-    qreal m_maxValue;
+    int m_minCount;
     int m_maxCount;
+    QDateTime m_timeOrigin;
+    QDateTime m_timeStart;
+    QDateTime m_timeEnd;
     bool m_fixedGrids;
 };
 
-#endif // GRIDMODEL_H
+#endif // TIMEGRIDMODEL_H

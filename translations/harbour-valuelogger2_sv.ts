@@ -176,12 +176,20 @@
         <translation>Inställningar</translation>
     </message>
     <message>
-        <source>Horizontal grid lines</source>
-        <translation>Horisontella linjer</translation>
+        <source>Grid</source>
+        <translation type="unfinished">Rutnät</translation>
     </message>
     <message>
-        <source>Position</source>
-        <translation>Position</translation>
+        <source>Time axis</source>
+        <translation type="unfinished">Tidsaxel</translation>
+    </message>
+    <message>
+        <source>Time labels</source>
+        <translation type="unfinished">Tidsetiketter</translation>
+    </message>
+    <message>
+        <source>Value axis</source>
+        <translation type="unfinished">Värdeaxel</translation>
     </message>
     <message>
         <source>Dynamic</source>
@@ -200,12 +208,12 @@
         <translation>Etiketter till höger</translation>
     </message>
     <message>
-        <source>Cover</source>
-        <translation>Miniatyr</translation>
+        <source>Miscellaneous</source>
+        <translation type="unfinished">Varierad</translation>
     </message>
     <message>
-        <source>Show graph</source>
-        <translation>Visa diagram</translation>
+        <source>Show graph on the cover</source>
+        <translation type="unfinished">Visa diagram på omslagsbild</translation>
     </message>
 </context>
 <context>

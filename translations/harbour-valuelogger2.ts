@@ -176,12 +176,20 @@
         <translation>Settings</translation>
     </message>
     <message>
-        <source>Horizontal grid lines</source>
-        <translation>Horizontal grid lines</translation>
+        <source>Grid</source>
+        <translation>Grid</translation>
     </message>
     <message>
-        <source>Position</source>
-        <translation>Position</translation>
+        <source>Time axis</source>
+        <translation>Time axis</translation>
+    </message>
+    <message>
+        <source>Time labels</source>
+        <translation>Time labels</translation>
+    </message>
+    <message>
+        <source>Value axis</source>
+        <translation>Value axis</translation>
     </message>
     <message>
         <source>Dynamic</source>
@@ -200,12 +208,12 @@
         <translation>Right labels</translation>
     </message>
     <message>
-        <source>Cover</source>
-        <translation>Cover</translation>
+        <source>Miscellaneous</source>
+        <translation>Miscellaneous</translation>
     </message>
     <message>
-        <source>Show graph</source>
-        <translation>Show graph</translation>
+        <source>Show graph on the cover</source>
+        <translation>Show graph on the cover</translation>
     </message>
 </context>
 <context>

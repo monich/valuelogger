@@ -36,7 +36,9 @@ class Settings : public QObject
     Q_OBJECT
     Q_ENUMS(GridLinesStyle)
     Q_PROPERTY(QString configRoot READ getConfigRoot CONSTANT)
+    Q_PROPERTY(GridLinesStyle verticalGridLinesStyle READ getVerticalGridLinesStyle WRITE setVerticalGridLinesStyle NOTIFY verticalGridLinesStyleChanged)
     Q_PROPERTY(GridLinesStyle horizontalGridLinesStyle READ getHorizontalGridLinesStyle WRITE setHorizontalGridLinesStyle NOTIFY horizontalGridLinesStyleChanged)
+    Q_PROPERTY(bool topGridLabels READ getTopGridLabels WRITE setTopGridLabels NOTIFY topGridLabelsChanged)
     Q_PROPERTY(bool leftGridLabels READ getLeftGridLabels WRITE setLeftGridLabels NOTIFY leftGridLabelsChanged)
     Q_PROPERTY(bool rightGridLabels READ getRightGridLabels WRITE setRightGridLabels NOTIFY rightGridLabelsChanged)
     Q_PROPERTY(bool showGraphOnCover READ getShowGraphOnCover WRITE setShowGraphOnCover NOTIFY showGraphOnCoverChanged)
@@ -49,8 +51,14 @@ public:
 
     explicit Settings(QObject* parent = Q_NULLPTR);
 
+    GridLinesStyle getVerticalGridLinesStyle() const { return (GridLinesStyle) m_verticalGridLinesStyle->value((int) GridLinesDynamic).toInt(); }
+    void setVerticalGridLinesStyle(GridLinesStyle value) { m_verticalGridLinesStyle->set((int) value); }
+
     GridLinesStyle getHorizontalGridLinesStyle() const { return (GridLinesStyle) m_horizontalGridLinesStyle->value((int) GridLinesDynamic).toInt(); }
     void setHorizontalGridLinesStyle(GridLinesStyle value) { m_horizontalGridLinesStyle->set((int) value); }
+
+    bool getTopGridLabels() const { return m_topGridLabels->value(true).toBool(); }
+    void setTopGridLabels(bool value) { m_topGridLabels->set(value); }
 
     bool getLeftGridLabels() const { return m_leftGridLabels->value(true).toBool(); }
     void setLeftGridLabels(bool value) { m_leftGridLabels->set(value); }
@@ -68,13 +76,17 @@ public:
     static QObject* createSingleton(QQmlEngine* engine, QJSEngine* js);
 
 signals:
+    void verticalGridLinesStyleChanged();
     void horizontalGridLinesStyleChanged();
+    void topGridLabelsChanged();
     void leftGridLabelsChanged();
     void rightGridLabelsChanged();
     void showGraphOnCoverChanged();
 
 private:
+    MGConfItem* m_verticalGridLinesStyle;
     MGConfItem* m_horizontalGridLinesStyle;
+    MGConfItem* m_topGridLabels;
     MGConfItem* m_leftGridLabels;
     MGConfItem* m_rightGridLabels;
     MGConfItem* m_showGraphOnCover;

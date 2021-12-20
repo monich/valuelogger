@@ -30,12 +30,16 @@ const QString Settings::ConfigRoot(CONFIG_ROOT);
 
 Settings::Settings(QObject* parent) :
     QObject(parent),
+    m_verticalGridLinesStyle(new MGConfItem(DCONF_KEY("verticalGridLinesStyle"), this)),
     m_horizontalGridLinesStyle(new MGConfItem(DCONF_KEY("horizontalGridLinesStyle"), this)),
+    m_topGridLabels(new MGConfItem(DCONF_KEY("topGridLabels"), this)),
     m_leftGridLabels(new MGConfItem(DCONF_KEY("leftGridLabels"), this)),
     m_rightGridLabels(new MGConfItem(DCONF_KEY("rightGridLabels"), this)),
     m_showGraphOnCover(new MGConfItem(DCONF_KEY("showGraphOnCover"), this))
 {
+    connect(m_verticalGridLinesStyle, SIGNAL(valueChanged()), SIGNAL(verticalGridLinesStyleChanged()));
     connect(m_horizontalGridLinesStyle, SIGNAL(valueChanged()), SIGNAL(horizontalGridLinesStyleChanged()));
+    connect(m_topGridLabels, SIGNAL(valueChanged()), SIGNAL(topGridLabelsChanged()));
     connect(m_leftGridLabels, SIGNAL(valueChanged()), SIGNAL(leftGridLabelsChanged()));
     connect(m_rightGridLabels, SIGNAL(valueChanged()), SIGNAL(rightGridLabelsChanged()));
     connect(m_showGraphOnCover, SIGNAL(valueChanged()), SIGNAL(showGraphOnCoverChanged()));

@@ -21,12 +21,12 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 */
 
-#include "gridmodel.h"
+#include "valuegridmodel.h"
 #include "debuglog.h"
 
 #include <qmath.h>
 
-class GridModel::Grid {
+class ValueGridModel::Grid {
 public:
     enum Role {
         ValueRole = Qt::UserRole,
@@ -47,7 +47,7 @@ public:
     QString text;
 };
 
-GridModel::GridModel(QObject* parent) :
+ValueGridModel::ValueGridModel(QObject* parent) :
     QAbstractListModel(parent),
     m_size(1.0),
     m_minValue(0.0),
@@ -57,11 +57,11 @@ GridModel::GridModel(QObject* parent) :
 {
 }
 
-GridModel::~GridModel()
+ValueGridModel::~ValueGridModel()
 {
 }
 
-void GridModel::setSize(qreal size)
+void ValueGridModel::setSize(qreal size)
 {
     if (m_size != size) {
         m_size = size;
@@ -71,7 +71,7 @@ void GridModel::setSize(qreal size)
     }
 }
 
-void GridModel::setMinValue(qreal value)
+void ValueGridModel::setMinValue(qreal value)
 {
     if (m_minValue != value) {
         m_minValue = value;
@@ -81,7 +81,7 @@ void GridModel::setMinValue(qreal value)
     }
 }
 
-void GridModel::setMaxValue(qreal value)
+void ValueGridModel::setMaxValue(qreal value)
 {
     if (m_maxValue != value) {
         m_maxValue = value;
@@ -91,7 +91,7 @@ void GridModel::setMaxValue(qreal value)
     }
 }
 
-void GridModel::setMaxCount(int count)
+void ValueGridModel::setMaxCount(int count)
 {
     if (m_maxCount != count) {
         m_maxCount = count;
@@ -101,7 +101,7 @@ void GridModel::setMaxCount(int count)
     }
 }
 
-void GridModel::setFixedGrids(bool fixed)
+void ValueGridModel::setFixedGrids(bool fixed)
 {
     if (m_fixedGrids != fixed) {
         m_fixedGrids = fixed;
@@ -111,7 +111,7 @@ void GridModel::setFixedGrids(bool fixed)
     }
 }
 
-bool GridModel::makeGrids(QVector<Grid>* grids, qreal step)
+bool ValueGridModel::makeGrids(QVector<Grid>* grids, qreal step)
 {
     grids->resize(0);
     const qreal span = m_maxValue - m_minValue;
@@ -129,7 +129,7 @@ bool GridModel::makeGrids(QVector<Grid>* grids, qreal step)
     return true;
 }
 
-void GridModel::updateGrids()
+void ValueGridModel::updateGrids()
 {
     QVector<Grid> grids;
 
@@ -167,7 +167,7 @@ void GridModel::updateGrids()
 
 /* QAbstractItemModel */
 
-QHash<int,QByteArray> GridModel::roleNames() const
+QHash<int,QByteArray> ValueGridModel::roleNames() const
 {
     QHash<int,QByteArray> roles;
     roles.insert(Grid::ValueRole, "value");
@@ -176,12 +176,12 @@ QHash<int,QByteArray> GridModel::roleNames() const
     return roles;
 }
 
-int GridModel::rowCount(const QModelIndex& parent) const
+int ValueGridModel::rowCount(const QModelIndex& parent) const
 {
     return m_grids.count();
 }
 
-QVariant GridModel::data(const QModelIndex& idx, int role) const
+QVariant ValueGridModel::data(const QModelIndex& idx, int role) const
 {
     const int row = idx.row();
     if (row >= 0 && row < m_grids.count()) {

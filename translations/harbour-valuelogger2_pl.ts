@@ -176,36 +176,44 @@
         <translation>Ustawienia</translation>
     </message>
     <message>
-        <source>Horizontal grid lines</source>
-        <translation>Poziome linie siatki</translation>
+        <source>Grid</source>
+        <translation type="unfinished">Siatka</translation>
     </message>
     <message>
-        <source>Position</source>
-        <translation>Pozycja</translation>
+        <source>Time axis</source>
+        <translation type="unfinished">Oś czasu</translation>
+    </message>
+    <message>
+        <source>Time labels</source>
+        <translation type="unfinished">Etykiety czasu</translation>
+    </message>
+    <message>
+        <source>Value axis</source>
+        <translation type="unfinished">Oś wartości</translation>
     </message>
     <message>
         <source>Dynamic</source>
-        <translation>Dynamiczna</translation>
+        <translation type="unfinished">Dynamiczna</translation>
     </message>
     <message>
         <source>Fixed</source>
-        <translation>Niezmienna</translation>
+        <translation type="unfinished">Niezmienna</translation>
     </message>
     <message>
         <source>Left labels</source>
-        <translation>Lewe etykiety</translation>
+        <translation type="unfinished">Lewe etykiety</translation>
     </message>
     <message>
         <source>Right labels</source>
-        <translation>Prawe etykiety</translation>
+        <translation type="unfinished">Prawe etykiety</translation>
     </message>
     <message>
-        <source>Cover</source>
-        <translation>Okładka</translation>
+        <source>Miscellaneous</source>
+        <translation type="unfinished">Różne</translation>
     </message>
     <message>
-        <source>Show graph</source>
-        <translation>Pokaż wykres</translation>
+        <source>Show graph on the cover</source>
+        <translation type="unfinished">Pokaż wykres na okładke</translation>
     </message>
 </context>
 <context>

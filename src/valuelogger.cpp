@@ -24,13 +24,14 @@ DEALINGS IN THE SOFTWARE.
 
 #include "colormodel.h"
 #include "graph.h"
-#include "gridmodel.h"
 #include "hdashline.h"
 #include "logger.h"
 #include "datamodel.h"
 #include "debuglog.h"
 #include "pairmodel.h"
 #include "settings.h"
+#include "timegridmodel.h"
+#include "valuegridmodel.h"
 #include "vdashline.h"
 
 #include <sailfishapp.h>
@@ -69,11 +70,12 @@ int main(int argc, char *argv[])
     const char *uri = "harbour.valuelogger";
     qmlRegisterType<ColorModel>(uri, 1, 0, "ColorModel");
     qmlRegisterType<Graph>(uri, 1, 0, "Graph");
-    qmlRegisterType<GridModel>(uri, 1, 0, "GridModel");
     qmlRegisterType<DataModel>(uri, 1, 0, "DataModel");
     qmlRegisterType<HDashLine>(uri, 1, 0, "HDashLine");
     qmlRegisterType<VDashLine>(uri, 1, 0, "VDashLine");
     qmlRegisterType<PairModel>(uri, 1, 0, "PairModel");
+    qmlRegisterType<TimeGridModel>(uri, 1, 0, "TimeGridModel");
+    qmlRegisterType<ValueGridModel>(uri, 1, 0, "ValueGridModel");
     qmlRegisterSingletonType<Settings>(uri, 1, 0, "Settings", Settings::createSingleton);
     qmlRegisterSingletonType<Logger>(uri, 1, 0, "Logger", Logger::createSingleton);
     qmlRegisterSingletonType<DebugLog>(uri, 1, 0, "DebugLog", DebugLog::createSingleton);

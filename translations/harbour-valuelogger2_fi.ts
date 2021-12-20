@@ -176,16 +176,24 @@
         <translation>Asetukset</translation>
     </message>
     <message>
-        <source>Horizontal grid lines</source>
-        <translation type="unfinished">Vaakasuuntaiset ristikkoviivat</translation>
+        <source>Grid</source>
+        <translation type="unfinished">Ruudukko</translation>
     </message>
     <message>
-        <source>Position</source>
-        <translation type="unfinished">Positio</translation>
+        <source>Time axis</source>
+        <translation type="unfinished">Päivämääräakseli</translation>
+    </message>
+    <message>
+        <source>Time labels</source>
+        <translation type="unfinished">Päivämääräotsikot</translation>
+    </message>
+    <message>
+        <source>Value axis</source>
+        <translation type="unfinished">Arvoakseli</translation>
     </message>
     <message>
         <source>Dynamic</source>
-        <translation type="unfinished">Dynaaminen </translation>
+        <translation type="unfinished">Dynaaminen</translation>
     </message>
     <message>
         <source>Fixed</source>
@@ -193,19 +201,19 @@
     </message>
     <message>
         <source>Left labels</source>
-        <translation type="unfinished">Vasen etiketit</translation>
+        <translation type="unfinished">Otsikot vasemmalla</translation>
     </message>
     <message>
         <source>Right labels</source>
-        <translation type="unfinished">Oikeat etiketit</translation>
+        <translation type="unfinished">Otsikot oikealla</translation>
     </message>
     <message>
-        <source>Cover</source>
-        <translation type="unfinished">Kansilehti</translation>
+        <source>Miscellaneous</source>
+        <translation type="unfinished">Sekalaista</translation>
     </message>
     <message>
-        <source>Show graph</source>
-        <translation type="unfinished">Näytä käppyrä</translation>
+        <source>Show graph on the cover</source>
+        <translation type="unfinished">Näytä käppyrä kansilehdellä</translation>
     </message>
 </context>
 <context>
