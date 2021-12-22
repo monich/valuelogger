@@ -177,7 +177,7 @@
     </message>
     <message>
         <source>Grid</source>
-        <translation type="\shed">Siatka</translation>
+        <translation>Siatka</translation>
     </message>
     <message>
         <source>Time axis</source>
