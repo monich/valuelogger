@@ -177,43 +177,43 @@
     </message>
     <message>
         <source>Grid</source>
-        <translation type="unfinished">Siatka</translation>
+        <translation type="\shed">Siatka</translation>
     </message>
     <message>
         <source>Time axis</source>
-        <translation type="unfinished">Oś czasu</translation>
+        <translation>Oś czasu</translation>
     </message>
     <message>
         <source>Time labels</source>
-        <translation type="unfinished">Etykiety czasu</translation>
+        <translation>Etykiety czasu</translation>
     </message>
     <message>
         <source>Value axis</source>
-        <translation type="unfinished">Oś wartości</translation>
+        <translation>Oś wartości</translation>
     </message>
     <message>
         <source>Dynamic</source>
-        <translation type="unfinished">Dynamiczna</translation>
+        <translation>Dynamiczna</translation>
     </message>
     <message>
         <source>Fixed</source>
-        <translation type="unfinished">Niezmienna</translation>
+        <translation>Niezmienna</translation>
     </message>
     <message>
         <source>Left labels</source>
-        <translation type="unfinished">Lewe etykiety</translation>
+        <translation>Lewe etykiety</translation>
     </message>
     <message>
         <source>Right labels</source>
-        <translation type="unfinished">Prawe etykiety</translation>
+        <translation>Prawe etykiety</translation>
     </message>
     <message>
         <source>Miscellaneous</source>
-        <translation type="unfinished">Różne</translation>
+        <translation>Różne</translation>
     </message>
     <message>
         <source>Show graph on the cover</source>
-        <translation type="unfinished">Pokaż wykres na okładke</translation>
+        <translation>Pokaż wykres na okładce</translation>
     </message>
 </context>
 <context>
