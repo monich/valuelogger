@@ -243,11 +243,10 @@ Item {
         }
     }
 
-    ListView {
+    Loader {
         id: legend
 
-        readonly property real itemHeight: Math.round(fontSize * 3 / 2)
-
+        active: parInfoModel.length > 1
         anchors {
             left: grid.left
             leftMargin: Math.round(grid.width/grid.horizontalCount/2)
@@ -257,55 +256,68 @@ Item {
             topMargin: Theme.paddingLarge
         }
 
-        z: 11
-        height: itemHeight * count
-        model: parInfoModel
-        visible: opacity > 0
+        sourceComponent: Component {
+            ListView {
+                id: legendList
 
-        delegate: Item {
-            height: legend.itemHeight
-            width: legend.width
+                z: 11
+                height: itemHeight * count
+                model: parInfoModel
+                visible: opacity > 0
 
-            Rectangle {
-                id: legendColor
-                width: Theme.paddingLarge
-                height: Theme.paddingSmall/2
-                color: modelData.plotcolor
-                anchors.verticalCenter: parent.verticalCenter
-            }
+                readonly property real itemHeight: Math.round(fontSize * 3 / 2)
 
-            Label {
-                anchors {
-                    verticalCenter: parent.verticalCenter
-                    left: legendColor.right
-                    leftMargin: Theme.paddingSmall
-                    right: parent.right
+                delegate: Item {
+                    height: legendList.itemHeight
+                    width: legendList.width
+
+                    Rectangle {
+                        id: legendColor
+                        width: Theme.paddingLarge
+                        height: Theme.paddingSmall/2
+                        color: modelData.plotcolor
+                        anchors.verticalCenter: parent.verticalCenter
+                    }
+
+                    Label {
+                        anchors {
+                            verticalCenter: parent.verticalCenter
+                            left: legendColor.right
+                            leftMargin: Theme.paddingSmall
+                            right: parent.right
+                        }
+                        font {
+                            pixelSize: fontSize
+                            bold: fontBold
+                        }
+                        text: modelData.name
+                        truncationMode: TruncationMode.Fade
+                    }
                 }
-                font {
-                    pixelSize: fontSize
-                    bold: fontBold
+
+                Behavior on opacity {
+                    FadeAnimation { duration: 500 }
                 }
-                text: modelData.name
-                truncationMode: TruncationMode.Fade
+
+                onOpacityChanged: {
+                    if (opacity === 1.0) {
+                        legendVisibility.start()
+                    }
+                }
+
+                Timer {
+                    id: legendVisibility
+
+                    interval: 2000
+                    running: true
+                    onTriggered: legendList.opacity = 0.0
+                }
+
+                function show() {
+                    opacity = 1.0
+                    legendVisibility.restart()
+                }
             }
-        }
-
-        Behavior on opacity {
-            FadeAnimation { duration: 500 }
-        }
-
-        onOpacityChanged: {
-            if (opacity === 1.0) {
-                legendVisibility.start()
-            }
-        }
-
-        Timer {
-            id: legendVisibility
-
-            interval: 2000
-            running: true
-            onTriggered: legend.opacity = 0.0
         }
     }
 
@@ -524,8 +536,9 @@ Item {
                 property real pressY
 
                 onClicked: {
-                    legend.opacity = 1.0
-                    legendVisibility.restart()
+                    if (legend.item) {
+                        legend.item.show()
+                    }
                 }
 
                 onPressed: {

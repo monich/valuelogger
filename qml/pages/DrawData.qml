@@ -12,7 +12,7 @@ Page {
 
     PageHeader {
         id: ph
-        title: qsTr("Plot")
+        title: parInfo.length === 1 ? parInfo[0].name : qsTr("Plot")
     }
 
     LinePlot {
