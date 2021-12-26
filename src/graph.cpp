@@ -30,6 +30,8 @@ DEALINGS IN THE SOFTWARE.
 
 #include <qmath.h>
 
+#define PRINTABLE_TIME(d) qPrintable((d).toString(QStringLiteral("dd.MM.yyyyThh:mm")))
+
 namespace {
     // UTC times are signiticantly faster to compare.
     // Local times are getting converted to UTC every time
@@ -137,7 +139,7 @@ void Graph::setMinTime(const QDateTime& t)
 {
     if (m_minTime != t) {
         m_minTime = t;
-        DBG(t);
+        DBG(PRINTABLE_TIME(t));
         emit minTimeChanged();
         update();
     }
@@ -147,7 +149,7 @@ void Graph::setMaxTime(const QDateTime& t)
 {
     if (m_maxTime != t) {
         m_maxTime = t;
-        DBG(t);
+        DBG(PRINTABLE_TIME(t));
         emit maxTimeChanged();
         update();
     }

@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 #include <qmath.h>
 
 #define COUNT(a) (sizeof(a)/sizeof((a)[0]))
+#define PRINTABLE_TIME(d) qPrintable((d).toString(QStringLiteral("dd.MM.yyyyThh:mm")))
 
 class TimeGridModel::Grid {
 public:
@@ -285,7 +286,7 @@ void TimeGridModel::setTimeStart(QDateTime t)
 {
     if (m_timeStart != t) {
         m_timeStart = t;
-        DBG(t);
+        DBG(PRINTABLE_TIME(t));
         updateGrids();
         emit timeStartChanged();
     }
@@ -295,7 +296,7 @@ void TimeGridModel::setTimeEnd(QDateTime t)
 {
     if (m_timeEnd != t) {
         m_timeEnd = t;
-        DBG(t);
+        DBG(PRINTABLE_TIME(t));
         updateGrids();
         emit timeEndChanged();
     }
@@ -371,7 +372,7 @@ void TimeGridModel::updateGrids()
         m_timeEnd > m_timeStart) {
         const qint64 spanMSecs = m_timeStart.msecsTo(m_timeEnd);
         if (m_fixedGrids) {
-            DBG("grid" << m_timeStart << ".." << m_timeEnd);
+            DBG("grid" << PRINTABLE_TIME(m_timeStart) << ".." << PRINTABLE_TIME(m_timeEnd));
             int i, k = COUNT(Step::AllSteps) - 1;
             const Step* step = Step::AllSteps[k];
             while (spanMSecs < step->minSpanMSecs && k > 0) {
