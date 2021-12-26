@@ -150,44 +150,44 @@ public:
     const int* multipliers;
 };
 
-const TimeGridModel::Step TimeGridModel::Step::MSecs =
-    { TimeGridModel::Step::roundToMSecs, TimeGridModel::Step::addMSecs,
+const TimeGridModel::Step TimeGridModel::Step::MSecs = {
+      TimeGridModel::Step::roundToMSecs, TimeGridModel::Step::addMSecs,
       TimeGridModel::Step::formatMSecs, 1, "ms",
-      TimeGridModel::Step::MSecMultipliers};
+      TimeGridModel::Step::MSecMultipliers };
 const int TimeGridModel::Step::MSecMultipliers[] = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 0 };
 
-const TimeGridModel::Step TimeGridModel::Step::Secs =
-    { TimeGridModel::Step::roundToSecs, TimeGridModel::Step::addSecs,
+const TimeGridModel::Step TimeGridModel::Step::Secs = {
+      TimeGridModel::Step::roundToSecs, TimeGridModel::Step::addSecs,
       TimeGridModel::Step::formatSecs, TimeGridModel::Grid::SpanSecondMSecs, "sec",
       TimeGridModel::Step::SecMultipliers };
 const int TimeGridModel::Step::SecMultipliers[] = { 1, 2, 5, 10, 20, 30, 0 };
 
-const TimeGridModel::Step TimeGridModel::Step::Mins =
-    { TimeGridModel::Step::roundToMins, TimeGridModel::Step::addMins,
+const TimeGridModel::Step TimeGridModel::Step::Mins = {
+      TimeGridModel::Step::roundToMins, TimeGridModel::Step::addMins,
       TimeGridModel::Step::formatMins, TimeGridModel::Grid::SpanMinuteMSecs, "min",
       TimeGridModel::Step::MinMultipliers };
 const int TimeGridModel::Step::MinMultipliers[] = { 1, 2, 5, 10, 20, 30, 0 };
 
-const TimeGridModel::Step TimeGridModel::Step::Hours =
-    { TimeGridModel::Step::roundToHours, TimeGridModel::Step::addHours,
+const TimeGridModel::Step TimeGridModel::Step::Hours = {
+      TimeGridModel::Step::roundToHours, TimeGridModel::Step::addHours,
       TimeGridModel::Step::formatHours, TimeGridModel::Grid::SpanHourMSecs, "hour(s)",
       TimeGridModel::Step::HourMultipliers };
 const int TimeGridModel::Step::HourMultipliers[] = { 1, 2, 3, 4, 6, 12, 0 };
 
-const TimeGridModel::Step TimeGridModel::Step::Days =
-    { TimeGridModel::Step::roundToDays, TimeGridModel::Step::addDays,
+const TimeGridModel::Step TimeGridModel::Step::Days = {
+      TimeGridModel::Step::roundToDays, TimeGridModel::Step::addDays,
       TimeGridModel::Step::formatDays, TimeGridModel::Grid::SpanDayMSecs, "day(s)",
       TimeGridModel::Step::DayMultipliers };
 const int TimeGridModel::Step::DayMultipliers[] = { 1, 2, 5, 10, 0 };
 
-const TimeGridModel::Step TimeGridModel::Step::Months =
-    { TimeGridModel::Step::roundToMonths, TimeGridModel::Step::addMonths,
+const TimeGridModel::Step TimeGridModel::Step::Months = {
+      TimeGridModel::Step::roundToMonths, TimeGridModel::Step::addMonths,
       TimeGridModel::Step::formatMonths, TimeGridModel::Grid::MinSpanMonthMSecs, "month(s)",
       TimeGridModel::Step::MonthMultipliers };
 const int TimeGridModel::Step::MonthMultipliers[] = { 1, 3, 6, 0 };
 
-const TimeGridModel::Step TimeGridModel::Step::Years
-    { TimeGridModel::Step::roundToYears, TimeGridModel::Step::addYears,
+const TimeGridModel::Step TimeGridModel::Step::Years = {
+      TimeGridModel::Step::roundToYears, TimeGridModel::Step::addYears,
       TimeGridModel::Step::formatYears, TimeGridModel::Grid::MinSpanYearMSecs, "year(s)",
       TimeGridModel::Step::YearMultipliers };
 const int TimeGridModel::Step::YearMultipliers[] = { 1, 2, 5, 10, 20, 50, 100, 200, 500, 0 };
