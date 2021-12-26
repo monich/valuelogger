@@ -316,7 +316,7 @@ Item {
         timeStart: xstart
         timeEnd: xend
         size: canvas.width
-        maxCount: canvas.width ? Math.ceil(canvas.width/Theme.itemSizeHuge) + 1 : 0
+        maxCount: canvas.width ? (Math.ceil(canvas.width/Theme.itemSizeHuge) + (fixedGrids ? 0 : 1)) : 0
         fixedGrids: Settings.verticalGridLinesStyle === Settings.GridLinesFixed
     }
 
@@ -414,7 +414,7 @@ Item {
                     minValue: min
                     maxValue: max
                     size: canvas.height
-                    maxCount: fixedGrids ? 4 : 7
+                    maxCount: canvas.height ? (Math.ceil(canvas.height/(isLandscape ? Theme.itemSizeLarge : Theme.itemSizeHuge)) + (fixedGrids ? 0 : 2)) : 0
                     fixedGrids: Settings.horizontalGridLinesStyle === Settings.GridLinesFixed
                 }
                 delegate: Column {

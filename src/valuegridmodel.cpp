@@ -36,8 +36,9 @@ public:
 
     Grid() : value(0.0), coord(0.0) {}
     Grid(const Grid& g) : value(g.value), coord(g.coord), text(g.text) {}
-    Grid(qreal v, qreal c) : value(v), coord(c), text(QString::number(v)) {}
+    Grid(qreal v, qreal c, qreal s) : value(v), coord(c), text(formatValue(v, s)) {}
 
+    static QString formatValue(qreal v, qreal s);
     Grid& operator=(const Grid& g) { value = g.value; coord = g.coord; text = g.text; return *this; }
     bool operator==(const Grid& g) const { return value == g.value && coord == g.coord && text == g.text; }
 
@@ -46,6 +47,31 @@ public:
     qreal coord;
     QString text;
 };
+
+QString ValueGridModel::Grid::formatValue(qreal v, qreal s)
+{
+    static const QString zero("0");
+    static const QString sep1(".");
+    static const QString sep2(",");
+    int precision = 2;
+    if (v == 0.0) {
+        return zero;
+    } else if (s < 1) {
+        precision = qMax((int)ceil(-log10(s)) + 1, precision);
+    } else if (ceil(log10(qAbs(v))) > 6) {
+        return QString::number(v, 'g', 5);
+    }
+    // Apply 'f' format
+    QString text(QString::number(v, 'f', precision));
+    // Strip trailing zeros
+    while (text.endsWith(zero)) {
+        text = text.left(text.length() - 1);
+    }
+    if (text.endsWith(sep1) || text.endsWith(sep2)) {
+        text = text.left(text.length() - 1);
+    }
+    return text;
+}
 
 ValueGridModel::ValueGridModel(QObject* parent) :
     QAbstractListModel(parent),
@@ -122,7 +148,7 @@ bool ValueGridModel::makeGrids(QVector<Grid>* grids, qreal step)
         }
         const qreal value = step * i;
         const qreal coord = m_size * (value - m_minValue) / span;
-        const Grid grid(value, coord);
+        const Grid grid(value, coord, step);
         grids->append(grid);
         DBG(grids->count() << ":" << grid.value << grid.coord << grid.text);
     }
@@ -134,18 +160,19 @@ void ValueGridModel::updateGrids()
     QVector<Grid> grids;
 
     if (m_size > 0 && m_maxValue > m_minValue && m_maxCount > 0) {
+        const qreal span = m_maxValue - m_minValue;
         if (m_fixedGrids) {
-            const qreal span = m_maxValue - m_minValue;
+            const qreal step = span/(m_maxCount + 1);
             DBG("grid" << m_minValue << ".." << m_maxValue);
             for (int i = 0; i < m_maxCount; i++) {
-                const qreal offset = (i + 1) * span / (m_maxCount + 1);
+                const qreal offset = (i + 1) * step;
                 const qreal coord = m_size * offset / span;
-                const Grid grid(m_minValue + offset, coord);
+                const Grid grid(m_minValue + offset, coord, step);
                 grids.append(grid);
                 DBG(grids.count() << ":" << grid.value << grid.coord << grid.text);
             }
         } else {
-            const qreal minStep = (m_maxValue - m_minValue)/m_maxCount;
+            const qreal minStep = span/m_maxCount;
             const int log = ceil(log10(minStep));
             const qreal roundedStep = exp10(log);
             DBG("grid" << m_minValue << ".." << m_maxValue << log << roundedStep);
