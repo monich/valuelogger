@@ -247,6 +247,7 @@ Item {
         id: legend
 
         active: parInfoModel.length > 1
+        z: 11
         anchors {
             left: grid.left
             leftMargin: Math.round(grid.width/grid.horizontalCount/2)
@@ -260,7 +261,6 @@ Item {
             ListView {
                 id: legendList
 
-                z: 11
                 height: itemHeight * count
                 model: parInfoModel
                 visible: opacity > 0
