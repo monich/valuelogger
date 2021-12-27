@@ -25,6 +25,7 @@
 */
 
 import QtQuick 2.0
+import QtGraphicalEffects 1.0
 import Sailfish.Silica 1.0
 import harbour.valuelogger 1.0
 
@@ -34,6 +35,7 @@ Item {
     property var parInfoModel
     property bool dragging
 
+    readonly property bool darkOnLight: 'colorScheme' in Theme && Theme.colorScheme === Theme.DarkOnLight
     readonly property int thinLine: Math.max(2, Math.floor(Theme.paddingSmall/3))
     readonly property int fontSize: Theme.fontSizeTiny
     readonly property bool fontBold: true
@@ -255,17 +257,24 @@ Item {
             rightMargin: Theme.horizontalPageMargin
             top: grid.top
             topMargin: Theme.paddingLarge
+            bottom: grid.bottom
+            bottomMargin: Theme.paddingLarge
         }
 
         sourceComponent: Component {
             ListView {
                 id: legendList
 
-                height: itemHeight * count
+                width: legend.width
+                height: legend.height
                 model: parInfoModel
                 visible: opacity > 0
+                interactive: false
+                clip: true
 
-                readonly property real itemHeight: Math.round(fontSize * 3 / 2)
+                readonly property int itemHeight: Math.round(fontSize * 3 / 2)
+                readonly property int shadowOffset: Math.ceil(Theme.paddingSmall/4)
+                readonly property color shadowColor: darkOnLight ? "#80ffffff" : "#80000000"
 
                 delegate: Item {
                     height: legendList.itemHeight
@@ -273,13 +282,38 @@ Item {
 
                     Rectangle {
                         id: legendColor
+
                         width: Theme.paddingLarge
                         height: Theme.paddingSmall/2
                         color: modelData.plotcolor
                         anchors.verticalCenter: parent.verticalCenter
+                        layer.enabled: true
+                        layer.effect: DropShadow {
+                            color: legendList.shadowColor
+                            horizontalOffset: legendList.shadowOffset
+                            verticalOffset: legendList.shadowOffset
+                            transparentBorder: true
+                        }
+                    }
+
+                    // DropShadow doesn't seem to work with Label :(
+                    Label {
+                        x: legendLabel.x + legendList.shadowOffset
+                        y: legendLabel.y + legendList.shadowOffset
+                        width: legendLabel.width - legendList.shadowOffset
+                        height: height.width
+                        font {
+                            pixelSize: fontSize
+                            bold: fontBold
+                        }
+                        text: modelData.name
+                        truncationMode: TruncationMode.Fade
+                        color: legendList.shadowColor
                     }
 
                     Label {
+                        id: legendLabel
+
                         anchors {
                             verticalCenter: parent.verticalCenter
                             left: legendColor.right
@@ -310,10 +344,11 @@ Item {
 
                     interval: 2000
                     running: true
-                    onTriggered: legendList.opacity = 0.0
+                    onTriggered: parent.opacity = 0.0
                 }
 
                 function show() {
+                    Debug.log("Showing legend")
                     opacity = 1.0
                     legendVisibility.restart()
                 }
