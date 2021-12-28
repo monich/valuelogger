@@ -107,6 +107,7 @@ void DataModel::reset()
 #define FIRST_TIME 0x01
 #define FIRST_VALUE 0x02
 
+        m_data.reserve(n);
         int first = (FIRST_TIME | FIRST_VALUE);
         for (int i = 0; i < n; i++) {
             Data* data = new Data(rawData.at(i).toMap());
@@ -194,6 +195,7 @@ void DataModel::updateRow(int row, QString value, QString annotation, QString ti
             data->annotation = annotation;
             roles.append(AnnotationRole);
         }
+
         const QString currentTimestamp(Database::toString(data->timestamp));
         if (currentTimestamp != timestamp) {
             DBG(TIMESTAMP << "=" << timestamp);
