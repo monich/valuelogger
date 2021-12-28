@@ -61,8 +61,8 @@ void DashLine::setColor(const QColor& color)
             QSGGeometryNode* node = (QSGGeometryNode*)nodes[i];
             QSGFlatColorMaterial* m = (QSGFlatColorMaterial*)node->material();
             m->setColor(color);
-            node->markDirty(QSGNode::DirtyMaterial);
         }
+        update();
         emit colorChanged();
     }
 }
@@ -100,7 +100,7 @@ QSGGeometry* DashLine::newRectGeometry(float x, float y, float w, float h)
 void DashLine::updateRectNode(QSGGeometryNode* node, float x, float y, float w, float h)
 {
     updateRectGeometry(node->geometry()->vertexDataAsPoint2D(), x, y, w, h);
-    node->markDirty(QSGNode::DirtyGeometry);
+    node->markDirty(QSGNode::DirtyGeometry | QSGNode::DirtyMaterial);
 }
 
 QSGGeometryNode* DashLine::newNode(QSGGeometry* g)
