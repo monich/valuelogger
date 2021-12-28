@@ -378,7 +378,6 @@ Item {
         readonly property real leftMargin: valueMax.width
         readonly property real opacityRamp: Theme.paddingLarge
         Repeater {
-            //model: Settings.topGridLabels ? timeGridModel : 0
             model: timeGridModel
             delegate: Text {
                 x: model.coordinate - width/2
