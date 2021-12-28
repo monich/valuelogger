@@ -51,6 +51,8 @@ enum LoggerSignal {
 };
 
 namespace {
+    const QString VERSION(APPVERSION);
+
     const QString PARAMETER(PARAMETER_COL);
     const QString NAME(NAME_ROLE);
     const QString DESCRIPTION(DESCRIPTION_ROLE);
@@ -86,6 +88,12 @@ Logger::Logger(QObject* parent) :
 
 Logger::~Logger()
 {
+}
+
+QString Logger::getVersion()
+{
+    DBG(VERSION);
+    return VERSION;
 }
 
 void Logger::queueSignal(uint signal)

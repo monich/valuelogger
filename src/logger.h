@@ -53,8 +53,8 @@ public:
     ~Logger();
 
     static int dataTableRole();
+    static QString getVersion();
 
-    static QString getVersion() { return APPVERSION; }
     int getVisualizeCount() const { return m_visualizeCount; }
     int getDefaultParameterIndex() const { return m_defaultParameterIndex; }
     QString getDefaultParameterName() const { return m_defaultParameterName; }
