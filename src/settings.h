@@ -42,6 +42,14 @@ class Settings : public QObject
     Q_PROPERTY(bool leftGridLabels READ getLeftGridLabels WRITE setLeftGridLabels NOTIFY leftGridLabelsChanged)
     Q_PROPERTY(bool rightGridLabels READ getRightGridLabels WRITE setRightGridLabels NOTIFY rightGridLabelsChanged)
     Q_PROPERTY(bool showGraphOnCover READ getShowGraphOnCover WRITE setShowGraphOnCover NOTIFY showGraphOnCoverChanged)
+    Q_PROPERTY(int coverStyle READ getCoverStyle WRITE setCoverStyle NOTIFY coverStyleChanged)
+    Q_PROPERTY(QString coverItem READ getCoverItem NOTIFY coverStyleChanged)
+    Q_PROPERTY(QStringList coverItems READ getCoverItems CONSTANT)
+    Q_PROPERTY(QVariantList sampleData READ getSampleData CONSTANT)
+
+    static const QString ConfigRoot;
+    static const QStringList CoverItems;
+    static const QVariantList SampleData;
 
 public:
     enum GridLinesStyle {
@@ -51,6 +59,16 @@ public:
 
     explicit Settings(QObject* parent = Q_NULLPTR);
 
+    /* Callback for qmlRegisterSingletonType<Settings> */
+    static QObject* createSingleton(QQmlEngine* engine, QJSEngine* js);
+
+    /* Static helpers */
+    static const QString& getConfigRoot() { return ConfigRoot; }
+    static const QStringList& getCoverItems() { return CoverItems; }
+    static const QVariantList& getSampleData() { return SampleData; }
+    static int validateCoverStyle(int style);
+
+    /* Getters and setters */
     GridLinesStyle getVerticalGridLinesStyle() const { return (GridLinesStyle) m_verticalGridLinesStyle->value((int) GridLinesDynamic).toInt(); }
     void setVerticalGridLinesStyle(GridLinesStyle value) { m_verticalGridLinesStyle->set((int) value); }
 
@@ -69,11 +87,12 @@ public:
     bool getShowGraphOnCover() const { return m_showGraphOnCover->value(true).toBool(); }
     void setShowGraphOnCover(bool value) { m_showGraphOnCover->set(value); }
 
-    static const QString ConfigRoot;
-    static const QString getConfigRoot() { return ConfigRoot; }
+    int getCoverStyle() const;
+    void setCoverStyle(int style);
+    const QString& getCoverItem() const { return CoverItems.at(getCoverStyle()); }
 
-    /* Callback for qmlRegisterSingletonType<Settings> */
-    static QObject* createSingleton(QQmlEngine* engine, QJSEngine* js);
+private:
+    static QVariantList createSampleData();
 
 signals:
     void verticalGridLinesStyleChanged();
@@ -82,6 +101,7 @@ signals:
     void leftGridLabelsChanged();
     void rightGridLabelsChanged();
     void showGraphOnCoverChanged();
+    void coverStyleChanged();
 
 private:
     MGConfItem* m_verticalGridLinesStyle;
@@ -90,6 +110,7 @@ private:
     MGConfItem* m_leftGridLabels;
     MGConfItem* m_rightGridLabels;
     MGConfItem* m_showGraphOnCover;
+    MGConfItem* m_coverStyle;
 };
 
 #endif // SETTINGS_H

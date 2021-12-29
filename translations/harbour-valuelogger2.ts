@@ -81,6 +81,13 @@
     </message>
 </context>
 <context>
+    <name>CoverPreview</name>
+    <message>
+        <source>Example</source>
+        <translation>Example</translation>
+    </message>
+</context>
+<context>
     <name>DrawData</name>
     <message>
         <source>Plot</source>
@@ -208,12 +215,8 @@
         <translation>Right labels</translation>
     </message>
     <message>
-        <source>Miscellaneous</source>
-        <translation>Miscellaneous</translation>
-    </message>
-    <message>
-        <source>Show graph on the cover</source>
-        <translation>Show graph on the cover</translation>
+        <source>Cover</source>
+        <translation>Cover</translation>
     </message>
 </context>
 <context>

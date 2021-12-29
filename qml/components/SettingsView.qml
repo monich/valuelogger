@@ -111,14 +111,29 @@ SilicaFlickable  {
             }
         }
 
-        SectionHeader { text: qsTr("Miscellaneous") }
+        SectionHeader { text: qsTr("Cover") }
 
-        TextSwitch {
-            width: parent.width
-            text: qsTr("Show graph on the cover")
-            automaticCheck: false
-            checked: Settings.showGraphOnCover
-            onClicked: Settings.showGraphOnCover = !Settings.showGraphOnCover
+        DataModel {
+            id: sampleModel
+
+            rawData: Settings.sampleData
+        }
+
+        Grid {
+            x: Theme.horizontalPageMargin
+            columnSpacing: Theme.paddingLarge
+            rowSpacing: Theme.paddingLarge
+            columns: Math.floor((parent.width - 2 * x + columnSpacing)/(Theme.coverSizeSmall.width + columnSpacing))
+
+            Repeater {
+                model: Settings.coverItems
+                delegate: CoverPreview {
+                    dataModel: sampleModel
+                    source: "../cover/" + modelData
+                    selected: (Settings.coverStyle === model.index)
+                    onClicked: Settings.coverStyle = model.index
+                }
+            }
         }
     }
 }

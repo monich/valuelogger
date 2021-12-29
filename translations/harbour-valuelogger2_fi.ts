@@ -81,6 +81,13 @@
     </message>
 </context>
 <context>
+    <name>CoverPreview</name>
+    <message>
+        <source>Example</source>
+        <translation type="unfinished">Esimerkki</translation>
+    </message>
+</context>
+<context>
     <name>DrawData</name>
     <message>
         <source>Plot</source>
@@ -208,12 +215,8 @@
         <translation type="unfinished">Otsikot oikealla</translation>
     </message>
     <message>
-        <source>Miscellaneous</source>
-        <translation type="unfinished">Sekalaista</translation>
-    </message>
-    <message>
-        <source>Show graph on the cover</source>
-        <translation type="unfinished">Näytä käppyrä kansilehdellä</translation>
+        <source>Cover</source>
+        <translation type="unfinished">Kansilehti</translation>
     </message>
 </context>
 <context>

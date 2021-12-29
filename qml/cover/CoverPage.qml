@@ -1,5 +1,4 @@
 import QtQuick 2.0
-import QtGraphicalEffects 1.0
 import Sailfish.Silica 1.0
 import harbour.valuelogger 1.0
 
@@ -16,190 +15,42 @@ CoverBackground {
     readonly property int thinLine: Math.max(1, Math.floor(Theme.paddingSmall/4))
     readonly property int thickLine: Math.max(2, Math.floor(Theme.paddingSmall/2))
     readonly property bool showGraph: Settings.showGraphOnCover && Logger.defaultParameterTable !== ""
+    readonly property string title: Logger.defaultParameterName ? Logger.defaultParameterName : "Value logger"
 
-    Item {
-        id: iconItem
+    property alias coverItem: coverItemLoader.item
 
-        readonly property int padding: Theme.paddingSmall
-
-        y: x
-        width: parent.width / 2 + 2 * padding
-        height: width
-        anchors.horizontalCenter: parent.horizontalCenter
-        visible: !showGraph
-
-        HighlightIcon {
-            source: showGraph ? "" : "../images/icon-background.svg"
-            highlightColor: Theme.primaryColor
-            anchors.centerIn: parent
-            sourceSize.width: icon.width + parent.padding
-            sourceSize.height: icon.height + parent.padding
-            opacity: 0.2
-        }
-
-        Image {
-            id: icon
-
-            source: showGraph ? "" : Qt.resolvedUrl("../images/harbour-valuelogger2.svg")
-            anchors.centerIn: parent
-            sourceSize.width: parent.width - 2 * parent.padding
-        }
-    }
-
-    Loader {
-        id: graphItem
-
-        y: x
-        width: parent.width - 2 * Theme.paddingLarge
-        height: width
-        anchors.horizontalCenter: parent.horizontalCenter
-        active: Settings.showGraphOnCover
-        sourceComponent: Component {
-            Item {
-                anchors.fill: parent
-                visible: showGraph
-
-                Connections {
-                    target: Logger
-                    onTableUpdated: {
-                        if (table == defaultParameterData.dataTable) {
-                            defaultParameterData.reset()
-                        }
-                    }
-                }
-
-                DataModel {
-                    id: defaultParameterData
-
-                    readonly property real valueSpan: maxValue - minValue
-
-                    dataTable: Logger.defaultParameterTable
-
-                    onModelReset: graph.update()
-                }
-
-                Rectangle {
-                    id: background
-
-                    x: thickLine
-                    y: thickLine
-                    width: parent.width - 2 * x
-                    height: parent.height - 2 * y
-                    color: darkOnLight ? "white" : "black"
-                    radius: Theme.paddingSmall - thickLine
-                    opacity: 0.2
-                }
-
-                Rectangle {
-                    id: mask
-
-                    anchors.fill: background
-                    color: background.color
-                    radius: background.radius
-                    visible: false
-                }
-
-                Graph {
-                    id: graph
-
-                    readonly property real extraValueRoom: height ? (lineWidth / height * defaultParameterData.valueSpan) : 0
-
-                    anchors.centerIn: parent
-                    width: parent.width - 2 * graphBorder.border.width
-                    height: parent.height - 2 * graphBorder.border.width
-                    model: defaultParameterData
-                    minValue: defaultParameterData.minValue - extraValueRoom
-                    maxValue: defaultParameterData.maxValue + extraValueRoom
-                    minTime: defaultParameterData.minTime
-                    maxTime: defaultParameterData.maxTime
-                    lineWidth: thickLine
-                    nodeMarks: false
-                    color: Logger.defaultParameterColor
-                    visible: false
-                }
-
-                OpacityMask {
-                    anchors.fill: graph
-                    source: graph
-                    maskSource: mask
-                }
-
-                ShaderEffectSource {
-                    id: grid
-
-                    readonly property color color: Theme.primaryColor
-
-                    anchors.fill: parent
-                    opacity: 0.4
-                    sourceItem: Item {
-                        width: grid.width
-                        height: grid.height
-
-                        Repeater {
-                            id: verticalGrid
-
-                            readonly property int gridCount: 5
-                            model: gridCount - 1
-                            delegate: VDashLine {
-                                x: graph.x + Math.round((index + 1) * graph.width / verticalGrid.gridCount - width / 2)
-                                y: graph.y
-                                width: thinLine
-                                height: graph.height
-                                dashSize: 2 * width
-                                color: grid.color
-                            }
-                        }
-
-                        Repeater {
-                            id: horizontalGrid
-
-                            readonly property int gridCount: 5
-                            model: gridCount - 1
-                            delegate: HDashLine {
-                                x: graph.x
-                                y: graph.x + Math.round((index + 1) * graph.height / horizontalGrid.gridCount - height / 2)
-                                width: graph.width
-                                height: thinLine
-                                dashSize: 2 * height
-                                color: grid.color
-                            }
-                        }
-                    }
-                }
-
-                Rectangle {
-                    id: graphBorder
-
-                    anchors.fill: parent
-                    opacity: 0.6
-                    color: "transparent"
-                    radius: Theme.paddingSmall
-                    border {
-                        width: thickLine
-                        color: Theme.primaryColor
-                    }
-                }
+    Connections {
+        target: Logger
+        onTableUpdated: {
+            if (table == defaultParameterData.dataTable) {
+                defaultParameterData.reset()
             }
         }
     }
 
-    Label {
-        id: label
+    DataTableModel {
+        id: defaultParameterData
 
-        anchors {
-            horizontalCenter: parent.horizontalCenter
-            top: showGraph ? graphItem.bottom : iconItem.bottom
-            bottom: parent.bottom
-            bottomMargin: (Theme.itemSizeSmall + Theme.iconSizeSmall)/2/cover.parent.scale
+        dataTable: Logger.defaultParameterTable
+        onModelReset: {
+            if (coverItem) {
+                coverItem.updateGraph()
+            }
         }
-        width: Math.min(implicitWidth, parent.width - 2 * Theme.paddingLarge)
-        verticalAlignment: Text.AlignVCenter
-        truncationMode: TruncationMode.Fade
-        minimumPixelSize: Theme.fontSizeExtraSmall
-        fontSizeMode: Text.Fit
-        color: Theme.highlightColor
-        text: Logger.defaultParameterName ? Logger.defaultParameterName : "Value logger"
     }
+
+    Loader {
+        id: coverItemLoader
+
+        anchors.fill: cover
+        source: Qt.resolvedUrl(Settings.coverItem)
+    }
+
+    Binding { target: coverItem;  property: "coverScale"; value: cover.parent.scale }
+    Binding { target: coverItem;  property: "showGraph"; value: showGraph }
+    Binding { target: coverItem;  property: "graphColor"; value: Logger.defaultParameterColor }
+    Binding { target: coverItem;  property: "graphModel"; value: defaultParameterData }
+    Binding { target: coverItem;  property: "title"; value: title }
 
     CoverActionList {
         enabled: Logger.visualizeCount === 1

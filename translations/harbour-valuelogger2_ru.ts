@@ -81,6 +81,13 @@
     </message>
 </context>
 <context>
+    <name>CoverPreview</name>
+    <message>
+        <source>Example</source>
+        <translation>Пример</translation>
+    </message>
+</context>
+<context>
     <name>DrawData</name>
     <message>
         <source>Plot</source>
@@ -208,12 +215,8 @@
         <translation>Значения справа</translation>
     </message>
     <message>
-        <source>Miscellaneous</source>
-        <translation>Разное</translation>
-    </message>
-    <message>
-        <source>Show graph on the cover</source>
-        <translation>Показывать график на обложке</translation>
+        <source>Cover</source>
+        <translation>Обложка</translation>
     </message>
 </context>
 <context>

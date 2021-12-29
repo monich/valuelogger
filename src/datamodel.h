@@ -24,16 +24,19 @@ DEALINGS IN THE SOFTWARE.
 #ifndef DATAMODEL_H
 #define DATAMODEL_H
 
-#include "database.h"
-
 #include <QDateTime>
 #include <QVariantList>
 #include <QAbstractListModel>
 
+#define ROLE_KEY_ROLE           "key"
+#define ROLE_TIMESTAMP_ROLE     "timestamp"
+#define ROLE_VALUE_ROLE         "value"
+#define ROLE_ANNOTATION_ROLE    "annotation"
+
 class DataModel : public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString dataTable READ getDataTable WRITE setDataTable NOTIFY dataTableChanged)
+    Q_PROPERTY(QVariantList rawData READ getRawdata WRITE setRawData NOTIFY rawDataChanged)
     Q_PROPERTY(QDateTime minTime READ getMinTime NOTIFY minTimeChanged)
     Q_PROPERTY(QDateTime maxTime READ getMaxTime NOTIFY maxTimeChanged)
     Q_PROPERTY(qreal minValue READ getMinValue NOTIFY minValueChanged)
@@ -44,15 +47,14 @@ public:
     explicit DataModel(QObject* parent = Q_NULLPTR);
     ~DataModel();
 
-    QString getDataTable() const { return m_dataTable; }
-    void setDataTable(QString table);
+    QVariantList getRawdata() const { return m_rawData; }
+    void setRawData(QVariantList data);
 
     const QDateTime& getMinTime() const { return m_minTime; }
     const QDateTime& getMaxTime() const { return m_maxTime; }
     qreal getMinValue() const { return m_minValue; }
     qreal getMaxValue() const { return m_maxValue; }
 
-    Q_INVOKABLE void reset();
     Q_INVOKABLE void deleteRow(int row);
     Q_INVOKABLE void updateRow(int row, QString value, QString annotation, QString timestamp);
 
@@ -61,11 +63,15 @@ public:
     int rowCount(const QModelIndex& parent = QModelIndex()) const Q_DECL_OVERRIDE;
     QVariant data(const QModelIndex& idx, int role) const Q_DECL_OVERRIDE;
 
+protected:
+    virtual void deleteRowStorage(QString key);
+    virtual bool updateRowStorage(QString key, QString value, QString annotation, QString timestamp);
+
 private:
     void updateRanges();
 
 signals:
-    void dataTableChanged();
+    void rawDataChanged();
     void minTimeChanged();
     void maxTimeChanged();
     void minValueChanged();
@@ -74,8 +80,7 @@ signals:
 
 private:
     class Data;
-    Database m_db;
-    QString m_dataTable;
+    QVariantList m_rawData;
     QVector<Data*> m_data;
     QDateTime m_minTime;
     QDateTime m_maxTime;

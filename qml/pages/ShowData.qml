@@ -19,7 +19,7 @@ Page {
         }
     }
 
-    DataModel {
+    DataTableModel {
         id: dataModel
     }
 

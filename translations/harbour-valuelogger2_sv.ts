@@ -81,6 +81,13 @@
     </message>
 </context>
 <context>
+    <name>CoverPreview</name>
+    <message>
+        <source>Example</source>
+        <translation type="unfinished">Exempel</translation>
+    </message>
+</context>
+<context>
     <name>DrawData</name>
     <message>
         <source>Plot</source>
@@ -208,12 +215,8 @@
         <translation>Etiketter till höger</translation>
     </message>
     <message>
-        <source>Miscellaneous</source>
-        <translation type="unfinished">Varierad</translation>
-    </message>
-    <message>
-        <source>Show graph on the cover</source>
-        <translation type="unfinished">Visa diagram på omslagsbild</translation>
+        <source>Cover</source>
+        <translation>Miniatyr</translation>
     </message>
 </context>
 <context>

@@ -27,6 +27,7 @@ DEALINGS IN THE SOFTWARE.
 #include "hdashline.h"
 #include "logger.h"
 #include "datamodel.h"
+#include "datatablemodel.h"
 #include "debuglog.h"
 #include "pairmodel.h"
 #include "settings.h"
@@ -71,6 +72,7 @@ int main(int argc, char *argv[])
     qmlRegisterType<ColorModel>(uri, 1, 0, "ColorModel");
     qmlRegisterType<Graph>(uri, 1, 0, "Graph");
     qmlRegisterType<DataModel>(uri, 1, 0, "DataModel");
+    qmlRegisterType<DataTableModel>(uri, 1, 0, "DataTableModel");
     qmlRegisterType<HDashLine>(uri, 1, 0, "HDashLine");
     qmlRegisterType<VDashLine>(uri, 1, 0, "VDashLine");
     qmlRegisterType<PairModel>(uri, 1, 0, "PairModel");

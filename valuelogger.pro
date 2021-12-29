@@ -21,6 +21,7 @@ CONFIG(debug, debug|release) {
 }
 
 SOURCES += src/colormodel.cpp \
+        src/datatablemodel.cpp \
         src/dashline.cpp \
         src/database.cpp \
         src/datamodel.cpp \
@@ -35,6 +36,7 @@ SOURCES += src/colormodel.cpp \
         src/vdashline.cpp
 
 HEADERS += src/colormodel.h \
+        src/datatablemodel.h \
         src/dashline.h \
         src/database.h \
         src/datamodel.h \

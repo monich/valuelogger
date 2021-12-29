@@ -81,6 +81,13 @@
     </message>
 </context>
 <context>
+    <name>CoverPreview</name>
+    <message>
+        <source>Example</source>
+        <translation type="unfinished">Przykład</translation>
+    </message>
+</context>
+<context>
     <name>DrawData</name>
     <message>
         <source>Plot</source>
@@ -208,12 +215,8 @@
         <translation>Prawe etykiety</translation>
     </message>
     <message>
-        <source>Miscellaneous</source>
-        <translation>Różne</translation>
-    </message>
-    <message>
-        <source>Show graph on the cover</source>
-        <translation>Pokaż wykres na okładce</translation>
+        <source>Cover</source>
+        <translation>Okładka</translation>
     </message>
 </context>
 <context>

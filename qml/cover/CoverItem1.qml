@@ -1,0 +1,3 @@
+CoverItemBase {
+    showIcon: true
+}

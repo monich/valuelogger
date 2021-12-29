@@ -627,7 +627,7 @@ Item {
                 maxTime: xend
                 lineWidth: paintedCount ? Math.max(Math.ceil(Math.min(maxLineWidth, width/paintedCount)), minLineWidth) : maxLineWidth
                 color: modelData.plotcolor
-                model: DataModel {
+                model: DataTableModel {
                     dataTable: modelData.datatable
                 }
             }
