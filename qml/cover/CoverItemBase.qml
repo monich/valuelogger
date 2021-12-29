@@ -6,7 +6,7 @@ import "../components"
 Item {
     /* API */
 
-    property real coverScale: 1.0
+    property real coverScale: scale
     property bool showGraph: true
     property color graphColor
     property var graphModel
@@ -20,8 +20,8 @@ Item {
     property bool showIcon: !showGraph
 
     readonly property bool darkOnLight: 'colorScheme' in Theme && Theme.colorScheme === Theme.DarkOnLight
-    readonly property int thinLine: Math.max(1, Math.floor(Theme.paddingSmall/4))
-    readonly property int thickLine: Math.max(2, Math.floor(Theme.paddingSmall/2))
+    readonly property real thinLine: Math.max(1/scale, Math.floor(Theme.paddingSmall/4))
+    readonly property real thickLine: Math.max(2, Math.floor(Theme.paddingSmall/2))
 
     /* Implementation */
 

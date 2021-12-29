@@ -90,7 +90,7 @@ CoverItemBase {
                             readonly property int gridCount: 5
                             model: gridCount - 1
                             delegate: VDashLine {
-                                x: graph.x + Math.round((index + 1) * graph.width / verticalGrid.gridCount - width / 2)
+                                x: Math.round(graph.x + Math.round((index + 1) * graph.width / verticalGrid.gridCount - width / 2))
                                 y: graph.y
                                 width: thinLine
                                 height: graph.height
@@ -106,7 +106,7 @@ CoverItemBase {
                             model: gridCount - 1
                             delegate: HDashLine {
                                 x: graph.x
-                                y: graph.x + Math.round((index + 1) * graph.height / horizontalGrid.gridCount - height / 2)
+                                y: graph.y + Math.round((index + 1) * graph.height / horizontalGrid.gridCount - height / 2)
                                 width: graph.width
                                 height: thinLine
                                 dashSize: 2 * height

@@ -39,35 +39,46 @@ CoverItemBase {
                     color: graphColor
                 }
 
-                Repeater {
-                    id: verticalGrid
+                ShaderEffectSource {
+                    id: grid
 
-                    readonly property int gridCount: 5
-                    model: gridCount - 1
-                    delegate: VDashLine {
-                        x: graph.x + Math.round((index + 1) * graph.width / verticalGrid.gridCount - width / 2)
-                        y: graph.y
-                        width: thinLine
-                        height: graph.height
-                        dashSize: 2 * width
-                        color: Theme.primaryColor
-                        opacity: 0.4
-                    }
-                }
+                    readonly property color color: Theme.primaryColor
 
-                Repeater {
-                    id: horizontalGrid
+                    anchors.fill: parent
+                    opacity: 0.4
+                    sourceItem: Item {
+                        width: grid.width
+                        height: grid.height
 
-                    readonly property int gridCount: 5
-                    model: gridCount - 1
-                    delegate: HDashLine {
-                        x: graph.x
-                        y: graph.x + Math.round((index + 1) * graph.height / horizontalGrid.gridCount - height / 2)
-                        width: graph.width
-                        height: thinLine
-                        dashSize: 2 * height
-                        color: Theme.primaryColor
-                        opacity: 0.4
+                        Repeater {
+                            id: verticalGrid
+
+                            readonly property int gridCount: 5
+                            model: gridCount - 1
+                            delegate: VDashLine {
+                                x: Math.round(graph.x + Math.round((index + 1) * graph.width / verticalGrid.gridCount - width / 2))
+                                y: graph.y
+                                width: thinLine
+                                height: graph.height
+                                dashSize: 2 * width
+                                color: grid.color
+                            }
+                        }
+
+                        Repeater {
+                            id: horizontalGrid
+
+                            readonly property int gridCount: 5
+                            model: gridCount - 1
+                            delegate: HDashLine {
+                                x: graph.x
+                                y: graph.y + Math.round((index + 1) * graph.height / horizontalGrid.gridCount - height / 2)
+                                width: graph.width
+                                height: thinLine
+                                dashSize: 2 * height
+                                color: grid.color
+                            }
+                        }
                     }
                 }
 
