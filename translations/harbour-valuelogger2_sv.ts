@@ -101,6 +101,10 @@
         <translation>Exportera till CSV</translation>
     </message>
     <message>
+        <source>Share CSV</source>
+        <translation type="unfinished">Dela CSV</translation>
+    </message>
+    <message>
         <source>Exported to %1</source>
         <translation>Exporterad till %1</translation>
     </message>

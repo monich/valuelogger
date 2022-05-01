@@ -101,6 +101,10 @@
         <translation>Eksportuj do CSV</translation>
     </message>
     <message>
+        <source>Share CSV</source>
+        <translation type="unfinished">Udostępnij CSV</translation>
+    </message>
+    <message>
         <source>Add new parameter</source>
         <translation>dodaj nowy parametr</translation>
     </message>

@@ -101,6 +101,10 @@
         <translation>Vie CSV muotoon</translation>
     </message>
     <message>
+        <source>Share CSV</source>
+        <translation type="unfinished">Jaa CSV</translation>
+    </message>
+    <message>
         <source>Exported to %1</source>
         <translation>Viety tiedostoon %1</translation>
     </message>

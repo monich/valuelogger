@@ -11,6 +11,7 @@ Page {
 
     readonly property real fullHeight: isPortrait ? Screen.height : Screen.width
     readonly property bool darkOnLight: 'colorScheme' in Theme && Theme.colorScheme === Theme.DarkOnLight
+    readonly property bool sailfishShare: Logger.compareVersions(Logger.transferEngineVersion, "0.4.0") >= 0
 
     signal plotSelected()
 
@@ -29,12 +30,17 @@ Page {
         })
     }
 
-    Notification {
-        id: notification
-        expireTimeout: 2500
-        Component.onCompleted: {
-            if ("icon" in notification) {
-                notification.icon = Qt.binding(function() { return Qt.resolvedUrl("../images/" + (darkOnLight ? "icon-cover-plot-dark.svg" : "icon-cover-plot.svg")) })
+    Component {
+        id: notificationComponent
+
+        Notification {
+            id: notification
+
+            expireTimeout: 2500
+            Component.onCompleted: {
+                if ("icon" in notification) {
+                    notification.icon = Qt.binding(function() { return Qt.resolvedUrl("../images/" + (darkOnLight ? "icon-cover-plot-dark.svg" : "icon-cover-plot.svg")) })
+                }
             }
         }
     }
@@ -55,12 +61,30 @@ Page {
             }
 
             MenuItem {
-                text: qsTr("Export to CSV")
+                text: sailfishShare ? qsTr("Share CSV") : qsTr("Export to CSV")
                 visible: Logger.visualizeCount > 0
+                property var action
                 onClicked: {
-                    notification.previewBody = qsTr("Exported to %1").arg(Logger.exportToCSV())
-                    notification.publish()
+                    if (sailfishShare) {
+                        if (!action) {
+                            action = Qt.createQmlObject("import Sailfish.Share 1.0;ShareAction {mimeType: 'application/octet-stream'}",
+                                mainPage, "SailfishShare")
+                        }
+                        if (action) {
+                            action.resources = [ Logger.exportTempCSV() ]
+                            action.trigger()
+                        }
+                    } else {
+                        if (!action) {
+                            action = notificationComponent.createObject(mainPage)
+                        }
+                        if (action) {
+                            action.previewBody = qsTr("Exported to %1").arg(Logger.exportToCSV())
+                            action.publish()
+                        }
+                    }
                 }
+
             }
 
             MenuItem {

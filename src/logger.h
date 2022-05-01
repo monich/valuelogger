@@ -29,7 +29,9 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QColor>
 #include <QString>
+#include <QVector>
 #include <QFile>
+#include <QTemporaryFile>
 #include <QVariantList>
 #include <QAbstractListModel>
 
@@ -40,6 +42,7 @@ class Logger : public QAbstractListModel
 {
     Q_OBJECT
     Q_PROPERTY(QString version READ getVersion CONSTANT)
+    Q_PROPERTY(QString transferEngineVersion READ transferEngineVersion CONSTANT)
     Q_PROPERTY(int count READ rowCount NOTIFY rowCountChanged)
     Q_PROPERTY(int visualizeCount READ getVisualizeCount NOTIFY visualizeCountChanged)
     Q_PROPERTY(int defaultParameterIndex READ getDefaultParameterIndex NOTIFY defaultParameterIndexChanged)
@@ -55,6 +58,7 @@ public:
 
     static int dataTableRole();
     static QString getVersion();
+    QString transferEngineVersion();
 
     int getVisualizeCount() const { return m_visualizeCount; }
     int getDefaultParameterIndex() const { return m_defaultParameterIndex; }
@@ -62,6 +66,7 @@ public:
     QString getDefaultParameterTable() const { return m_defaultParameterTable; }
     QColor getDefaultParameterColor() const { return m_defaultParameterColor; }
 
+    Q_INVOKABLE static int compareVersions(QString v1, QString v2);
     Q_INVOKABLE QString addParameter(QString name, QString description, bool visualize, QColor plotcolor);
     Q_INVOKABLE void editParameterAt(int row, QString name, QString description, bool visualize, QColor plotcolor, QString pairedtable);
     Q_INVOKABLE void deleteParameterAt(int row);
@@ -69,6 +74,7 @@ public:
     Q_INVOKABLE QVariantMap get(int row);
     Q_INVOKABLE QString addData(QString table, QString value, QString annotation, QString timestamp);
     Q_INVOKABLE QString exportToCSV();
+    Q_INVOKABLE QString exportTempCSV();
 
     /* QAbstractItemModel */
     Qt::ItemFlags flags(const QModelIndex& idx) const Q_DECL_OVERRIDE;
@@ -97,11 +103,18 @@ private:
     void updateVisualizeCount();
     void updateDefaultParameter();
     void writeCSV(QFile& file);
+
     static QString esc(QString str);
+    static QString queryPackageVersion(QString package);
+    static QString queryPackageVersion2(const char* package);
+    static QVector<uint> parseVersion(QString version);
+    static int compareParsedVersions(const QVector<uint> v1, const QVector<uint> v2);
 
 private:
     Database m_db;
     QVariantList m_parameters;
+    QString m_transferEngineVersion;
+    QTemporaryFile m_shareCSV;
     int m_visualizeCount;
     int m_defaultParameterIndex;
     QString m_defaultParameterName;

@@ -101,6 +101,10 @@
         <translation>Export to CSV</translation>
     </message>
     <message>
+        <source>Share CSV</source>
+        <translation>Share CSV</translation>
+    </message>
+    <message>
         <source>Exported to %1</source>
         <translation>Exported to %1</translation>
     </message>

@@ -25,10 +25,16 @@ DEALINGS IN THE SOFTWARE.
 #include "logger.h"
 #include "debuglog.h"
 
+#include <QDir>
 #include <QColor>
-#include <QFile>
 #include <QLocale>
 #include <QStandardPaths>
+
+#include <stdlib.h>
+#include <unistd.h>
+#include <errno.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 enum LoggerRole {
     NameRole = Qt::UserRole,
@@ -71,6 +77,7 @@ Logger::Logger(QObject* parent) :
     QAbstractListModel(parent),
     queuedSignals(0)
 {
+    m_shareCSV.setFileTemplate(QDir::tempPath() + "/valuelogger.XXXXXX.csv");
     m_parameters = readParameters();
     m_visualizeCount = currentVisualizeCount();
     m_defaultParameterIndex = currentDefaultParameterIndex();
@@ -94,6 +101,14 @@ QString Logger::getVersion()
 {
     DBG(VERSION);
     return VERSION;
+}
+
+QString Logger::transferEngineVersion()
+{
+    if (m_transferEngineVersion.isEmpty()) {
+        m_transferEngineVersion = queryPackageVersion2("declarative-transferengine-qt5");
+    }
+    return m_transferEngineVersion;
 }
 
 void Logger::queueSignal(uint signal)
@@ -387,17 +402,31 @@ void Logger::deleteParameterAt(int row)
 
 QString Logger::exportToCSV()
 {
-    QString filename = QString("%1/valuelogger.csv").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-    DBG("Exporting to is" << filename);
+    const QString filename(QString("%1/valuelogger.csv").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation)));
+    DBG("Exporting to" << qPrintable(filename));
 
     QFile file(filename);
-    writeCSV(file);
-    return filename;
+    if (file.open(QIODevice::ReadWrite)) {
+        writeCSV(file);
+        file.close();
+        return filename;
+    }
+    return QString();
+}
+
+QString Logger::exportTempCSV()
+{
+    m_shareCSV.close();
+    if (m_shareCSV.open()) {
+        DBG("Writing" << qPrintable(m_shareCSV.fileName()));
+        writeCSV(m_shareCSV);
+        return m_shareCSV.fileName();
+    }
+    return QString();
 }
 
 void Logger::writeCSV(QFile& file)
 {
-    file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
     out.setCodec("UTF-8");
 
@@ -425,7 +454,6 @@ void Logger::writeCSV(QFile& file)
     }
 
     out.flush();
-    file.close();
 }
 
 QString Logger::esc(QString str)
@@ -433,6 +461,94 @@ QString Logger::esc(QString str)
     static const QString BEFORE("\"");
     static const QString AFTER("\"\"");
     return str.replace(BEFORE, AFTER);
+}
+
+QString Logger::queryPackageVersion(QString package)
+{
+    const QByteArray packageLatin1(package.toLatin1());
+    return queryPackageVersion2(packageLatin1.constData());
+}
+
+QString Logger::queryPackageVersion2(const char* package)
+{
+    QString version;
+    int fds[2];
+    if (pipe(fds) == 0) {
+        pid_t pid = fork();
+        if (!pid) {
+            const char* argv[6];
+            argv[0] = "rpm";
+            argv[1] = "-q";
+            argv[2] = "--qf";
+            argv[3] = "%{version}";
+            argv[4] = package;
+            argv[5] = NULL;
+            while ((dup2(fds[1], STDOUT_FILENO) == -1) && (errno == EINTR));
+            execvp(argv[0], (char**)argv);
+            abort();
+        }
+        close(fds[1]);
+
+        // There shouldn't be much output
+        QByteArray out;
+        const int chunk = 16;
+        ssize_t n = 0;
+        do {
+            const int size = out.size();
+            out.resize(size + chunk);
+            while ((n = read(fds[0], out.data() + size, chunk)) == -1 && (errno == EINTR));
+            out.resize(size + qMax(n, (ssize_t)0));
+        } while (n > 0);
+
+        // Parse the version
+        if (out.size() > 0) {
+            version = QString::fromLatin1(out);
+            DBG(package << qPrintable(version));
+        }
+        waitpid(pid, NULL, 0);
+        close(fds[0]);
+    }
+    return version;
+}
+
+QVector<uint> Logger::parseVersion(QString version)
+{
+    QVector<uint> parsed;
+    QStringList parts(version.split('.', QString::SkipEmptyParts));
+    const int n = qMin(parts.count(),4);
+    for (int i = 0; i < n; i++) {
+        const QString part(parts.at(i));
+        bool ok = false;
+        int val = part.toUInt(&ok);
+        if (ok) {
+            parsed.append(val);
+        } else {
+            break;
+        }
+    }
+    return parsed;
+}
+
+int Logger::compareParsedVersions(const QVector<uint> ver1, const QVector<uint> ver2)
+{
+    const int n1 = ver1.size();
+    const int n2 = ver2.size();
+    const int n = qMin(n1, n2);
+    for (int i = 0; i < n; i++) {
+        const uint v1 = ver1.at(i);
+        const uint v2 = ver2.at(i);
+        if (v1 > v2) {
+            return 1;
+        } else if (v1 < v2) {
+            return -1;
+        }
+    }
+    return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
+}
+
+int Logger::compareVersions(QString v1, QString v2)
+{
+    return compareParsedVersions(parseVersion(v1), parseVersion(v2));
 }
 
 /* QAbstractItemModel */

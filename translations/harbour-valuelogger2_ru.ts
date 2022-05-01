@@ -101,6 +101,10 @@
         <translation>Сохранить в CSV</translation>
     </message>
     <message>
+        <source>Share CSV</source>
+        <translation>Переслать CSV</translation>
+    </message>
+    <message>
         <source>Exported to %1</source>
         <translation>Файл %1 сохранён</translation>
     </message>
