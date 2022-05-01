@@ -109,6 +109,10 @@
         <translation>Add new parameter</translation>
     </message>
     <message>
+        <source>Plot</source>
+        <translation>Plot</translation>
+    </message>
+    <message>
         <source>Show raw data</source>
         <translation>Show raw data</translation>
     </message>

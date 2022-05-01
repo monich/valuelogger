@@ -109,6 +109,10 @@
         <translation>Добавить параметр</translation>
     </message>
     <message>
+        <source>Plot</source>
+        <translation>Показать график</translation>
+    </message>
+    <message>
         <source>Show raw data</source>
         <translation>Показать данные</translation>
     </message>
@@ -118,7 +122,7 @@
     </message>
     <message>
         <source>Pair</source>
-        <translation>Связать параметры...</translation>
+        <translation>Связать параметры</translation>
     </message>
     <message>
         <source>Remove</source>

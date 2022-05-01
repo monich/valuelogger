@@ -109,6 +109,10 @@
         <translation>Lisää uusi parametri</translation>
     </message>
     <message>
+        <source>Plot</source>
+        <translation type="unfinished">Piirrä</translation>
+    </message>
+    <message>
         <source>Show raw data</source>
         <translation>Näytä arvot</translation>
     </message>

@@ -110,6 +110,12 @@ Page {
                 menu: Component {
                     ContextMenu {
                         MenuItem {
+                            // Allow 5 items only in portrait
+                            visible: mainPage.isPortrait
+                            text: qsTr("Plot")
+                            onClicked: parameterItem.plotParameter()
+                        }
+                        MenuItem {
                             text: qsTr("Show raw data")
                             onClicked: parameterItem.showRawData()
                         }
@@ -130,6 +136,17 @@ Page {
                 }
 
                 ListView.onRemove: animateRemoval(parameterItem)
+
+                function plotParameter() {
+                    pageStack.push(Qt.resolvedUrl("DrawData.qml"), {
+                        "allowedOrientations": mainPage.allowedOrientations,
+                        "parInfo": [{
+                            "name": parName,
+                            "plotcolor": model.plotcolor,
+                            "datatable": model.datatable
+                        }]
+                    })
+                }
 
                 function showRawData() {
                     var dialog = pageStack.push(Qt.resolvedUrl("ShowData.qml"), {

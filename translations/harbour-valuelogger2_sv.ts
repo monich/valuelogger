@@ -109,6 +109,10 @@
         <translation>Lägg till ny parameter</translation>
     </message>
     <message>
+        <source>Plot</source>
+        <translation type="unfinished">Diagram</translation>
+    </message>
+    <message>
         <source>Show raw data</source>
         <translation>Visa rådata</translation>
     </message>

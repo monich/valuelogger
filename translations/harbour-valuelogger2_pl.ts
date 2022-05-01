@@ -105,6 +105,10 @@
         <translation>dodaj nowy parametr</translation>
     </message>
     <message>
+        <source>Plot</source>
+        <translation type="unfinished">Wykres</translation>
+    </message>
+    <message>
         <source>Show raw data</source>
         <translation>Pokaż surowe dane</translation>
     </message>
