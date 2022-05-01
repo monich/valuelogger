@@ -125,6 +125,7 @@ ApplicationWindow {
                     Debug.log("showing", par.name)
                     parInfo.push({
                         "name": par.name,
+                        "description": par.description,
                         "plotcolor": par.plotcolor,
                         "datatable": par.datatable
                     })

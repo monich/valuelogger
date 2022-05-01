@@ -142,6 +142,7 @@ Page {
                         "allowedOrientations": mainPage.allowedOrientations,
                         "parInfo": [{
                             "name": parName,
+                            "description": model.description,
                             "plotcolor": model.plotcolor,
                             "datatable": model.datatable
                         }]

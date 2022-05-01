@@ -11,16 +11,19 @@ Page {
     Component.onCompleted: plot.enableSizeTracking()
 
     PageHeader {
-        id: ph
+        id: header
+
         title: parInfo.length === 1 ? parInfo[0].name : qsTr("Plot")
+        description: parInfo.length === 1 ? parInfo[0].description : ""
     }
 
     LinePlot {
         id: plot
+
         x: Theme.horizontalPageMargin
         width: parent.width - 2 * x
         anchors {
-            top: ph.bottom
+            top: header.bottom
             bottom: parent.bottom
         }
     }
