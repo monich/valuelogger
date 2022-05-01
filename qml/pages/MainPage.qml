@@ -56,7 +56,7 @@ Page {
 
             MenuItem {
                 text: qsTr("Export to CSV")
-                enabled: Logger.count > 0
+                visible: Logger.visualizeCount > 0
                 onClicked: {
                     notification.previewBody = qsTr("Exported to %1").arg(Logger.exportToCSV())
                     notification.publish()

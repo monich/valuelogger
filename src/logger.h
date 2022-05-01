@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2014-2015 kimmoli <kimmo.lindholm@gmail.com> @likimmo
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2022 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -29,6 +29,7 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QColor>
 #include <QString>
+#include <QFile>
 #include <QVariantList>
 #include <QAbstractListModel>
 
@@ -95,6 +96,8 @@ private:
     int currentDefaultParameterIndex();
     void updateVisualizeCount();
     void updateDefaultParameter();
+    void writeCSV(QFile& file);
+    static QString esc(QString str);
 
 private:
     Database m_db;

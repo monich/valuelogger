@@ -1,6 +1,6 @@
 /*
 Copyright (c) 2014-2015 kimmoli <kimmo.lindholm@gmail.com> @likimmo
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2022 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -387,44 +387,52 @@ void Logger::deleteParameterAt(int row)
 
 QString Logger::exportToCSV()
 {
-    DBG("Exporting");
-
-    QLocale loc = QLocale::system(); /* Should return current locale */
-
-    QChar separator = (loc.decimalPoint() == '.') ? ',' : ';';
-    DBG("Using" << separator << "as separator");
-
     QString filename = QString("%1/valuelogger.csv").arg(QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-    DBG("Output filename is" << filename);
+    DBG("Exporting to is" << filename);
 
     QFile file(filename);
+    writeCSV(file);
+    return filename;
+}
+
+void Logger::writeCSV(QFile& file)
+{
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
     out.setCodec("UTF-8");
 
+    static const QString QUOTE("\"");
+    static const QString SEP("\",\"");  // Includes quotes
+    static const QString EOL("\"\r\n"); // Includes quote
+
     const QVariantList parList = readParameters();
     QListIterator<QVariant> i(parList);
-
     while (i.hasNext()) {
-        const QVariantMap par(i.next().value<QVariantMap>());
+        const QVariantMap par(i.next().toMap());
+        if (par.value(VISUALIZE).toBool()) {
+            out << QUOTE << esc(par.value(NAME).toString()) << SEP
+                << esc(par.value(DESCRIPTION).toString()) << EOL;
 
-        out << par.value(NAME).toString() << separator << par.value(DESCRIPTION).toString() << "\n";
-
-        const QVariantList dataList(m_db.readData(par.value(DATATABLE).toString()));
-        QListIterator<QVariant> n(dataList);
-
-        while (n.hasNext()) {
-            const QVariantMap data(n.next().value<QVariantMap>());
-            out << data.value(TIMESTAMP).toString() << separator <<
-                   data.value(VALUE).toString().replace('.', loc.decimalPoint()) << separator << "\"" <<
-                   data.value(ANNOTATION).toString() << "\"\n";
+            const QVariantList dataList(m_db.readData(par.value(DATATABLE).toString()));
+            QListIterator<QVariant> n(dataList);
+            while (n.hasNext()) {
+                const QVariantMap data(n.next().toMap());
+                out << QUOTE << esc(data.value(TIMESTAMP).toString()) << SEP
+                    << esc(data.value(VALUE).toString()) << SEP
+                    << esc(data.value(ANNOTATION).toString()) << EOL;
+            }
         }
     }
 
     out.flush();
     file.close();
+}
 
-    return filename;
+QString Logger::esc(QString str)
+{
+    static const QString BEFORE("\"");
+    static const QString AFTER("\"\"");
+    return str.replace(BEFORE, AFTER);
 }
 
 /* QAbstractItemModel */
