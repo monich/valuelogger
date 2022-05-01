@@ -29,14 +29,15 @@ DEALINGS IN THE SOFTWARE.
 PairModel::PairModel(QObject* parent) :
     QSortFilterProxyModel(parent)
 {
-    setFilterRole(Logger::dataTableRole());
 }
 
-/* This is easier than to build a regex for inverse matching */
 bool PairModel::filterAcceptsRow(int row, const QModelIndex& parent) const
 {
-    return m_ignoreDataTable.isEmpty() ||
-        !QSortFilterProxyModel::filterAcceptsRow(row, parent);
+    const int role = Logger::dataTableRole();
+    const QAbstractItemModel* source = sourceModel();
+    const QModelIndex sourceIndex(source->index(row, 0, parent));
+    const QString key(source->data(sourceIndex, role).toString());
+    return key != m_ignoreDataTable;
 }
 
 void PairModel::setIgnoreDataTable(QString table)
@@ -46,7 +47,5 @@ void PairModel::setIgnoreDataTable(QString table)
         m_ignoreDataTable = table;
         endResetModel();
         emit ignoreDataTableChanged();
-        setFilterRegExp(table.isEmpty() ?  QRegExp() :
-            QRegExp("^" + table + "$")); /* inverted by filterAcceptsRow */
     }
 }
