@@ -25,6 +25,25 @@ BuildRequires:  qt5-qttools-linguist
 %description
 Simple application to log different data from user input, e.g. weight, blood pressure, anything
 
+%if "%{?vendor}" == "chum"
+Categories:
+ - Utility
+Icon: https://raw.githubusercontent.com/monich/valuelogger/master/qml/images/harbour-valuelogger2.svg
+Screenshots:
+- https://home.monich.net/chum/harbour-valuelogger2/screenshots/screenshot-001.png
+- https://home.monich.net/chum/harbour-valuelogger2/screenshots/screenshot-002.png
+- https://home.monich.net/chum/harbour-valuelogger2/screenshots/screenshot-003.png
+- https://home.monich.net/chum/harbour-valuelogger2/screenshots/screenshot-004.png
+- https://home.monich.net/chum/harbour-valuelogger2/screenshots/screenshot-005.png
+- https://home.monich.net/chum/harbour-valuelogger2/screenshots/screenshot-006.png
+- https://home.monich.net/chum/harbour-valuelogger2/screenshots/screenshot-007.png
+- https://home.monich.net/chum/harbour-valuelogger2/screenshots/screenshot-008.png
+- https://home.monich.net/chum/harbour-valuelogger2/screenshots/screenshot-009.png
+- https://home.monich.net/chum/harbour-valuelogger2/screenshots/screenshot-010.png
+Url:
+  Homepage: https://openrepos.net/content/slava/value-logger
+%endif
+
 %prep
 %setup -q -n %{name}-%{version}
 
