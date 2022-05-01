@@ -113,19 +113,6 @@ Dialog {
                     visible: text !== ""
                 }
             }
-
-            Image {
-                id: check
-
-                anchors {
-                    top: parent.top
-                    topMargin: Theme.paddingSmall
-                    right: parent.right
-                    rightMargin: Theme.paddingSmall
-                }
-                visible: parameterItem.paired
-                source: "image://theme/icon-s-installed" + (parameterItem.highlighted ? ("?" + Theme.highlightColor) : "")
-            }
         }
 
         VerticalScrollDecorator { }
