@@ -136,4 +136,6 @@ SilicaFlickable  {
             }
         }
     }
+
+    VerticalScrollDecorator { }
 }
