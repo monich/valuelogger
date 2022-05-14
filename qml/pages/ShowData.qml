@@ -7,13 +7,21 @@ import "../js/debug.js" as Debug
 Page {
     id: showDataPage
 
-    property string parName : "Name goes here"
-    property string parDescription : "Description goes here"
+    property string parName
+    property string parDescription
     property alias dataTable: dataModel.dataTable
+
+    Component.onCompleted: {
+        dataListView.positionViewAtEnd()
+        scrollDecorator.showDecorator()
+    }
 
     SilicaFlickable {
         anchors.fill: parent
+        visible: placeholder.opacity !== 0
         ViewPlaceholder {
+            id: placeholder
+
             enabled: dataListView.count === 0
             text: qsTr("No data.")
         }
@@ -33,7 +41,11 @@ Page {
     SilicaListView {
         id: dataListView
 
-        VerticalScrollDecorator { flickable: dataListView }
+        VerticalScrollDecorator {
+            id: scrollDecorator
+
+            flickable: dataListView
+        }
 
         model: dataModel
 
