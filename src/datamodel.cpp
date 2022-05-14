@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2022 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -268,7 +268,7 @@ void DataModel::updateRow(int row, QString value, QString annotation, QString ti
         }
 
         if (!roles.isEmpty() &&
-            !updateRowStorage(data->key, value, annotation, timestamp)) {
+            updateRowStorage(data->key, value, annotation, timestamp)) {
             const QModelIndex idx(index(row));
             emit dataChanged(idx, idx, roles);
             updateRanges();
