@@ -6,9 +6,9 @@ Name:       harbour-valuelogger2
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 
 Summary:    Value Logger
-Version:    1.0.19
+Version:    1.0.20
 Release:    1
-License:    LICENSE
+License:    MIT
 URL: https://github.com/monich/valuelogger
 Source0:    %{name}-%{version}.tar.bz2
 
