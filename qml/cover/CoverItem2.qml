@@ -17,9 +17,19 @@ CoverItemBase {
         height: width
         anchors.horizontalCenter: parent.horizontalCenter
         active: showGraph
+        onItemChanged: {
+            if (item) {
+                thisItem.repaintGraph.connect(item.repaintGraph)
+            }
+        }
+
         sourceComponent: Component {
             Item {
                 anchors.fill: parent
+
+                function repaintGraph() {
+                    graph.update()
+                }
 
                 Graph {
                     id: graph

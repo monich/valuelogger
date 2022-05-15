@@ -95,7 +95,7 @@ Page {
                     "nowTime": Qt.formatDateTime(model.timestamp, "hh:mm:ss")
                 })
 
-                editDialog.accepted.connect( function() {
+                editDialog.accepted.connect(function() {
                     Debug.log("dialog accepted")
 
                     var timestamp = editDialog.nowDate + " " + editDialog.nowTime
@@ -104,7 +104,6 @@ Page {
                     Debug.log(" time", timestamp)
 
                     dataModel.updateRow(model.index, editDialog.value, editDialog.annotation, timestamp)
-                    Logger.tableUpdated(dataTable)
                 })
             }
 

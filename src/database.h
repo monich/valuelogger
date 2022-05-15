@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2022 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -26,7 +26,9 @@ DEALINGS IN THE SOFTWARE.
 
 #include <QSharedPointer>
 #include <QVariantList>
+#include <QDateTime>
 #include <QString>
+#include <QObject>
 
 /* Parameter table */
 #define PARAMETER_COL       "parameter"     /* TEXT */
@@ -55,16 +57,15 @@ DEALINGS IN THE SOFTWARE.
 #define DATA_VALUE_ROLE     DATA_VALUE_COL
 #define DATA_ANNOTATION_ROLE DATA_ANNOTATION_COL
 
-class Database
+class Database : public QObject
 {
+    Q_OBJECT
+    Q_DISABLE_COPY(Database)
     class Private;
 
 public:
-    Database();
-    Database(const Database& db);
+    Database(QObject* parent);
     ~Database();
-
-    Database& operator=(const Database& db);
 
     static QDateTime toDateTime(const QVariant& value);
     static QString toString(const QDateTime& value);
@@ -77,6 +78,9 @@ public:
     bool setPairedTable(QString datatable, QString pairedtable);
     void deleteData(QString table, QString key);
     void deleteParameter(QString datatable);
+
+signals:
+    void dataChanged(QString datatable);
 
 private:
     QSharedPointer<Private> p;

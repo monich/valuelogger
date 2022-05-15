@@ -111,7 +111,7 @@ private:
     static int compareParsedVersions(const QVector<uint> v1, const QVector<uint> v2);
 
 private:
-    Database m_db;
+    uint queuedSignals;
     QVariantList m_parameters;
     QString m_transferEngineVersion;
     QTemporaryFile m_shareCSV;
@@ -120,7 +120,7 @@ private:
     QString m_defaultParameterName;
     QString m_defaultParameterTable;
     QColor m_defaultParameterColor;
-    uint queuedSignals;
+    Database* m_db;
 };
 
 #endif // LOGGER_H

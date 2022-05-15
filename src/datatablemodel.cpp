@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2022 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -25,8 +25,11 @@ DEALINGS IN THE SOFTWARE.
 #include "debuglog.h"
 
 DataTableModel::DataTableModel(QObject* parent) :
-    DataModel(parent)
+    DataModel(parent),
+    m_internalUpdate(0),
+    m_db(new Database(this))
 {
+    connect(m_db, SIGNAL(dataChanged(QString)), SLOT(onDataChanged(QString)));
 }
 
 DataTableModel::~DataTableModel()
@@ -45,17 +48,34 @@ void DataTableModel::setDataTable(QString table)
 void DataTableModel::deleteRowStorage(QString key)
 {
     if (!m_dataTable.isEmpty()) {
-        m_db.deleteData(m_dataTable, key);
+        m_internalUpdate++;
+        m_db->deleteData(m_dataTable, key);
+        m_internalUpdate--;
     }
 }
 
 bool DataTableModel::updateRowStorage(QString key, QString value, QString annotation, QString timestamp)
 {
-    return !m_dataTable.isEmpty() &&
-        !m_db.addData(m_dataTable, key, value, annotation, timestamp).isEmpty();
+    bool ok = false;
+    if (!m_dataTable.isEmpty()) {
+        m_internalUpdate++;
+        ok = !m_db->addData(m_dataTable, key, value, annotation, timestamp).isEmpty();
+        m_internalUpdate--;
+    }
+    return ok;
 }
 
 void DataTableModel::reset()
 {
-    setRawData(m_dataTable.isEmpty() ? QVariantList() : m_db.readData(m_dataTable));
+    m_internalUpdate++;
+    setRawData(m_dataTable.isEmpty() ? QVariantList() : m_db->readData(m_dataTable));
+    m_internalUpdate--;
+}
+
+void DataTableModel::onDataChanged(QString table)
+{
+    if (!m_internalUpdate && table == m_dataTable) {
+        DBG(table << "has changed, resetting the model");
+        reset();
+    }
 }

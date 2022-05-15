@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2022 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -56,8 +56,10 @@ namespace {
     const QString FORMAT_DATE("yyyy-MM-dd");
 }
 
-class Database::Private
+class Database::Private : public QObject
 {
+    Q_OBJECT
+
 public:
     Private();
     ~Private();
@@ -66,6 +68,9 @@ public:
     void createParameterTable();
     void createDataTable(QString table);
     void dropDataTable(QString table);
+
+signals:
+    void dataChanged(QString table);
 
 public:
     QSqlDatabase db;
@@ -283,6 +288,7 @@ QString Database::addData(QString table, QString key, QString value, QString ann
 
     if (query.exec()) {
         DBG("data" << (key.isEmpty() ? "added" : "edited") << timestamp << "=" << value << "+" << annotation);
+        emit p->dataChanged(table);
         return objHash;
     } else {
         WARN("failed" << timestamp << "=" << value << ":" << query.lastError());
@@ -333,6 +339,7 @@ void Database::deleteData(QString table, QString key)
 
     if (query.exec()) {
         DBG("deleted" << key << "from" << datatable);
+        emit p->dataChanged(table);
     } else {
         WARN("Failed to delete" << key << "from" << datatable << ":" << query.lastError());
     }
@@ -363,7 +370,7 @@ bool Database::setPairedTable(QString datatable, QString pairedtable)
     }
 }
 
-Database::Database()
+Database::Database(QObject* parent) : QObject(parent)
 {
     static QWeakPointer<Private> shared;
     p = shared;
@@ -371,21 +378,11 @@ Database::Database()
         p = QSharedPointer<Private>::create();
         shared = p;
     }
-}
-
-Database::Database(const Database& that) :
-    p(that.p)
-{
+    connect(p.data(), SIGNAL(dataChanged(QString)), SIGNAL(dataChanged(QString)));
 }
 
 Database::~Database()
 {
-}
-
-Database& Database::operator=(const Database& that)
-{
-    p = that.p;
-    return *this;
 }
 
 QDateTime Database::toDateTime(const QVariant& value)
@@ -409,3 +406,5 @@ QString Database::toString(const QDateTime& value)
 {
     return value.toString(FORMAT_DATE_TIME);
 }
+
+#include "database.moc"

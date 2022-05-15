@@ -75,7 +75,8 @@ namespace {
 
 Logger::Logger(QObject* parent) :
     QAbstractListModel(parent),
-    queuedSignals(0)
+    queuedSignals(0),
+    m_db(new Database(this))
 {
     m_shareCSV.setFileTemplate(QDir::tempPath() + "/valuelogger.XXXXXX.csv");
     m_parameters = readParameters();
@@ -230,7 +231,7 @@ void Logger::updateDefaultParameter()
 
 QString Logger::addData(QString table, QString value, QString annotation, QString timestamp)
 {
-    const QString key(m_db.addData(table, QString(), value, annotation, timestamp));
+    const QString key(m_db->addData(table, QString(), value, annotation, timestamp));
     if (!key.isEmpty()) {
         tableUpdated(table);
     }
@@ -253,7 +254,7 @@ QVariantMap Logger::get(int row)
 
 QVariantList Logger::readParameters()
 {
-    return m_db.readParameters();
+    return m_db->readParameters();
 }
 
 QString Logger::addParameter(QString name, QString description, bool visualize, QColor plotcolor)
@@ -261,7 +262,7 @@ QString Logger::addParameter(QString name, QString description, bool visualize, 
     DBG("Adding entry:" << name << "-" << description << "color" << plotcolor);
 
     const QString colorName(plotcolor.name());
-    const QString datatable(m_db.addParameter(name, description, visualize, colorName));
+    const QString datatable(m_db->addParameter(name, description, visualize, colorName));
     if (!datatable.isEmpty()) {
         DBG("parameter added:" << name);
 
@@ -332,7 +333,7 @@ void Logger::editParameterAt(int row, QString name, QString description, bool vi
         }
 
         if (!roles.isEmpty()) {
-            if (m_db.insertOrReplace(par.value(DATATABLE).toString(), name, description, visualize, colorName, pairedtable)) {
+            if (m_db->insertOrReplace(par.value(DATATABLE).toString(), name, description, visualize, colorName, pairedtable)) {
                 m_parameters.replace(row, par);
                 const QModelIndex idx(index(row));
                 emit dataChanged(idx, idx, roles);
@@ -372,7 +373,7 @@ void Logger::deleteParameterAt(int row)
         const QString dataTable(deleted.value(DATATABLE).toString());
 
         DBG("Deleting entry at" << row << ":" << deleted.value(NAME).toString());
-        m_db.deleteParameter(dataTable);
+        m_db->deleteParameter(dataTable);
 
         beginRemoveRows(QModelIndex(), row, row);
         m_parameters.removeAt(row);
@@ -381,7 +382,7 @@ void Logger::deleteParameterAt(int row)
         for (int i = m_parameters.count() - 1; i >= 0; i--) {
             const QVariantMap par(m_parameters.at(i).toMap());
             if (par.value(PAIREDTABLE).toString() == dataTable) {
-                if (m_db.setPairedTable(par.value(DATATABLE).toString(), QString())) {
+                if (m_db->setPairedTable(par.value(DATATABLE).toString(), QString())) {
                     QVector<int> roles;
                     roles.append(PairedTableRole);
                     const QModelIndex idx(index(i));
@@ -442,7 +443,7 @@ void Logger::writeCSV(QFile& file)
             out << QUOTE << esc(par.value(NAME).toString()) << SEP
                 << esc(par.value(DESCRIPTION).toString()) << EOL;
 
-            const QVariantList dataList(m_db.readData(par.value(DATATABLE).toString()));
+            const QVariantList dataList(m_db->readData(par.value(DATATABLE).toString()));
             QListIterator<QVariant> n(dataList);
             while (n.hasNext()) {
                 const QVariantMap data(n.next().toMap());
@@ -610,7 +611,7 @@ bool Logger::setData(const QModelIndex& idx, const QVariant& value, int role)
                 par.insert(VISUALIZE, bval);
                 QVector<int> roles;
                 roles.append(role);
-                if (m_db.insertOrReplace(par.value(DATATABLE).toString(),
+                if (m_db->insertOrReplace(par.value(DATATABLE).toString(),
                     par.value(NAME).toString(), par.value(DESCRIPTION).toString(),
                     bval, par.value(PLOTCOLOR).toString(),
                     par.value(PAIREDTABLE).toString())) {
@@ -630,7 +631,7 @@ bool Logger::setData(const QModelIndex& idx, const QVariant& value, int role)
                 DBG("Paired table at" << row << "=>" << sval);
                 QVector<int> roles;
                 roles.append(role);
-                if (m_db.setPairedTable(par.value(DATATABLE).toString(), sval)) {
+                if (m_db->setPairedTable(par.value(DATATABLE).toString(), sval)) {
                     par.insert(PAIREDTABLE, sval);
                     m_parameters.replace(row, par);
                     emit dataChanged(idx, idx, roles);

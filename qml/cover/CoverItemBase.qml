@@ -12,7 +12,7 @@ Item {
     property var graphModel
     property alias title: label.text
 
-    signal updateGraph()
+    signal repaintGraph()
 
     /* Internal API */
 

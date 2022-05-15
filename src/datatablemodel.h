@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2022 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -45,12 +45,16 @@ protected:
     void deleteRowStorage(QString key) Q_DECL_OVERRIDE;
     bool updateRowStorage(QString key, QString value, QString annotation, QString timestamp) Q_DECL_OVERRIDE;
 
+private slots:
+    void onDataChanged(QString table);
+
 signals:
     void dataTableChanged();
 
 private:
-    Database m_db;
+    int m_internalUpdate;
     QString m_dataTable;
+    Database* m_db;
 };
 
 #endif // DATATABLEMODEL_H

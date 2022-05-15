@@ -19,24 +19,18 @@ CoverBackground {
 
     property alias coverItem: coverItemLoader.item
 
-    Connections {
-        target: Logger
-        onTableUpdated: {
-            if (table == defaultParameterData.dataTable) {
-                defaultParameterData.reset()
-            }
-        }
-    }
-
     DataTableModel {
         id: defaultParameterData
 
         dataTable: Logger.defaultParameterTable
-        onModelReset: {
-            if (coverItem) {
-                coverItem.updateGraph()
-            }
-        }
+        onModelReset: repaintTimer.start()
+    }
+
+    Timer {
+        id: repaintTimer
+
+        interval: 500
+        onTriggered: coverItem.repaintGraph()
     }
 
     Loader {
