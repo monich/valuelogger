@@ -284,11 +284,14 @@ Page {
 
                         HighlightIcon {
                             id: pairIcon
+
                             source: "image://theme/icon-m-link"
                             anchors.verticalCenter: parent.verticalCenter
                             sourceSize: Qt.size(Theme.iconSizeMedium, Theme.iconSizeMedium)
                             highlightColor: Theme.primaryColor
                             visible: model.pairedtable !== ""
+                            layer.enabled: parameterItem.highlighted
+                            layer.effect: PressEffect { source: pairIcon }
                         }
 
                         IconButton {
