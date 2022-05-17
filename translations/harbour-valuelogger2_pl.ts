@@ -84,7 +84,7 @@
     <name>CoverPreview</name>
     <message>
         <source>Example</source>
-        <translation type="unfinished">Przykład</translation>
+        <translation>Przykład</translation>
     </message>
 </context>
 <context>
@@ -102,7 +102,7 @@
     </message>
     <message>
         <source>Share CSV</source>
-        <translation type="unfinished">Udostępnij CSV</translation>
+        <translation>Udostępnij CSV</translation>
     </message>
     <message>
         <source>Add new parameter</source>
@@ -110,7 +110,7 @@
     </message>
     <message>
         <source>Plot</source>
-        <translation type="unfinished">Wykres</translation>
+        <translation>Wykres</translation>
     </message>
     <message>
         <source>Show raw data</source>
