@@ -32,7 +32,7 @@ SilicaFlickable  {
         Label {
             x: Theme.horizontalPageMargin
             width: parent.width - 2 * x
-            text: "© 2014-2015 kimmoli\n© 2021-2022 Slava Monich"
+            text: "© 2014-2015 kimmoli\n© 2021-2025 Slava Monich"
             color: Theme.highlightColor
             font.pixelSize: Theme.fontSizeSmall
             horizontalAlignment: Text.AlignHCenter

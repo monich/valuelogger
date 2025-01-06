@@ -6,18 +6,17 @@ Name:       harbour-valuelogger2
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 
 Summary:    Value Logger
-Version:    1.0.20
+Version:    1.0.21
 Release:    1
 License:    MIT
 URL: https://github.com/monich/valuelogger
 Source0:    %{name}-%{version}.tar.bz2
 
-Requires:   sailfishsilica-qt5 >= 0.10.9
 Requires:   qt5-qtsvg-plugin-imageformat-svg
 BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  pkgconfig(Qt5Qml)
 BuildRequires:  pkgconfig(Qt5Core)
-BuildRequires:  pkgconfig(sailfishapp) >= 0.0.10
+BuildRequires:  pkgconfig(sailfishapp)
 BuildRequires:  pkgconfig(mlite5)
 BuildRequires:  desktop-file-utils
 BuildRequires:  qt5-qttools-linguist
