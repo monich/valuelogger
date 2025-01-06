@@ -3,7 +3,7 @@
  
     Modified to support multiple lines for valuelogger 2014 Kimmo Lindholm
 
-    More or less completely rewritten in 2021 by Slava Monich
+    More or less completely rewritten in 2021-2025 by Slava Monich
 
     Permission is hereby granted, free of charge, to any person obtaining a copy
     of this software and associated documentation files (the "Software"), to deal
@@ -627,6 +627,7 @@ Item {
                 maxTime: xend
                 lineWidth: paintedCount ? Math.max(Math.ceil(Math.min(maxLineWidth, width/paintedCount)), minLineWidth) : maxLineWidth
                 color: modelData.plotcolor
+                smooth: Settings.smoothGraph
                 model: DataTableModel {
                     dataTable: modelData.datatable
                 }

@@ -191,6 +191,14 @@
         <translation>Ustawienia</translation>
     </message>
     <message>
+        <source>Graph</source>
+        <translation type="unfinished">Wykres</translation>
+    </message>
+    <message>
+        <source>Smooth</source>
+        <translation type="unfinished">Wygładzony</translation>
+    </message>
+    <message>
         <source>Grid</source>
         <translation>Siatka</translation>
     </message>

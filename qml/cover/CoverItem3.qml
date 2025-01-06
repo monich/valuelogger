@@ -68,6 +68,7 @@ CoverItemBase {
                     maxTime: model.maxTime
                     lineWidth: thickLine
                     nodeMarks: false
+                    smooth: Settings.smoothGraph
                     color: graphColor
                     visible: false
                 }

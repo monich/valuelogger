@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2025 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -40,34 +40,38 @@ class Graph : public QQuickPaintedItem
     Q_PROPERTY(QDateTime maxTime READ maxTime WRITE setMaxTime NOTIFY maxTimeChanged)
     Q_PROPERTY(QObject* model READ getModel WRITE setModel NOTIFY modelChanged)
     Q_PROPERTY(bool nodeMarks READ nodeMarks WRITE setNodeMarks NOTIFY nodeMarksChanged)
+    Q_PROPERTY(bool smooth READ smooth WRITE setSmooth NOTIFY smoothChanged)
     Q_PROPERTY(int paintedCount READ paintedCount NOTIFY paintedCountChanged)
 
 public:
     explicit Graph(QQuickItem* parent = Q_NULLPTR);
 
     const QColor& color() const { return m_color; }
-    void setColor(const QColor& color);
+    void setColor(const QColor&);
 
     qreal lineWidth() const { return m_lineWidth; }
-    void setLineWidth(qreal lineWidth);
+    void setLineWidth(qreal);
 
     qreal minValue() const { return m_minValue; }
-    void setMinValue(qreal value);
+    void setMinValue(qreal);
 
     qreal maxValue() const { return m_maxValue; }
-    void setMaxValue(qreal value);
+    void setMaxValue(qreal);
 
     const QDateTime& minTime() const { return m_minTime; }
-    void setMinTime(const QDateTime& t);
+    void setMinTime(const QDateTime&);
 
     const QDateTime& maxTime() const { return m_maxTime; }
-    void setMaxTime(const QDateTime& t);
+    void setMaxTime(const QDateTime&);
 
     QAbstractItemModel* getModel() const { return m_model; }
     void setModel(QObject* model);
 
     bool nodeMarks() const { return m_nodeMarks; }
-    void setNodeMarks(bool value);
+    void setNodeMarks(bool);
+
+    bool smooth() const { return m_smooth; }
+    void setSmooth(bool);
 
     int paintedCount() const { return m_paintedCount; }
 
@@ -75,7 +79,7 @@ protected:
     void paint(QPainter* aPainter) Q_DECL_OVERRIDE;
 
 private:
-    static bool lineVisible(qreal x1, qreal y1, qreal x2, qreal y2, qreal w, qreal h);
+    static bool lineVisible(const QPointF&, const QPointF&, const QRectF&);
 
 private slots:
     void onModelDestroyed();
@@ -89,6 +93,7 @@ signals:
     void maxTimeChanged();
     void modelChanged();
     void nodeMarksChanged();
+    void smoothChanged();
     void paintedCountChanged();
 
 private:
@@ -102,6 +107,7 @@ private:
     int m_valueRole;
     QAbstractItemModel* m_model;
     bool m_nodeMarks;
+    bool m_smooth;
     int m_paintedCount;
 };
 

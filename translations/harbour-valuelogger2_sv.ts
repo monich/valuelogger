@@ -114,7 +114,7 @@
     </message>
     <message>
         <source>Plot</source>
-        <translation type="unfinished">Diagram</translation>
+        <translation type="unfinished">Rita</translation>
     </message>
     <message>
         <source>Show raw data</source>
@@ -189,6 +189,14 @@
     <message>
         <source>Settings</source>
         <translation>Inställningar</translation>
+    </message>
+    <message>
+        <source>Graph</source>
+        <translation type="unfinished">Graf</translation>
+    </message>
+    <message>
+        <source>Smooth</source>
+        <translation type="unfinished">Jämn</translation>
     </message>
     <message>
         <source>Grid</source>

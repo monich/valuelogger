@@ -191,6 +191,14 @@
         <translation>Settings</translation>
     </message>
     <message>
+        <source>Graph</source>
+        <translation>Graph</translation>
+    </message>
+    <message>
+        <source>Smooth</source>
+        <translation>Smooth</translation>
+    </message>
+    <message>
         <source>Grid</source>
         <translation>Grid</translation>
     </message>

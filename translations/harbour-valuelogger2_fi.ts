@@ -191,6 +191,14 @@
         <translation>Asetukset</translation>
     </message>
     <message>
+        <source>Graph</source>
+        <translation type="unfinished">Kaavio</translation>
+    </message>
+    <message>
+        <source>Smooth</source>
+        <translation type="unfinished">Sileä</translation>
+    </message>
+    <message>
         <source>Grid</source>
         <translation type="unfinished">Ruudukko</translation>
     </message>

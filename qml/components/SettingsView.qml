@@ -15,6 +15,15 @@ SilicaFlickable  {
 
         PageHeader { title: qsTr("Settings") }
 
+        SectionHeader { text: qsTr("Graph") }
+
+        TextSwitch {
+            text: qsTr("Smooth")
+            automaticCheck: false
+            checked: Settings.smoothGraph
+            onClicked: Settings.smoothGraph = !Settings.smoothGraph
+        }
+
         SectionHeader { text: qsTr("Grid") }
 
         Grid {

@@ -191,8 +191,16 @@
         <translation>Настройки</translation>
     </message>
     <message>
+        <source>Graph</source>
+        <translation>График</translation>
+    </message>
+    <message>
+        <source>Smooth</source>
+        <translation>Сглаженный</translation>
+    </message>
+    <message>
         <source>Grid</source>
-        <translation>Сетка графика</translation>
+        <translation>Сетка</translation>
     </message>
     <message>
         <source>Time axis</source>

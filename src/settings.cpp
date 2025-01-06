@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2025 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -51,6 +51,7 @@ Settings::Settings(QObject* parent) :
     m_leftGridLabels(new MGConfItem(DCONF_KEY("leftGridLabels"), this)),
     m_rightGridLabels(new MGConfItem(DCONF_KEY("rightGridLabels"), this)),
     m_showGraphOnCover(new MGConfItem(DCONF_KEY("showGraphOnCover"), this)),
+    m_smoothGraph(new MGConfItem(DCONF_KEY("smoothGraph"), this)),
     m_coverStyle(new MGConfItem(DCONF_KEY("coverStyle"), this))
 {
     connect(m_verticalGridLinesStyle, SIGNAL(valueChanged()), SIGNAL(verticalGridLinesStyleChanged()));
@@ -59,14 +60,16 @@ Settings::Settings(QObject* parent) :
     connect(m_leftGridLabels, SIGNAL(valueChanged()), SIGNAL(leftGridLabelsChanged()));
     connect(m_rightGridLabels, SIGNAL(valueChanged()), SIGNAL(rightGridLabelsChanged()));
     connect(m_showGraphOnCover, SIGNAL(valueChanged()), SIGNAL(showGraphOnCoverChanged()));
+    connect(m_smoothGraph, SIGNAL(valueChanged()), SIGNAL(smoothGraphChanged()));
     connect(m_showGraphOnCover, SIGNAL(valueChanged()), SIGNAL(coverStyleChanged()));
+    connect(m_smoothGraph, SIGNAL(valueChanged()), SIGNAL(coverStyleChanged()));
     connect(m_coverStyle, SIGNAL(valueChanged()), SIGNAL(coverStyleChanged()));
 }
 
 /* Callback for qmlRegisterSingletonType<Settings> */
-QObject* Settings::createSingleton(QQmlEngine* engine, QJSEngine* js)
+QObject* Settings::createSingleton(QQmlEngine*, QJSEngine*)
 {
-    return new Settings;
+    return new Settings();
 }
 
 QVariantList Settings::createSampleData()

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2025 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -42,6 +42,7 @@ class Settings : public QObject
     Q_PROPERTY(bool leftGridLabels READ getLeftGridLabels WRITE setLeftGridLabels NOTIFY leftGridLabelsChanged)
     Q_PROPERTY(bool rightGridLabels READ getRightGridLabels WRITE setRightGridLabels NOTIFY rightGridLabelsChanged)
     Q_PROPERTY(bool showGraphOnCover READ getShowGraphOnCover WRITE setShowGraphOnCover NOTIFY showGraphOnCoverChanged)
+    Q_PROPERTY(bool smoothGraph READ getSmoothGraph WRITE setSmoothGraph NOTIFY smoothGraphChanged)
     Q_PROPERTY(int coverStyle READ getCoverStyle WRITE setCoverStyle NOTIFY coverStyleChanged)
     Q_PROPERTY(QString coverItem READ getCoverItem NOTIFY coverStyleChanged)
     Q_PROPERTY(QStringList coverItems READ getCoverItems CONSTANT)
@@ -60,7 +61,7 @@ public:
     explicit Settings(QObject* parent = Q_NULLPTR);
 
     /* Callback for qmlRegisterSingletonType<Settings> */
-    static QObject* createSingleton(QQmlEngine* engine, QJSEngine* js);
+    static QObject* createSingleton(QQmlEngine*, QJSEngine*);
 
     /* Static helpers */
     static const QString& getConfigRoot() { return ConfigRoot; }
@@ -87,6 +88,9 @@ public:
     bool getShowGraphOnCover() const { return m_showGraphOnCover->value(true).toBool(); }
     void setShowGraphOnCover(bool value) { m_showGraphOnCover->set(value); }
 
+    bool getSmoothGraph() const { return m_smoothGraph->value(true).toBool(); }
+    void setSmoothGraph(bool value) { m_smoothGraph->set(value); }
+
     int getCoverStyle() const;
     void setCoverStyle(int style);
     const QString& getCoverItem() const { return CoverItems.at(getCoverStyle()); }
@@ -101,6 +105,7 @@ signals:
     void leftGridLabelsChanged();
     void rightGridLabelsChanged();
     void showGraphOnCoverChanged();
+    void smoothGraphChanged();
     void coverStyleChanged();
 
 private:
@@ -110,6 +115,7 @@ private:
     MGConfItem* m_leftGridLabels;
     MGConfItem* m_rightGridLabels;
     MGConfItem* m_showGraphOnCover;
+    MGConfItem* m_smoothGraph;
     MGConfItem* m_coverStyle;
 };
 

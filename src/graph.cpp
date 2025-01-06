@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2025 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -25,6 +25,7 @@ DEALINGS IN THE SOFTWARE.
 #include "debuglog.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QBrush>
 #include <QPen>
 
@@ -50,6 +51,7 @@ Graph::Graph(QQuickItem* parent) :
     m_valueRole(-1),
     m_model(Q_NULLPTR),
     m_nodeMarks(true),
+    m_smooth(true),
     m_paintedCount(0)
 {
     setClip(true);
@@ -165,22 +167,40 @@ void Graph::setNodeMarks(bool value)
     }
 }
 
-bool Graph::lineVisible(qreal x1, qreal y1, qreal x2, qreal y2, qreal w, qreal h)
+void Graph::setSmooth(bool value)
 {
-    if ((x1 < 0 && x2 < 0) || (x1 >= w && x2 >= w) ||
-        (y1 < 0 && y2 < 0) || (y1 >= h && y2 >= h)) {
-        return false;
+    if (m_smooth != value) {
+        m_smooth = value;
+        DBG(value);
+        emit smoothChanged();
+        update();
     }
-    // Yeah, some cases will slip through but getting it 100% right
-    // won't save us much, so let's keep it simple.
-    return true;
+}
+
+bool Graph::lineVisible(const QPointF& p1, const QPointF& p2, const QRectF& graphRect)
+{
+    const qreal x1 = p1.x();
+    const qreal y1 = p1.y();
+    const qreal x2 = p2.x();
+    const qreal y2 = p2.y();
+    const QPointF topleft(qMin(x1, x2), qMin(y1, y2));
+
+    if (graphRect.contains(topleft)) {
+        return true;
+    } else {
+        const QPointF bottomRight(qMax(x1, x2), qMax(y1, y2));
+
+        return graphRect.contains(bottomRight) ||
+            QRectF(topleft, bottomRight).intersects(graphRect);
+    }
 }
 
 void Graph::paint(QPainter* aPainter)
 {
     int paintedCount = 0;
-    const qreal w = width();
-    const qreal h = height();
+    const QRectF rect(boundingRect());
+    const qreal w = rect.width();
+    const qreal h = rect.height();
 
     if (m_model && m_model->rowCount() &&
         m_timestampRole >= 0 && m_valueRole >= 0 &&
@@ -205,13 +225,12 @@ void Graph::paint(QPainter* aPainter)
             if (ok) {
                 const qreal x = w * m_minTime.msecsTo(time) / timeSpan;
                 const qreal y = h * (m_maxValue - value) / valueSpan;
+                const QPointF p(x, y);
                 if (drawSquares && !points.isEmpty()) {
                     const QPointF& last(points.last());
-                    const qreal lastX = last.x();
-                    const qreal lastY = last.y();
-                    if (lineVisible(lastX, lastY, x, y, w, h)) {
-                        const qreal dx = x - lastX;
-                        const qreal dy = y - lastY;
+                    if (lineVisible(last, p, rect)) {
+                        const qreal dx = x - last.x();
+                        const qreal dy = y - last.y();
                         const qreal distSquared = dx * dx + dy * dy;
                         if (distSquared < minDistSquared) {
                             drawSquares = false;
@@ -219,7 +238,7 @@ void Graph::paint(QPainter* aPainter)
                         }
                     }
                 }
-                points.append(QPointF(x, y));
+                points.append(p);
             }
         }
 
@@ -229,15 +248,19 @@ void Graph::paint(QPainter* aPainter)
         const qreal ymax = h + m_lineWidth;
         const int np = points.count();
         const QPointF* pa = points.constData();
-        qreal lastX = 0, lastY = 0;
 
         const QBrush brush(m_color);
         QPen pen(m_color);
         pen.setWidth(m_lineWidth);
 
+        const QPointF* prev2 = Q_NULLPTR;
+
         for (i = 0; i < np; i++) {
-            const qreal x = pa[i].x();
-            const qreal y = pa[i].y();
+            const QPointF* prev = i > 0 ? (pa + (i - 1)) : Q_NULLPTR;
+            const QPointF* next = (i + 1) < np ? (pa + (i + 1)) : Q_NULLPTR;
+            const QPointF& p = pa[i];
+            const qreal x = p.x();
+            const qreal y = p.y();
 
             if (x >= xmin && x < xmax && y >= ymin && y < ymax) {
                 paintedCount++;
@@ -249,13 +272,56 @@ void Graph::paint(QPainter* aPainter)
                 }
             }
 
-            if (i > 0 && lineVisible(lastX, lastY, x, y, w, h)) {
+            if (prev && lineVisible(*prev, p, rect)) {
                 aPainter->setPen(pen);
-                aPainter->drawLine(lastX, lastY, x, y);
+                if (m_smooth && prev->x() != x && prev->y() != y) {
+                    const qreal L = 0.4;
+                    // Initialize control points with the same y as the end points.
+                    // For edges and spikes it will remain that way.
+                    const qreal dx = x - prev->x();
+                    const qreal dy = y - prev->y();
+                    const qreal l = qSqrt(dx * dx + dy * dy) * L;
+                    QPointF ctlPt1(prev->x() + dx * L, prev->y());
+                    QPointF ctlPt2(x - dx * L, y);
+                    QPainterPath path;
+
+                    if (prev2 && x != prev2->x() &&
+                        (prev->y() - prev2->y()) * (prev->y() - y) < 0) {
+                        // prev->y() somewhere is between prev2->y() and y
+                        const qreal a = qAtan((y - prev2->y()) / (x - prev2->x()));
+
+                        ctlPt1.setX(prev->x() + l * qCos(a));
+                        ctlPt1.setY(prev->y() + l * qSin(a));
+                    }
+
+                    if (next && next->x() != x && next->x() != prev->x() &&
+                        (y - prev->y()) * (y - next->y()) < 0) {
+                        // y is somewhere between prev->y() and next->y()
+                        const qreal a = qAtan((next->y() - prev->y()) / (next->x() - prev->x()));
+
+                        ctlPt2.setX(x - l * qCos(a));
+                        ctlPt2.setY(y - l * qSin(a));
+                    }
+
+#if 0 // Visualization of control points
+                    QPen pen1(Qt::white);
+                    pen1.setWidth(0);
+                    aPainter->setPen(pen1);
+                    aPainter->drawLine(*prev, ctlPt1);
+                    aPainter->drawLine(ctlPt2, p);
+                    aPainter->setPen(pen);
+#endif
+
+                    path.moveTo(*prev);
+                    path.cubicTo(ctlPt1, ctlPt2, p);
+                    aPainter->drawPath(path);
+
+                } else {
+                    aPainter->drawLine(*prev, p);
+                }
             }
 
-            lastX = x;
-            lastY = y;
+            prev2 = prev;
         }
     }
 
