@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2025 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -78,7 +78,6 @@ signals:
     void timeOriginChanged();
     void timeStartChanged();
     void timeEndChanged();
-    void dateTimeFormatChanged();
     void fixedGridsChanged();
 
 private:

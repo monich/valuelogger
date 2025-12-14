@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2021 Slava Monich <slava@monich.com>
+Copyright (c) 2021-2025 Slava Monich <slava@monich.com>
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
@@ -61,8 +61,6 @@ public:
     Grid& operator=(const Grid& g) { time = g.time; coord = g.coord; text = g.text; return *this; }
     bool operator==(const Grid& g) const { return coord == g.coord && text == g.text && time == g.time; }
 
-    static const QString& dateTimeFormat(qint64 spanMSecs);
-
 public:
     QDateTime time;
     qreal coord;
@@ -79,16 +77,6 @@ const QString TimeGridModel::Grid::DateFormat("dd.MM.yyyy");
 const QString TimeGridModel::Grid::YearFormat("yyyy");
 const QString TimeGridModel::Grid::FixedFormat("dd.MM.yyyy hh:mm");
 
-const QString& TimeGridModel::Grid::dateTimeFormat(qint64 spanMSecs)
-{
-    return (spanMSecs <= SpanSecondMSecs) ? MSecsFormat :
-        (spanMSecs <= SpanMinuteMSecs) ? SecsFormat :
-        (spanMSecs <= SpanDayMSecs) ? TimeFormat :
-        (spanMSecs <= MinSpanMonthMSecs) ? DayFormat :
-        (spanMSecs <= MinSpanYearMSecs) ? DateFormat :
-        YearFormat;
-}
-
 QDebug operator<<(QDebug out, const TimeGridModel::Grid& grid)
 {
     QDebugStateSaver saver(out);
@@ -100,14 +88,14 @@ QDebug operator<<(QDebug out, const TimeGridModel::Grid& grid)
 
 struct TimeGridModel::Step {
 public:
-    static QDateTime roundToSpan(const QDateTime& t, const QDateTime& o, qint64 spanMSecs);
-    static QDateTime roundToMSecs(const QDateTime& t, const QDateTime& o, int msecs) { return roundToSpan(t, o, msecs); }
-    static QDateTime roundToSecs(const QDateTime& t, const QDateTime& o, int secs) { return roundToSpan(t, o, Grid::SpanSecondMSecs * secs); }
-    static QDateTime roundToMins(const QDateTime& t, const QDateTime& o, int mins) { return roundToSpan(t, o, Grid::SpanMinuteMSecs * mins); }
-    static QDateTime roundToHours(const QDateTime& t, const QDateTime& o, int hours) { return roundToSpan(t, o, Grid::SpanHourMSecs * hours); }
-    static QDateTime roundToDays(const QDateTime& t, const QDateTime& o, int days) { return roundToSpan(t, o, Grid::SpanDayMSecs * days); }
-    static QDateTime roundToMonths(const QDateTime& t, const QDateTime&, int months);
-    static QDateTime roundToYears(const QDateTime& t, const QDateTime&, int years);
+    static QDateTime roundToSpan(const QDateTime& t, qint64 spanMSecs);
+    static QDateTime roundToMSecs(const QDateTime& t, int msecs) { return roundToSpan(t, msecs); }
+    static QDateTime roundToSecs(const QDateTime& t, int secs) { return roundToSpan(t, Grid::SpanSecondMSecs * secs); }
+    static QDateTime roundToMins(const QDateTime& t, int mins) { return roundToSpan(t, Grid::SpanMinuteMSecs * mins); }
+    static QDateTime roundToHours(const QDateTime& t, int hours) { return roundToSpan(t, Grid::SpanHourMSecs * hours); }
+    static QDateTime roundToDays(const QDateTime& t, int days) { return roundToSpan(t, Grid::SpanDayMSecs * days); }
+    static QDateTime roundToMonths(const QDateTime& t, int months);
+    static QDateTime roundToYears(const QDateTime& t, int years);
     static QDateTime addMSecs(const QDateTime& t, int msecs) { return t.addMSecs(msecs); }
     static QDateTime addSecs(const QDateTime& t, int secs) { return t.addMSecs(Grid::SpanSecondMSecs * secs); }
     static QDateTime addMins(const QDateTime& t, int mins) { return t.addMSecs(Grid::SpanMinuteMSecs * mins); }
@@ -142,7 +130,7 @@ public:
     static const Step* AllSteps[];
 
 public:
-    QDateTime (*roundUp)(const QDateTime& t, const QDateTime& origin, int n);
+    QDateTime (*roundUp)(const QDateTime& t, int n);
     QDateTime (*add)(const QDateTime& t, int n);
     QString (*format)(const QDateTime& t, const Grid* prev);
     const qint64 minSpanMSecs;
@@ -202,16 +190,14 @@ const TimeGridModel::Step* TimeGridModel::Step::AllSteps[] = {
     &TimeGridModel::Step::Years
 };
 
-QDateTime TimeGridModel::Step::roundToSpan(const QDateTime& t,
-    const QDateTime& origin, qint64 spanMSecs)
+QDateTime TimeGridModel::Step::roundToSpan(const QDateTime& t, qint64 spanMSecs)
 {
-    const qint64 msec = origin.msecsTo(t);
+    const qint64 msec = t.toMSecsSinceEpoch();
     const qint64 remainder = (msec % spanMSecs);
     return remainder ? t.addMSecs(spanMSecs - remainder) : t;
 }
 
-QDateTime TimeGridModel::Step::roundToMonths(const QDateTime& t,
-    const QDateTime&, int months)
+QDateTime TimeGridModel::Step::roundToMonths(const QDateTime& t, int months)
 {
     const int msec = t.time().msecsSinceStartOfDay();
     const QDate date(t.date());
@@ -221,8 +207,7 @@ QDateTime TimeGridModel::Step::roundToMonths(const QDateTime& t,
         QDateTime(QDate(date.year(), m, 1).addMonths(months - remainder)) : t;
 }
 
-QDateTime TimeGridModel::Step::roundToYears(const QDateTime& t,
-    const QDateTime&, int years)
+QDateTime TimeGridModel::Step::roundToYears(const QDateTime& t, int years)
 {
     const int msec = t.time().msecsSinceStartOfDay();
     const QDate date(t.date());
@@ -326,7 +311,7 @@ bool TimeGridModel::makeGrids(QVector<Grid>* grids, const Step* step, int n) con
 {
     grids->resize(0);
     const qint64 spanMSecs = m_timeStart.msecsTo(m_timeEnd);
-    QDateTime t(step->roundUp(m_timeStart, m_timeOrigin, n));
+    QDateTime t(step->roundUp(m_timeStart, n));
     for (int i = 0; t < m_timeEnd; i++, t = step->add(t, n)) {
         if (grids->count() >= m_maxCount) {
             DBG("step" << n << step->units << "is too small");
