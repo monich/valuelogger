@@ -1,12 +1,10 @@
 Name:       harbour-valuelogger2
 
-%{!?qtc_qmake:%define qtc_qmake %qmake}
 %{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
 %{!?qtc_make:%define qtc_make make}
-%{?qtc_builddir:%define _builddir %qtc_builddir}
 
 Summary:    Value Logger
-Version:    1.0.21
+Version:    1.0.22
 Release:    1
 License:    MIT
 URL: https://github.com/monich/valuelogger
